@@ -1,0 +1,38 @@
+{
+  "name": "stayaway",
+  "version": "3.0.0",
+  "description": "A multiplayer card game",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "postinstall": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/znsoft/stayaway.git"
+  },
+  "author": "Alvin Lin (omgimanerd)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/znsoft/stayaway/issues"
+  },
+  "homepage": "https://github.com/znsoft/stayaway#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "jquery": "^3.6.0",
+    "morgan": "^1.9.1",
+    "pg": "^8.7.3",
+    "popper.js": "^1.14.7",
+    "pug": "^2.0.3",
+    "socket.io": "^2.4.1",
+    "webpack-cli": "^3.2.3",
+    "ws": "^8.5.0"
+  },
+  "devDependencies": {
+    "css-loader": "^2.1.1",
+    "less": "^3.9.0",
+    "less-loader": "^4.1.0",
+    "mini-css-extract-plugin": "^0.5.0",
+    "webpack": "^4.29.6"
+  }
+}
