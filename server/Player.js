@@ -1,8 +1,11 @@
+const Card = require('./Card')
 
 class Player {
     constructor(clientDB, socket, roomid, playername, playerCaption, room, gamenum, quarantineCount = 0, Infected = false) {
+        this.readyforstart = false;
         this.clientDB = clientDB;
         this.socket = socket;
+        this.playerid = playername;
         this.playername = playername;
         this.playerCaption = playerCaption;
         this.roomid = roomid;
@@ -17,6 +20,9 @@ class Player {
         this.state = Player.States.Nothing;
         this.phase = Player.Phases.Nothing;
         this.exchange = null;
+        this.needupdate = true;
+        this.lastseen = Date.now();
+        if (room != null) this.place = room.players.size;
 
     }
 
@@ -51,11 +57,13 @@ class Player {
     }
 
     sendGUIDToPlayer() {
-        this.clientDB.query(`update players set (needupdate, lastseen ) = (true, $2) WHERE guid = $1 ; `, [this.guid, new Date()], (err, data) => { });
+        this.lastseen = Date.now();
+        //this.clientDB.query(`update players set (needupdate, lastseen ) = (true, $2) WHERE guid = $1 ; `, [this.guid, new Date()], (err, data) => { });
         this.send({ messagetype: 'playerguid', guid: this.guid, playername: this.playername, roomname: this.roomid, password: this.room.password, quarantineCount: this.quarantineCount, infected: this.Infected, thing: this.thing, gamenum: this.gamenum });
     }
 
     insertPlayer() {
+        /*
         //console.trace(`gamenum = ${this.gamenum}`);
         //console.log(`gamenum = ${this.gamenum}`);
         this.clientDB.query(`INSERT INTO players (place , roomid ,playerid , name , lastseen , guid, quarantineCount, Infected , gamenum ,needupdate)
@@ -70,6 +78,7 @@ class Player {
 
 
         this.clientDB.query(`delete from cards where roomid IN (SELECT roomid FROM rooms WHERE roomid = $1 and gamestarted = false); `, [this.roomid,], (err, data) => { });
+        */
     }
 
     generateGUID() {
@@ -84,41 +93,54 @@ class Player {
             //console.log("offline");
             return;
         }
-
-
+        this.sendplayers(deckData);
+        this.lastseen = Date.now();
+        this.needupdate = false;
+        /*
         this.clientDB.query(`select * from players where guid = $1 and needupdate = true;`,
             [this.guid], (err, data) => {
                 if (err) console.log(err);
                 if (data == undefined || data.rows == undefined || data.rows.length == 0) return;
                 this.sendplayers(deckData);
                 this.clientDB.query(`update players set (needupdate, lastseen ) = (false, $2) WHERE guid = $1 ; `, [this.guid, new Date()], (err, data) => { });
-            });
+            });*/
     }
 
     outExchangeCard(data) {
-       // console.trace(`outExchangeCard = ${this.gamenum}`);
+
+        this.phase = Player.Phases.Nothing;
+        this.state = Player.States.Nothing
+        nextplayer = this.room.nextplayer;
+        nextplayer.phase = Player.Phases.Action;
+        nextplayer.state = Player.States.SelectCard;
+
+        this.room.currentplayer = nextplayer;
+        this.room.calcNextPlayer();
+        /*
+        // console.trace(`outExchangeCard = ${this.gamenum}`);
         this.clientDB.query(`select * from cards where roomid = $1 and playerid=$2 and not nextplayer is null;`,
             [this.roomid, this.playername], (err, dta) => {
-             //   console.log(data);
+                //   console.log(data);
                 if (dta == undefined || dta.rows == undefined) return;
                 if (dta.rows.length > 0) return;
                 this.clientDB.query(`update cards set nextplayer = $4 where roomid = $1 and playerid=$2 and place=$3;`, [this.roomid, this.playername, data.place, data.nextplayer], (err) => {
-                  //  console.log(err);
+                    //  console.log(err);
                     this.clientDB.query(`update players set (phase, state ) =(  $3, $4) WHERE roomid = $1 and guid = $2; `, [this.roomid, data.guid, Player.Phases.Exchange, Player.States.OutgoingExchange], (err) => {
-                     //   console.log(err);
+                        //   console.log(err);
                         this.clientDB.query(`update players set (phase, state ) =(  $3, $4) WHERE roomid = $1 and place=$2; `, [this.roomid, data.nextplayer, Player.Phases.Exchange, Player.States.IncomeExchange], (err) => {
-                        //    console.log(err);
+                            //    console.log(err);
                             this.room.needUpdateForAll();
 
                         });
                     });
                 });
-            });
+            });*/
 
     }
 
     inExchangeCard(data) {
-
+        nowNextPlayer();
+        /*
         this.clientDB.query(`select r.nextplayer, r.currentplayer as oldplayer, p.playerid as currentplayer from rooms as r inner join players as p on  p.roomid = r.roomid and r.nextplayer = p.place and p.gamenum = r.gamenum where r.roomid = $1`, [this.roomid], (err, firstdata) => {
             if (firstdata == undefined || firstdata.rows == undefined) return;
             if (firstdata.rows.length == 0) return;
@@ -134,12 +156,22 @@ class Player {
                     });
                 });
             });
-        });
+        });*/
 
 
     }
 
     nowNextPlayer() {
+        this.phase = Player.Phases.Nothing;
+        this.state = Player.States.Nothing
+        nextplayer = this.room.nextplayer;
+        nextplayer.phase = Player.Phases.Action;
+        nextplayer.state = Player.States.SelectCard;
+
+        this.room.currentplayer = nextplayer;
+        this.room.calcNextPlayer();
+
+        /*
         this.clientDB.query(`select r.nextplayer, r.currentplayer as oldplayer, p.playerid as currentplayer from rooms as r inner join players as p on  p.roomid = r.roomid and r.nextplayer = p.place and p.gamenum = r.gamenum where r.roomid = $1`, [this.roomid], (err, firstdata) => {
             if (firstdata == undefined || firstdata.rows == undefined) return;
             if (firstdata.rows.length == 0) return;
@@ -149,23 +181,33 @@ class Player {
                 this.clientDB.query(`update players set (phase, state ) =(  $3, $4) WHERE roomid = $1 and playerid = $2; `, [this.roomid, row.oldplayer, Player.Phases.Nothing, Player.States.Nothing], (err) => {
                     //   console.log(err);
                     this.clientDB.query(`update players set (phase, state ) =(  $3, $4) WHERE roomid = $1 and playerid=$2; `, [this.roomid, row.currentplayer, Player.Phases.Action, Player.States.SelectCard], (err) => {
-                            //    console.log(err);
-                            this.room.needUpdateForAll();
+                        //    console.log(err);
+                        this.room.needUpdateForAll();
 
-                        });
                     });
+                });
             });
-        });
+        });*/
     }
 
 
     giveCardfromUpDeck() {
 
-
+        getOneCardfromDeckForAction();
 
     }
 
     actionDropCard(data) {
+        this.phase = Player.Phases.Exchange;
+        this.state = Player.States.SelectCard;
+        this.room.currentplayer = this.room.nextplayer;
+        this.room.calcNextPlayer();
+        let cardplace = data.place;
+        this.room.dropcards.push(this.cards[cardplace]);
+        this.cards.slice(cardplace, 1);
+        this.cards.forEach((v, i) => { v.place = i });
+       
+        /*
         //console.trace(data);
         //set nextplayer in rooms for next player by place%maxplace
         this.clientDB.query(`update rooms set nextplayer = (select p.place
@@ -176,18 +218,23 @@ class Player {
             [this.roomid, this.guid], (err) => {
                 //console.log(err);
                 this.clientDB.query(`update cards set (isInDeck, isInDrop , playerid ) =(  false ,true, null) where roomid = $1 and playerid=$2 and place=$3;`, [this.roomid, this.playername, data.place], (err) => {
-                   // console.log(err);
+                    // console.log(err);
                     this.clientDB.query(`update players set (phase, state ) =(  $3, $4) WHERE roomid = $1 and guid = $2; `, [this.roomid, data.guid, Player.Phases.Exchange, Player.States.SelectCard], (err) => {
-                       // console.log(err);
-                        this.room.needUpdateForAll();
+                        // console.log(err);
+                        
 
                     });
                 });
-            });
+        });*/
+        
     }
 
     getOneCardfromDeckForAction() {
+        this.room.giveOneCardfromDeckToPlayer(this);
+        this.cards.forEach((v, i) => { v.place = i });
+        
 
+/*
         this.clientDB.query(`select * from cards where roomid = $1 and playerid=$2;`,
             [this.roomid, this.playername], (err, data) => {
                 if (err) console.log(err);
@@ -198,14 +245,20 @@ class Player {
                 }
 
             });
+            */
 
     }
 
     sendplayers(deckData) {
-        let playersCards = new Map();
-        this.cards = [];
+        //let playersCards = new Map();
+
+        /*        this.cards = [];
         this.clientDB.query(`select 
-                        b.playerid as playername, b.quarantineCount as quarantineCount, b.place as num, b.Infected as Infected, b.thing as thing , b.state as state, b.phase as phase, c.cardid as cardnum, c.place as cardplace, r.direction as direction , r.nextplayer as nextplayer, r.currentplayer as currentplayer, c.nextplayer as nextplayerforcard
+                        b.playerid as playername, b.quarantineCount as quarantineCount, b.place as num, 
+                        b.Infected as Infected, b.thing as thing , b.state as state, b.phase as phase, 
+                        c.cardid as cardnum, c.place as cardplace, r.direction as direction , 
+                        r.nextplayer as nextplayer, r.currentplayer as currentplayer, 
+                        c.nextplayer as nextplayerforcard
                         from players as b left join cards as c on c.roomid = b.roomid and c.playerid = b.playerid left join 
                         (select *  from players  where roomid=$1 and playerid=$2 and gamenum = $3) as p on p.roomid = b.roomid inner join rooms as r on r.roomid = b.roomid 
                         where b.roomid=$1 and b.gamenum = $3  
@@ -213,42 +266,61 @@ class Player {
             [this.roomid, this.playername, this.gamenum], (err, data) => {
                 if (err) console.log(err);
                 // console.log(data);
-                if (data == undefined || data.rows == undefined) { this.send({ messagetype: 'playerlist', playerlist: [] }); return; }
-                let nextplayer = null;
-                let currentplayer = null;
-                data.rows.forEach((v, i) => {
-                    let p = playersCards.get(v.playername);
-                    //this.room.players.get()
-                    if (p == undefined)
-                        if (v.playername == this.playername) { p = this; p.thing = v.thing; p.Infected = v.Infected; p.quarantineCount = v.quarantineCount; }
-                        else p = new Player(null, null, null, v.playername, null, null, v.quarantineCount);
-                    p.place = v.num;
-                    p.state = v.state;
-                    p.phase = v.phase;
-                    nextplayer = v.nextplayer;
-                    currentplayer = v.currentplayer;
-                    let cardplace = v.cardplace;
-                    if (this.thing == true) p.Infected = v.Infected;
-                    if (this.Infected == true) p.thing = v.thing;
-                    let card = this.room.findCardByNum(v.cardnum);
-                    
-                    if (v.nextplayerforcard == null) {
-                        if (v.playername == this.playername || card.isPanic) p.cards.push({ cardnum: v.cardnum, cardplace: cardplace }); else p.cards.push({ cardnum: -1, cardplace: cardplace });
-                    } else {
-                        p.exchange = { nextplayer: v.nextplayerforcard, card: -1, cardplace: cardplace};
-                    }
-                    playersCards.set(v.playername, p);
+                if (data == undefined || data.rows == undefined) { this.send({ messagetype: 'playerlist', playerlist: [] }); return; }*/
 
-                });
-                let exchange = [];
-                playersCards.forEach((v, k) => {
-                    exchange.push({ playername: v.playername, quarantineCount: v.quarantineCount, num: v.place, Infected: v.Infected, thing: v.thing, state: v.state, phase: v.phase, cards: v.cards, exchange: v.exchange });
-                });
 
-                this.send({ messagetype: 'playerlist', playerlist: exchange, deck: deckData, nextplayer: nextplayer, currentplayer: currentplayer });
+        let nextplayer = this.room.nextplayer.place;
+        let currentplayer = this.room.currentplayer.place;
+        let exchange = [];
+
+       // nextplayer = this.room.nextplayer.place;
+        //currentplayer = this.room.currentplayer.place;
+
+
+        this.room.players.forEach((v, k) => {
+            let p;
+            // this.room.players.forEach((v, i) => {
+            //let p =playersCards.get(v.playerid );
+
+            //if (p == undefined)
+            if (v.playername == this.playername) { p = this; }
+            else p = new Player(null, null, null, v.playername, null, null, v.quarantineCount);
+            p.place = v.place;
+            p.state = v.state;
+            p.phase = v.phase;
+
+
+            if (this.thing == true) p.Infected = v.Infected;//покажем нечте зараженных
+            if (this.Infected == true) p.thing = v.thing;//покажем зараженным нечту
+            cardsArray = [];
+            v.cards.forEach((card, i) => {
+
+                //let card = vCard.num;
+                let cardplace = card.place;
+
+                // if (card.nextplayerforcard == null) {
+                if (v.playername == this.playername || card.card.isPanic)
+                    cardsArray.push({ cardnum: card.card.num, cardplace: cardplace });
+                else cardsArray.push({ cardnum: -1, cardplace: cardplace });
+                // } else {
+                //     p.exchange = { nextplayer: v.nextplayerforcard, card: -1, cardplace: cardplace };
+                // }
             });
+            exchange.push({ playername: v.playername, quarantineCount: v.quarantineCount, num: v.place, Infected: p.Infected, thing: p.thing, state: p.state, phase: p.phase, cards: cardsArray, exchange: null });
 
 
+            //playersCards.set(v.playername, p);
+
+        });
+
+
+        /*
+        let exchange = [];
+        playersCards.forEach((v, k) => {
+            exchange.push({ playername: v.playername, quarantineCount: v.quarantineCount, num: v.place, Infected: v.Infected, thing: v.thing, state: v.state, phase: v.phase, cards: v.cards, exchange: v.exchange });
+        });*/
+
+        this.send({ messagetype: 'playerlist', playerlist: exchange, deck: deckData, nextplayer: nextplayer, currentplayer: currentplayer });
     }
 
 }

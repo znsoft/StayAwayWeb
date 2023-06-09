@@ -81,18 +81,6 @@
     </div>
     <button id="startgamebutton" hidden="true" onclick="startGame()">Startgame</button>
 
-    <div style="opacity: 0.4;
-        position: absolute;
-        transition: opacity 1s;
-        margin-right: 5px; ">
-        <textarea id="query" cols="90" rows="10" onclick="console.log(this.selectionStart)"></textarea>
-
-        <br><button onclick="sendQuery()">Query</button>
-
-    </div>
-
-
-
 
     <canvas id="canvas" width="2000" height="2000">Please update your browser</a> in order to view this page.</canvas>
     <pre id="chat"></pre>
@@ -991,9 +979,10 @@
         try {
             let p = JSON.parse(document.cookie);
             p.messagetype = 'startgame';
+            //p.
             websocket.senddata(p);
-            document.getElementById("logindiv").hidden = true;
-            document.getElementById("startgamebutton").hidden = true;
+            //document.getElementById("logindiv").hidden = true;
+            //document.getElementById("startgamebutton").hidden = true;
 
         } catch { }
     }

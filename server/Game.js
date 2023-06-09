@@ -11,7 +11,9 @@ class Game {
 
 
     findRoom(roomname, callback) {
-
+        let room = this.rooms.get(roomname);
+        if (room == undefined) callback([]); else callback([room]);
+        /*
         this.clientDB.query(`select * from rooms where roomid = $1;`, [roomname], (err, data) => {
             if (err) console.log(err);
             //console.log(data);
@@ -19,13 +21,14 @@ class Game {
             else
                 callback(data.rows);
         });
+        */
     }
 
     messagePlayer(socket, data) {
-
+        
         if (data.messagetype == 'ping') return;
-
-        if (data.messagetype == 'query') {
+        //console.log(data);
+        /*if (data.messagetype == 'query') {
 
             this.clientDB.query(data.query, (err, data) => {
                 if (err) data = err;
@@ -37,7 +40,7 @@ class Game {
 
             return;
         }
-
+        */
         let room = this.rooms.get(data.roomname);
 
         if (data.messagetype == 'newroom') {
@@ -69,15 +72,22 @@ class Game {
 
     doPlayer(room, data, socket) {
 
-        if (data.messagetype == 'startgame') {
-            room.startgame();
-            return;
-        }
+
 
         room.findPlayer(data.playername, (sqlplayerdata) => {
-            if (sqlplayerdata.length == 0) {socket.close(1001, 'Player not found');        return; }
+
+            if (sqlplayerdata.length == 0) {
+                socket.close(1001, 'Player ' + data.playername + ' not found in room ' + data.roomname);        return; }
+
 
             let sqlplayer = sqlplayerdata[0];
+
+
+            if (data.messagetype == 'startgame') {
+                room.startgame(sqlplayer);
+                return;
+            }
+
             if (data.messagetype == 'restoreplayer') {
                 if (data.guid != sqlplayer.guid) { socket.close(1001, 'Player not found'); return; }
                 room.restorePlayer(socket, data);
@@ -109,6 +119,7 @@ class Game {
                     socket.close(1001, 'This room is exist yet'); return;
                 } else {
                     room = new Room(this.clientDB, data.roomname, data.password, data.numofPlayers, data.playername, true, 0);
+                    //room = new Room(this.clientDB, data.roomname, data.password, data.numofPlayers, data.playername, true, 0);
                     room.clearPlayers();
                     room.addPlayer(socket, data);
                     this.rooms.set(data.roomname, room);

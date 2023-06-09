@@ -3,7 +3,7 @@ const PORT = process.env.PORT || 3000
 
 const express = require('express')
 const { Server } = require('ws');
-const { Client } = require('pg');
+//const { Client } = require('pg');
 
 const INDEX = 'client/client.html';
 
@@ -13,7 +13,7 @@ const server = express()
     .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
 
-const clientdb = new Client({
+const clientdb = {};/*new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: {
         rejectUnauthorized: false
@@ -27,7 +27,7 @@ clientdb.query('CREATE TABLE IF NOT EXISTS rooms (roomid text PRIMARY KEY, playe
 clientdb.query('CREATE TABLE IF NOT EXISTS players (roomid text,playerid text, name text, password text, score text, isSpectator boolean, lastmsg integer, lastseen date, guid text NOT NULL , quarantineCount int, place int, Infected boolean NOT NULL DEFAULT false, thing boolean NOT NULL DEFAULT false, gamenum int, state int NOT NULL DEFAULT 0, phase int NOT NULL DEFAULT 0, needupdate boolean NOT NULL DEFAULT false, CONSTRAINT roomplayer PRIMARY KEY(roomid,playerid) );', (err, data) => { if (err) console.log('players');});
 clientdb.query('CREATE TABLE IF NOT EXISTS cards (roomid text,playerid text, name text, cardid int, isInDeck boolean NOT NULL DEFAULT false, isInDrop boolean NOT NULL DEFAULT false,nextplayer int, isShowDoor boolean NOT NULL DEFAULT false, place int );', (err, data) => { if (err) console.log('cards');	});
 clientdb.query('CREATE TABLE IF NOT EXISTS chat (roomid text,msgid integer, chattext text, playername text, isPrivate boolean );', (err, data) => { if (err) console.log('chat'); });
-
+*/
 
 const Game = require('./server/Game')
 const game = new Game(clientdb)
