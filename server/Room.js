@@ -131,7 +131,9 @@ class Room {
             });
 
             playercards.forEach((v, k) => {
+                console.log(v);
                 this.insertShuffle(v, k);//перемешаем карты игрока и отдаем ему в руку
+                //console.log();
             });
 
             m.forEach((v, k) => {//подмешаем карты заражений и паники в оставшуюся колоду 

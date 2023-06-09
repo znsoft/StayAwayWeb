@@ -43,6 +43,7 @@ class Card {
     constructor(clientDB, cardNum,  room, place) {
         this.clientDB = clientDB;
         this.card = this.findCardByNum(cardNum);
+        //console.log(cardNum +' '+   this.card.num);
         this.place = place;
         this.guid = this.generateGUID();
         this.room = room;
@@ -56,9 +57,13 @@ class Card {
     findCardByNum(num) {
 
         let m = new Map(Object.entries(this.CardsByPlayers));
-        for (i in m)
-            if (m[i].num == num) return m[i];
-        return this.CardsByPlayers.UnknownAction;
+        let find = this.CardsByPlayers.UnknownAction;
+        m.forEach((v, k) => {
+            if (v.num == num) find = v;
+
+        });
+
+        return find;
     }
 
     generateGUID() {

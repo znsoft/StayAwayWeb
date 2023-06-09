@@ -294,7 +294,7 @@ class Player {
             if (this.Infected == true) p.thing = v.thing;//покажем зараженным нечту
             let cardsArray = [];
             v.cards.forEach((card, i) => {
-
+                //console.log(card);
                 //let card = vCard.num;
                 let cardplace = card.place;
 
