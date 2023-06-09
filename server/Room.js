@@ -77,9 +77,11 @@ class Room {
             //this.clientDB.query(`delete from cards where roomid IN (SELECT roomid FROM rooms WHERE roomid = $1 and gamestarted = false);`, [this.roomid,], (err, data) => { });
 
             a.forEach((v, i) => {
+               
                 playercards.set(v.playerid, []);
                 let ppp = this.players.get(v.playerid);
                 ppp.cards = [];
+                ppp.place = i;
                 this.players.set(v.playerid, ppp);
 
             });
@@ -144,8 +146,10 @@ class Room {
             });
 
             this.insertShuffle(res);//оставшиеся карты перетасуем и закинем в деку
-
+            this.giveOneCardfromDeckToPlayer(this.currentplayer);
             //this.clientDB.query(`update cards set (isInDeck, place , playerid ) =(  false ,4, $2) WHERE roomid = $1 and isInDeck = true and place in (select max(place) from cards where  roomid = $1 and isInDeck = true); `, [this.roomname, currentPlayer], (err, data) => { });
+            //a.forEach(v => { console.log(v.playername+' '+v.cards.length); });
+
             this.gamestarted = true;           // this.clientDB.query('update rooms set gamestarted = true where roomid = $1; ', [this.roomname], (err, data) => { if (err) console.trace(err); });
             this.needUpdateForAll();
 
@@ -153,6 +157,31 @@ class Room {
         });
 
     }
+
+    insertShuffle(res, playerid = null) {
+        let len = res.length - 1;
+
+        for (; len >= 0; len--) {
+
+            let r = Math.round(Math.random() * (res.length - 1));
+            if (playerid == null) {
+                this.deckcards.push(new Card(this.clientDB, res[r], this, this.deckcards.length));
+
+
+            } else {
+                let p = this.players.get(playerid);
+                p.cards.push(new Card(this.clientDB, res[r], this, p.cards.length));
+                this.players.set(playerid, p);
+                //playercards.set(v.playerid, [])
+            };
+            //this.clientDB.query(`insert into cards (roomid , cardid , isInDeck, place , playerid ) values(  $1 ,$2, $3, $4, $5 ); `, [this.roomname, res[r], playername == null, len, playername], (err, data) => { if (err) console.trace(err); });
+            res.splice(r, 1);
+
+        }
+    }
+
+
+    
 
     giveOneCardfromDeckToPlayer(player) {
         player.cards.push(this.deckcards.pop());
@@ -174,27 +203,7 @@ class Room {
         //this.clientDB.query(`update players set needupdate = true where roomid = $1 and playerid=$2;`, [this.roomname, playername], (err, data) => { if (err) console.trace(err); });
     }
 
-    insertShuffle(res, playerid = null) {
-        let len = res.length - 1;
 
-        for (; len >= 0; len--) {
-
-            let r = Math.round(Math.random() * (res.length - 1));
-            if (playerid == null) {
-                this.deckcards.push(new Card(this.clientDB, res[r], this, this.deckcards.length));
-
-
-            } else {
-                let p = this.players.get(playerid);
-                p.cards.push(new Card(this.clientDB, res[r], this, p.cards.length) );
-                this.players.set(playerid, p);
-                //playercards.set(v.playerid, [])
-            };
-            //this.clientDB.query(`insert into cards (roomid , cardid , isInDeck, place , playerid ) values(  $1 ,$2, $3, $4, $5 ); `, [this.roomname, res[r], playername == null, len, playername], (err, data) => { if (err) console.trace(err); });
-            res.splice(r, 1);
-
-        }
-    }
 
     getPlayers(callback) {
         callback(Array.from(this.players, ([name, value]) => (value)));
@@ -253,7 +262,10 @@ class Room {
     }
 
     restorePlayer(socket, playerdata) {
-        let player = new Player(this.clientDB, socket, this.roomname, playerdata.playername, playerdata.playername, this, this.gamenum, playerdata.quarantineCount, playerdata.Infected);
+
+        let player = this.players.get(playerdata.playername);//new Player(this.clientDB, socket, this.roomname, playerdata.playername, playerdata.playername, this, this.gamenum, playerdata.quarantineCount, playerdata.Infected);
+        player.socket = socket;
+        player.room = this;
         player.guid = playerdata.guid;
         this.players.set(playerdata.playername, player);
         player.sendGUIDToPlayer();

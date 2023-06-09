@@ -268,7 +268,7 @@ class Player {
                 // console.log(data);
                 if (data == undefined || data.rows == undefined) { this.send({ messagetype: 'playerlist', playerlist: [] }); return; }*/
 
-
+        if (this.room.nextplayer == null) return;
         let nextplayer = this.room.nextplayer.place;
         let currentplayer = this.room.currentplayer.place;
         let exchange = [];
@@ -293,19 +293,21 @@ class Player {
             if (this.thing == true) p.Infected = v.Infected;//покажем нечте зараженных
             if (this.Infected == true) p.thing = v.thing;//покажем зараженным нечту
             let cardsArray = [];
-            v.cards.forEach((card, i) => {
+            
+            v.cards.forEach((c, i) => {
                 //console.log(card);
                 //let card = vCard.num;
-                let cardplace = card.place;
+                let cardplace = c.place;
 
                 // if (card.nextplayerforcard == null) {
-                if (v.playername == this.playername || card.card.isPanic)
-                    cardsArray.push({ cardnum: card.card.num, cardplace: cardplace });
+                if (v.playername == this.playername || c.card.isPanic)
+                    cardsArray.push({ cardnum: c.card.num, cardplace: cardplace });
                 else cardsArray.push({ cardnum: -1, cardplace: cardplace });
                 // } else {
                 //     p.exchange = { nextplayer: v.nextplayerforcard, card: -1, cardplace: cardplace };
                 // }
             });
+
             exchange.push({ playername: v.playername, quarantineCount: v.quarantineCount, num: v.place, Infected: p.Infected, thing: p.thing, state: p.state, phase: p.phase, cards: cardsArray, exchange: null });
 
 

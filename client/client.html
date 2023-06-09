@@ -525,6 +525,48 @@
 
         }
 
+        DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, i) {
+
+            let s = 260;
+            if (v == this.me) v.moveOneCard = this.moveOneCard;
+            if (v != this.me) s = 750;
+            let ang = 2 * Math.PI * (i / (this.players.length + this.players.length / 5));// + 2.5));
+            if (v != this.me) ang += 0.5;
+            let x = Math.cos(ang) * s;
+            let y = - Math.sin(ang) * s;
+            //v.x = x;
+            //v.y = y;
+            ctx.save();
+
+            if (v != this.me) ctx.scale(0.5, 0.5);
+            ctx.translate(y, x);
+            ctx.rotate(ang);
+
+            if (this.isNearOpponent(v) && HiLightRLPlayers == true && v != this.me || (HLOpponent && v.place == this.nextplayer)) {
+                ctx.fillStyle = "#003";
+                ctx.strokeStyle = "#a02";
+                ctx.roundRect(-2 * 95, -20, 5 * 95, 250, 20).stroke();
+            }
+
+            v.Draw(ctx, e);
+
+
+            this.exchange.filter((a) => {
+                if (a.nextplayer != v.place) return false;
+
+                ctx.save();
+                ctx.translate(-10, -200);
+                a.card.Draw(ctx);
+                ctx.restore();
+
+
+            });
+
+
+            ctx.restore();
+
+        }
+
 
         Draw(ctx, e,w,h) {
             ctx.clearRect(0, 0, w, h);
@@ -559,43 +601,7 @@
             }
 
             this.players.forEach((v, i) => {
-                let s = 260;
-                if (v == this.me) v.moveOneCard = this.moveOneCard;
-                if (v != this.me) s = 750;
-                let ang = 2 * Math.PI * (i / (this.players.length + this.players.length / 5));// + 2.5));
-                if (v != this.me) ang += 0.5;
-                let x = Math.cos(ang) * s;
-                let y = - Math.sin(ang) * s;
-                //v.x = x;
-                //v.y = y;
-                ctx.save();
-
-                if (v != this.me) ctx.scale(0.5, 0.5);
-                ctx.translate(y, x);
-                ctx.rotate(ang);
-
-                if (this.isNearOpponent(v) && HiLightRLPlayers == true && v != this.me || (HLOpponent && v.place == this.nextplayer)) {
-                    ctx.fillStyle = "#003";
-                    ctx.strokeStyle = "#a02";
-                    ctx.roundRect(-2 * 95, -20, 5 * 95, 250, 20).stroke();
-                }
-
-                v.Draw(ctx, e);
-
-
-                this.exchange.filter((a) => {
-                    if (a.nextplayer != v.place) return false;
-
-                    ctx.save();
-                    ctx.translate(-10, -200);
-                    a.card.Draw(ctx);
-                    ctx.restore();
-
-
-                });
-
-
-                ctx.restore();
+                this.DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, v.place);
             });
 
 
