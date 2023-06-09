@@ -292,7 +292,7 @@ class Player {
 
             if (this.thing == true) p.Infected = v.Infected;//покажем нечте зараженных
             if (this.Infected == true) p.thing = v.thing;//покажем зараженным нечту
-            cardsArray = [];
+            let cardsArray = [];
             v.cards.forEach((card, i) => {
 
                 //let card = vCard.num;

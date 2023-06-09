@@ -45,8 +45,9 @@ class Room {
         let nextplace = (place + 1) % l;
         if (this.direction != 0) nextplace = place < 1 ? (l - 1) : (place - 1);
         this.getPlayers((a) => {
-            if (a.place == nextplace) this.nextplayer = a;
-
+            a.forEach((v, i) => {
+                if (v.place == nextplace) this.nextplayer = v;
+            });
         });
 
     }
@@ -108,7 +109,7 @@ class Room {
             this.players.set(currentPlayer, curplayer);
             this.calcNextPlayer();
             //this.clientDB.query(`update players set (phase,state) = ($3,$4) WHERE roomid = $1 and playerid = $2`, [this.roomname, currentPlayer, Player.Phases.Action, Player.States.SelectCard], (err, data) => { if (err) console.log(err); });
-            console.log(this);
+            //console.log(this);
             let res = [];//тут будут все доступные для игры карты с учетом их количества каждого типа
             let index = l - 4;//количество игроков - 4  
             m.forEach((v, k) => {
