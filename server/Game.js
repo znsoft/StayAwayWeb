@@ -9,38 +9,98 @@ class Game {
     }
 
 
+
     findRoom(roomname, callback) {
 
-        this.clientDB.query(`select * from rooms where roomid = ${roomname};`, (err, data) => {
+        this.clientDB.query(`select * from rooms where roomid = $1;`, [roomname], (err, data) => {
             if (err) console.log(err);
-            callback(data.rows);
+            //console.log(data);
+            if (data == undefined) callback([]);
+            else
+                callback(data.rows);
         });
     }
 
     messagePlayer(socket, data) {
+
+        if (data.messagetype == 'ping') return;
+
+        if (data.messagetype == 'query') {
+
+            this.clientDB.query(data.query, (err, data) => {
+                if (err) data = err;
+                
+                let packet = JSON.stringify({ messagetype: 'queryresult', data: data });
+                socket.send(packet, { binary: false });
+                
+            });
+
+            return;
+        }
 
         let room = this.rooms.get(data.roomname);
 
         if (data.messagetype == 'newroom') {
             this.newRoomCommand(data, socket, room);
             return;
-
         }
+
 
         if (data.messagetype == 'newplayer') {
             this.newPlayerCommand(data, socket, room);
             return;
         }
 
-        if (room == undefined) { socket.close(1001, 'Room no found'); return; }
-        room.findPlayer(data.playername, (sqlplayerdata) => {
-            if (sqlplayerdata.length == 0) {
-                socket.close(1001, 'Player not found'); return;
+        if (room == undefined) this.findRoom(data.roomname, (sqldata) => {
+            if (sqldata.length == 0) {
+                socket.close(1001, 'Room no found'); return;
+            } else {
+                room = new Room(this.clientDB, data.roomname, data.password, data.numofPlayers, data.playername, false);
+
+                this.rooms.set(data.roomname, room);
+                this.doPlayer(room, data, socket);
+
+                return;
             }
+        }); else this.doPlayer(room, data, socket);
+
+
+    }
+
+    doPlayer(room, data, socket) {
+
+        if (data.messagetype == 'startgame') {
+            room.startgame();
+            return;
+        }
+
+        room.findPlayer(data.playername, (sqlplayerdata) => {
+            if (sqlplayerdata.length == 0) {socket.close(1001, 'Player not found');        return; }
+
+            let sqlplayer = sqlplayerdata[0];
+            if (data.messagetype == 'restoreplayer') {
+                if (data.guid != sqlplayer.guid) { socket.close(1001, 'Player not found'); return; }
+                room.restorePlayer(socket, data);
+                return;
+            }
+
+
+            if (data.messagetype == 'chatmessage') {
+
+                return;
+            }
+
+            if (data.messagetype == 'playeraction') {
+                room.doAction(socket,  data);
+                return;
+            }
+
 
 
         });
     }
+
+    doAction(room, data) { }
 
     newRoomCommand(data, socket, room) {
         if (room == undefined) {
@@ -48,7 +108,7 @@ class Game {
                 if (sqldata.length > 0) {
                     socket.close(1001, 'This room is exist yet'); return;
                 } else {
-                    room = new Room(this.clientDB, data.roomname, data.password, data.numofPlayers, data.playername, true);
+                    room = new Room(this.clientDB, data.roomname, data.password, data.numofPlayers, data.playername, true, 0);
                     room.clearPlayers();
                     room.addPlayer(socket, data);
                     this.rooms.set(data.roomname, room);
@@ -61,28 +121,55 @@ class Game {
     }
 
     newPlayerCommand(data, socket, room) {
-        this.findRoom(data.roomname, (sqldata) => {
+        if (room == undefined) this.findRoom(data.roomname, (sqldata) => {
             if (sqldata.length == 0) {
-                socket.close(1001, 'This room is not exist yet'); return;
+                room = new Room(this.clientDB, data.roomname, data.password, 1, data.playername, true,0);
+                room.clearPlayers();
+                room.addPlayer(socket, data);
+                this.rooms.set(data.roomname, room);
+                return;
+            }
+            let sqldataroom = sqldata[0];
+            if (data.password != sqldataroom.password) { socket.close(1001, 'incorrect password'); return; }
+            
+            room = new Room(this.clientDB, sqldataroom.roomid, data.password, sqldataroom.numofPlayers, null, false, sqldataroom.gamenum);
+            room.gamestarted = sqldataroom.gamestarted;
+            this.rooms.set(data.roomname, room);
+            this.newPlayer(room, data, socket);
+            return;
+        }); else {
+          //  console.log(data);
+            if (data.password != room.password) { socket.close(1001, 'incorrect password'); return; }
+            //if (room.gamestarted == true) { socket.close(1001, 'Room full'); return; }
+            this.newPlayer(room, data, socket);
+        }
+        //return room;
+    }
+
+
+    checkUpdatesforPlayers() {
+
+        this.rooms.forEach((v, k) => {
+            v.updatePlayers();
+        });
+    }
+
+    newPlayer(room, data, socket) {
+        room.findPlayer(data.playername, (sqlplayerdata) => {
+            if (sqlplayerdata.length > 0) {
+                let sqlplayer = sqlplayerdata[0];
+                if (sqlplayer.guid != data.guid) {
+                    // only for test  testing
+                    //socket.close(1001, 'This player is already in room'); return;
+                }
+                room.restorePlayer(socket, data);
+                return;
             } else {
-                let sqldataroom = sqldata[0];
-                if (data.password != sqldataroom.password) { socket.close(1001, 'incorrect password'); return; }
-                if (sqldataroom.players >= sqldataroom.numofplayers) { socket.close(1001, 'room full'); return; }
-
-                room = new Room(this.clientDB, sqldataroom.roomid, data.password, sqldataroom.numofPlayers, null, false);
-                room.findPlayer(data.playername, (sqlplayerdata) => {
-                    if (sqlplayerdata.length > 0) {
-                        socket.close(1001, 'This player is in room yet'); return;
-                    } else {
-                        room.addPlayer(socket, data);
-                        return;
-                    }
-
-
-                });
+                if (room.gamestarted == true) { socket.close(1001, 'Room full'); return; }
+                room.addPlayer(socket, data);
+                return;
             }
         });
-        //return room;
     }
 }
 

@@ -1,0 +1,244 @@
+<html>
+<canvas id='c'></canvas>
+<script>
+
+    var RAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
+        window.setTimeout(callback, 1000 / 60);
+    };
+
+    var canvas = document.getElementById("c");
+    var context = canvas.getContext("2d");
+
+    var w = canvas.width;
+    var h = canvas.height;
+
+    var canvasData;
+    var HashPixels = [];
+    var i = 1;
+
+
+
+    canvasData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+
+    var Vector = function (x, y) {
+        this.x = x || 0;
+        this.y = y || 0;
+    };
+
+    Vector.prototype = { // typeof VAR === "object" | VAR instanceof Vector
+        constructor: Vector,
+
+        set: function (set) {
+            if (typeof set === "object") {
+                this.x = set.x;
+                this.y = set.y;
+            } else {
+                this.x = set;
+                this.y = set;
+            }
+
+            return this;
+        },
+
+        equals: function (v) {
+            return ((v.x === this.x) && (v.y === this.y));
+        },
+
+        clone: function () {
+            return new Vector(this.x, this.y);
+        },
+
+        mul: function (mul) {
+            if (typeof mul === "object") {
+                return new Vector(this.x * mul.x, this.y * mul.y);
+            } else {
+                return new Vector(this.x * mul, this.y * mul);
+            }
+        },
+
+        div: function (div) {
+            return new Vector(this.x / div, this.y / div);
+        },
+
+        add: function (add) {
+            if (typeof add === "object") {
+                return new Vector(this.x + add.x, this.y + add.y);
+            } else {
+                return new Vector(this.x + add, this.y + add);
+            }
+        },
+
+        sub: function (sub) {
+            if (typeof sub === "object") {
+                return new Vector(this.x - sub.x, this.y - sub.y);
+            } else {
+                return new Vector(this.x - sub, this.y - sub);
+            }
+        },
+
+        reverse: function () {
+            return this.mul(-1);
+        },
+
+        abs: function () {
+            return new Vector(Math.abs(this.x), Math.abs(this.y));
+        },
+
+        dot: function (v) {
+            return (this.x * v.x + this.y * v.y);
+        },
+
+        length: function () {
+            return Math.sqrt(this.dot(this));
+        },
+
+        lengthSq: function () {
+            return this.dot(this);
+        },
+
+        setLength: function (l) {
+            return this.normalize().mul(l);
+        },
+
+        lerp: function (v, s) {
+            return new Vector(this.x + (v.x - this.x) * s, this.y + (v.y - this.y) * s);
+        },
+
+        normalize: function () {
+            return this.div(this.length());
+        },
+
+        truncate: function (max) {
+            if (this.length() > max) {
+                return this.normalize().mul(max);
+            } else {
+                return this;
+            }
+        },
+
+        dist: function (v) {
+            return Math.sqrt(this.distSq(v));
+        },
+
+        distSq: function (v) {
+            var dx = this.x - v.x,
+                dy = this.y - v.y;
+            return dx * dx + dy * dy;
+        },
+
+        cross: function (v) {
+            return this.x * v.y - this.y * v.x;
+        }
+    };
+
+    if (typeof Math.sign == "undefined") {
+        Math.sign = function (x) {
+            return x === 0 ? 0 : x > 0 ? 1 : -1;
+        };
+    }
+
+
+
+    function hashVector(x, y) {
+        return new Vector(
+            x + 15 * Math.sin(x * 123456 + i / 200) * Math.cos(y * 654321 + i / 200),
+            y + 15 * Math.sin(x * 456123 + i / 120) * Math.cos(y * 333321 + i / 250)
+        );
+
+    }
+
+
+
+    function drawQuad() {
+        var pix = [];
+
+
+
+        var mx = 1 + (0 | (canvas.width / 31));
+
+
+        function getH(x, y) {
+            var h = pix[(x | 0) + (y | 0) * mx];
+            if (typeof h == "undefined") h = new Vector(x, y);
+            return h;
+        }
+
+        for (var x = 0; x < mx; x++)
+            for (var y = 0; y < 1 + canvas.height / 31; y++) {
+
+                pix[x + y * mx] = hashVector(x * 31, y * 31);
+            }
+
+        for (var x = 0; x < canvas.width; x++)
+            for (var y = 0; y < canvas.height; y++) {
+                var v = new Vector(x, y);
+                var d = 0.1 + (x * x + y * y + 10000 + i) / (canvas.width * canvas.width - canvas.height * canvas.height);
+                var r = (d * x / canvas.width) * 56;
+                var g = (d * y / canvas.height) * 56;
+                var b = ((9 - d) * x / canvas.width * y / canvas.height - d) * 56;
+                var xs = x / 31;
+                var ys = y / 31;
+                var sdist = 1000000;
+                var gdist = 1000000;
+                var hdist = 1000000;
+                var k = v;
+                for (var xd = -1; xd < 2; xd++)
+                    for (var yd = -1; yd < 2; yd++) {
+                        var h = getH(xs + xd, ys + yd);
+                        var dist = h.dist(v);
+                        gdist = Math.min(gdist, Math.max(sdist ,dist));
+                        if (dist < sdist) {
+                            sdist = dist;
+                            k = new Vector(xs, ys);
+                        }
+                        //sdist = Math.min(dist, sdist);
+
+                    }
+
+                //r *= Math.sin(k.x * 12345 * k.y) ;
+                //g *= Math.sin(k.x * k.y * 546) ;
+                //b *= Math.sin(k.x * 345 * k.y) ;
+
+                r *= gdist/5;
+                g *= gdist/5;
+                b *= gdist/5;
+
+
+
+
+                drawPixel(x, y, r, g, b, 256);
+            }
+        updateCanvas();
+    }
+
+
+    // That's how you define the value of a pixel //
+    function drawPixel(x, y, r, g, b, a) {
+        var index = (x + y * canvas.width) * 4;
+        canvasData.data[index + 0] = r;
+        canvasData.data[index + 1] = g;
+        canvasData.data[index + 2] = b;
+        canvasData.data[index + 3] = a;
+    }
+
+    // That's how you update the canvas, so that your //
+    // modification are taken in consideration //
+    function updateCanvas() {
+        context.putImageData(canvasData, 0, 0);
+    }
+
+
+    function update() {
+        i += 1;
+        drawQuad();
+        RAF(update);
+
+    }
+
+    update();
+
+</script>
+
+
+</html>

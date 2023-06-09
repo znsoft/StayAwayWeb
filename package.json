@@ -1,34 +1,21 @@
 {
-  "name": "stayaway",
-  "version": "3.0.0",
-  "description": "A multiplayer card game",
+  "name": "znsrv",
+  "version": "1.0.0",
+  "description": "simple heroku serv",
   "main": "server.js",
+  "start": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "postinstall": "webpack"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/znsoft/stayaway.git"
-  },
-  "author": "Alvin Lin (omgimanerd)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/znsoft/stayaway/issues"
-  },
-  "homepage": "https://github.com/znsoft/stayaway#readme",
+  "author": "znsoft",
+  "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4",
-    "morgan": "^1.9.1",
-    "pg": "^8.7.3",
-    "popper.js": "^1.14.7",
-    "pug": "^2.0.3",
+    "bufferutil": "^4.0.6",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "pg": "^8.3.3",
+    "utf-8-validate": "^5.0.9",
     "ws": "^8.5.0"
-  },
-  "devDependencies": {
-    "css-loader": "^2.1.1",
-    "less": "^3.9.0",
-    "less-loader": "^4.1.0",
-    "mini-css-extract-plugin": "^0.5.0"
   }
 }

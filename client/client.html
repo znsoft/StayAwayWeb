@@ -4,27 +4,106 @@
     <meta charset="UTF-8">
 </head>
 <title>Stay away</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        height: 100%;
+    }
+
+    body {
+        background-color: #61a0a0;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+    }
+
+    button, select, a, a:visited {
+        padding: 8px 12px;
+        border: 0px;
+        border-radius: 5px;
+        margin-right: 5px;
+        color: #FFFFFF;
+        background-color: #000000;
+        font-family: monospace;
+        font-size: 11px;
+        cursor: pointer;
+        text-decoration: none;
+        text-transform: uppercase;
+    }
+
+        button:hover, select:hover, a:hover {
+            background-color: #FFFFFF;
+            color: #000000;
+        }
+
+    img {
+        padding: 4px;
+        border: 0px;
+        border-radius: 5px;
+        margin-right: 5px;
+        background-color: #000000;
+        vertical-align: middle;
+        cursor: pointer;
+        image-rendering: pixelated;
+    }
+
+        img:hover {
+            background-color: #FFFFFF;
+        }
+
+    option {
+        color: #ffffff;
+        background-color: #000000;
+    }
+
+    #toolbar {
+        transition: opacity 1s;
+    }
+</style>
+
 <body>
+
+    <div id="logindiv">
+        Room:<input id="room">|            </input>
+        Player:<input id="login">  </input><button onclick="sendLogin()">Login</button>
+    </div>
+    <button id="startgamebutton" hidden="true" onclick="startGame()">Startgame</button>
+
+    <div style="opacity: 0.4;
+        position: absolute;
+        transition: opacity 1s;
+        margin-right: 5px; ">
+        <textarea id="query" cols="90" rows="10" onclick="console.log(this.selectionStart)"></textarea>
+
+        <br><button onclick="sendQuery()">Query</button>
+
+    </div>
+
+
+
+
     <canvas id="canvas" width="2000" height="2000">Please update your browser</a> in order to view this page.</canvas>
+    <pre id="chat"></pre>
+
 </body>
-<script >
 
-    var wsUrl = location.origin.replace(/^http/, 'ws')
-    let     websocket = new WebSocket(wsUrl);
-
-    websocket.onopen = (evt)=> {console.log(evt) };
-    websocket.onclose = function(evt) { console.log(evt) };
-    websocket.onmessage = function(evt) { console.log(evt) };
-    websocket.onerror = function(evt) { console.log(evt) };
+<script>
 
 
+    //    <textarea id="query" style="opacity: 0.4; position: absolute; transition: opacity 1s;" cols="90" rows="10" onclick="console.log(this.selectionStart)"></textarea>
 
-
-
-</script>
-<script >
-
- 
 
 
     CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
@@ -40,25 +119,64 @@
         return this;
     };
 
+    CanvasRenderingContext2D.prototype.getWindowToCanvas = function (e) {
+        if (e == undefined) return;
+        //first calculate normal mouse coordinates
+        e = e || window.event;
+        var target = e.target || e.srcElement,
+            style = target.currentStyle || window.getComputedStyle(target, null),
+            borderLeftWidth = parseInt(style["borderLeftWidth"], 10),
+            borderTopWidth = parseInt(style["borderTopWidth"], 10),
+            rect = target.getBoundingClientRect(),
+            offsetX = e.clientX - borderLeftWidth - rect.left,
+            offsetY = e.clientY - borderTopWidth - rect.top;
+        let x = (offsetX * target.width) / target.clientWidth;
+        let y = (offsetY * target.height) / target.clientHeight;
 
+        //then adjust coordinates for the context's transformations
+        //const ctx = canvas.getContext("2d");
+        var transform = this.getTransform();
+        const invMat = transform.invertSelf();
+        return {
+            x: x * invMat.a + y * invMat.c + invMat.e,
+            y: x * invMat.b + y * invMat.d + invMat.f
+        };
+    }
+
+    CanvasRenderingContext2D.prototype.getCanvasToWindow = function (x,y) {
+
+        var invMat = this.getTransform();
+        //const invMat = transform.invertSelf();
+        return {
+            x: x * invMat.a + y * invMat.c + invMat.e,
+            y: x * invMat.b + y * invMat.d + invMat.f
+        };
+    }
 
     class Player {
-        constructor(name, num, isMe, cards, state, Phase) {
+        constructor(name, num, isMe, cards, state, Phase, QuarantineCount = 0) {
             this.name = name;
-            this.num = num;
+            this.place = num;
             this.isMe = isMe;
             this.cards = cards;
             this.Infected = false;
             this.Thing = false;
             this.state = state;
-            this.Quarantine = false;
+            this.QuarantineCount = QuarantineCount;
             this.selected = null;
             this.selectedCard = null;
             this.Phase = Phase;
             this.moveOneCard = false;
             this.move = null;
+            this.x = 0;
+            this.y = 0;
+            this.transform = {};
         }
 
+        get PanicCount() {
+            this.cards.filter(v => v.isPanic == true).length;
+
+        }
         get InfectCount() {
             this.cards.filter(v => v == Cards.Infect).length;
 
@@ -72,37 +190,33 @@
             }
         }
 
+        get isAction() {
 
-        getWindowToCanvas(ctx, e) {
-            if (e == undefined) return;
-            //first calculate normal mouse coordinates
-            e = e || window.event;
-            var target = e.target || e.srcElement,
-                style = target.currentStyle || window.getComputedStyle(target, null),
-                borderLeftWidth = parseInt(style["borderLeftWidth"], 10),
-                borderTopWidth = parseInt(style["borderTopWidth"], 10),
-                rect = target.getBoundingClientRect(),
-                offsetX = e.clientX - borderLeftWidth - rect.left,
-                offsetY = e.clientY - borderTopWidth - rect.top;
-            let x = (offsetX * target.width) / target.clientWidth;
-            let y = (offsetY * target.height) / target.clientHeight;
-
-            //then adjust coordinates for the context's transformations
-            //const ctx = canvas.getContext("2d");
-            var transform = ctx.getTransform();
-            const invMat = transform.invertSelf();
-            return {
-                x: x * invMat.a + y * invMat.c + invMat.e,
-                y: x * invMat.b + y * invMat.d + invMat.f
-            };
+            return (this.Phase == Phases.Action);
         }
 
-        Draw(ctx, e) {
+        get isNowMyTurn() {
+            return this.Phase == Phases.Action;
+        }
 
+        get isINeedGetCard() {
+
+            return this.Phase == Phases.Action && this.state == States.SelectCard && this.cards.length < 5;
+        }
+
+
+        Draw(ctx, e) {
+            this.transform = ctx.getTransform();
+            this.x = this.transform.e;
+            this.y = this.transform.f
+                //x: x * invMat.a + y * invMat.c + invMat.e,
+                   // y: x * invMat.b + y * invMat.d + invMat.f
             let lm = (this.cards.length - 1) / 2;
 
             if (e != undefined && !this.moveOneCard) {
                 this.selected = null; this.selectedCard = null; this.move = null;
+                //else { this.selected = null; this.selectedCard = null; }
+
             }
 
             this.cards.forEach((v, z) => {
@@ -117,7 +231,7 @@
                 ctx.translate(i * 111 - mx, h);
 
                 if (e != undefined) {
-                    let c = this.getWindowToCanvas(ctx, e);
+                    let c = ctx.getWindowToCanvas(e);
                     if (this.moveOneCard && this.selected == z && this.isMe) {
                         this.move = { x: c.x - 20, y: c.y - 20 };
                         c.x = 1;
@@ -126,16 +240,14 @@
                     }
 
                     if (c != undefined)
-                        if (c.x > 0 && c.x < 90 && c.y > 0 && c.y < 150) { this.selected = z; this.selectedCard = v; } //else { this.selected = null; this.selectedCard = null; }
+                        if (c.x > 0 && c.x < 90 && c.y > 0 && c.y < 150) { this.selected = z; this.selectedCard = v.card; v.card.RemoveOldAddNewButtons(this, v) }
                 }
 
                 if (this.isMe && this.selected == z && this.move != null && this.moveOneCard) {
                     ctx.translate(this.move.x, this.move.y);
-                } else
+                } else                    ctx.rotate(i / 50 * Math.PI);
 
-                    ctx.rotate(i / 50 * Math.PI);
-
-                v.Draw(ctx);
+                v.card.Draw(ctx);
 
 
 
@@ -143,6 +255,7 @@
 
                 ctx.restore();
             });
+
             ctx.strokeStyle = "#005";
             ctx.font = 'bold 48px serif';
             ctx.fillText(this.name, 20, 20);
@@ -157,17 +270,68 @@
 
     };
 
+    class Button {
+        constructor(id, text, x, y, w, h, callback, p) {
+            this.id = id;
+            this.text = text;
+            this.x = x;
+            this.y = y;
+            this.w = w;
+            this.h = h;
+            this.callback = callback;
+            Button.buttons.set(id, this);
+            this.p = p;
+            //this.p1 = p1;
+
+        }
+
+        static buttons = new Map();
+
+        static DrawAll(ctx, e) {
+            Button.buttons.forEach((v, k) => v.Draw(ctx, e));
+
+        }
+
+        static Delete(id) {
+            Button.buttons.delete(id);
+
+        }
+
+        static DeleteAll() {
+            Button.buttons.clear();
+        }
+
+        Draw(ctx, e) {
+
+            ctx.translate(this.x, this.y);
+
+            ctx.fillStyle = "#000";
+            ctx.font = '16px serif';
+            ctx.fillText(this.text, 3, 16);
+            ctx.roundRect(0, 0, this.w, this.h, 5).stroke();
+            if (e != undefined) {
+                let c = ctx.getWindowToCanvas(e);
+
+                if (c != undefined)
+                    if (c.x > 0 && c.x < this.w && c.y > 0 && c.y < this.h && this.callback != undefined) { this.callback(this.p); }
+            }
+
+        }
+
+    }
+
     class Deck {
         constructor(upCard, cardsLeft) {
             this.upCard = upCard;
             this.cardsLeft = cardsLeft;
             this.Doors = [];
         }
+
         Draw(ctx, e) {
 
             ctx.save();
             // ctx.globalCompositeOperation = 'destination-over';
-            ctx.translate(this.cardsLeft * 3, this.cardsLeft * 3);
+            ctx.translate(this.cardsLeft * 2, this.cardsLeft * 2);
             ctx.rotate(Math.PI / 2);
             this.upCard.Draw(ctx);
             ctx.restore();
@@ -202,7 +366,7 @@
     };
 
     class Card {
-
+        static splace = 0;
         constructor(name, num, CardCaption, Description, img, Exchange, Action, Defend, isPanic = false, isUnknown = false) {
             this.name = name;
             this.num = num;
@@ -214,6 +378,9 @@
             this.Exchange = Exchange;
             this.Action = Action;
             this.Defend = Defend;
+            Card.splace++;
+            this.place = Card.splace;
+            this.opponent = null;
         }
 
         GetActionArray(player) {
@@ -227,12 +394,44 @@
 
         }
 
+        GetExchangeArray(player, other) {
+            if (this.Exchange == null) return [];
+            let check = null;
+            if (Array.isArray(this.Exchange)) check = this.Exchange; else check = [this.Exchange];
+            if (typeof (this.Exchange) == "function") check = this.Exchange(player, other);
+            if (check == null || check == undefined) return [];
+            if (!Array.isArray(check)) check = [check];
+            return check;
+
+        }
+
+
         isCardMovableForAction(player) {
             let c = this.GetActionArray(player);
             //Actions.Drop.
             return c.filter((v) => v.MayMove == true).length > 0;
             //v.hasOwnProperty("MayMove") &&
             //for (var c of check) { }
+
+        }
+
+        RemoveOldAddNewButtons(player, z) {
+            Button.DeleteAll();
+          //  if (!(player.State == States.IncomeExchange || player.State == States.SelectCard || player.State == States.SelectPlayer || player.State == States.PerseveranceSelectCard || player.State == States.SuspicionSelectCard)) return;
+            if (player.Phase == Phases.Nothing) return;
+            let c = [];
+            if (player.Phase == Phases.Action)
+                c = this.GetActionArray(player);
+            if (player.Phase == Phases.Exchange)
+                c = this.GetExchangeArray(player, this.opponent);
+            let x = 0;
+            let y = 0;
+            c.forEach((v) => {
+                if (v.hasOwnProperty("Button")) {
+                    new Button(v.Button.Text, v.Button.Text, x, y, v.Button.Text.length * 10, 20, v.Button.action, z);
+                    x += v.Button.Text.length * 10 + 3;
+                }
+            });
 
         }
 
@@ -259,36 +458,68 @@
 
 
     class Game {
-        get GetPlayers() { return null; }
+        //get GetPlayers() { return this.players; }
 
-        get GetMe() { return this.players[0]; }
+        //get GetMe() { return this.players[0]; }
 
-        get GetDeck() { return new Deck(Cards.UnknownAction, 4); }
+        //get GetDeck() { return new Deck(Cards.UnknownAction, 4); }
 
         constructor(guid) {
 
             this.guid = guid;
-            this.players = this.GetPlayers;
-            this.players = [new Player("IAM", 0, true, [Cards.Thing, Cards.Infect, Cards.Suspicion, Cards.Analysis, Cards.BurnFire], States.SelectCard, Phases.Action),
-            new Player("ENEMY", 1, false, [Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction], States.Nothing, Phases.Nothing),
-            new Player("ENEMY1", 2, false, [Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction], States.Nothing, Phases.Nothing),
-            new Player("ENEMY2", 3, false, [Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction], States.Nothing, Phases.Nothing),
-            new Player("ENEMY3", 4, false, [Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction], States.Nothing, Phases.Nothing),
-                /*new Player("ENEMY4", 5, false, [Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction], States.Nothing, Phases.Nothing),
-                new Player("ENEMY5", 6, false, [Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction], States.Nothing, Phases.Nothing),
-                new Player("ENEMY6", 7, false, [Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction], States.Nothing, Phases.Nothing),
-                new Player("ENEMY7", 8, false, [Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction], States.Nothing, Phases.Nothing),
-                new Player("ENEMY8", 9, false, [Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction], States.Nothing, Phases.Nothing),
-                new Player("ENEMY9", 10, false, [Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction], States.Nothing, Phases.Nothing),
-                new Player("ENEMY10", 11, false, [Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction], States.Nothing, Phases.Nothing)
-                */
-            ];
+            //            this.players =
+            this.isStarted = false;
+            this.players = [new Player("IAM", 0, true, [], States.SelectCard, Phases.Action, 0)            ];
+
             this.me = this.players[0];
             this.Deck = new Deck(Cards.UnknownAction, 4);
             this.moveOneCard = false;
             this.gameDirection = Direction.CW;
             this.selectedOpponent = null;
+            this.opponent = null;
+            this.nextplayer = null;
+            this.exchange = [];
         }
+
+
+        findPlayerByNum(num) {
+            for (var p of this.players) if (p.place == num) return p;
+            return null;
+        }
+
+        parsePlayerList(message) {
+            let j = 0;
+            this.exchange = [];
+            this.players = [];
+            message.playerlist.forEach((v, i) => {
+                for (j in v.cards) {
+
+                        v.cards[j].card = findCardByNum(v.cards[j].cardnum);
+
+                }
+                let p = new Player(v.playername, v.num, i == 1, v.cards, findStateByNum(v.state), findPhaseByNum(v.phase));
+                p.Thing = v.thing;
+                p.Infected = v.Infected;
+                this.players.push(p);
+                if (v.num == message.nextplayer) this.opponent = p;
+                if (v.exchange == null) return;
+                this.exchange.push({ currentplayer: p, nextplayer: v.exchange.nextplayer, card: findCardByNum(v.exchange.card) });
+
+            });
+
+            this.me = this.players[0];
+            this.nextplayer = message.nextplayer;
+            this.me.opponent = this.opponent;
+            if (message.deck != undefined) {
+                this.Deck = new Deck(findCardByNum(message.deck.card), message.deck.deckCount);
+                this.isStarted = true;
+
+            }
+
+
+        }
+
+
 
         drawText(ctx, x, y, text) {
 
@@ -302,99 +533,154 @@
 
 
         isNearOpponent(player) {
-            return player.num == this.me.num + 1 || player.num == this.players.length - 1;
+            return player == this.players[1] || player == this.players[this.players.length - 1];
 
         }
 
 
-        Draw(ctx, e) {
+        Draw(ctx, e,w,h) {
+            ctx.clearRect(0, 0, w, h);
+            ctx.save();
+            ctx.translate(w / 2, h / 2);
+
+
+            if (this.me.selectedCard == null || this.me.Phase == Phases.Nothing || !(this.me.state == States.SelectCard || this.me.state == States.IncomeExchange || this.me.state == States.PerseveranceSelectCard)) Button.DeleteAll()
+
+            let HLOpponent = false;
+            if (this.me.Phase == Phases.Exchange) {
+                this.drawText(ctx, -10, -190, "Select card \nfor exchange");
+                HLOpponent = this.nextplayer != null;
+
+
+            }
+
             let HiLightRLPlayers = false;
-
+            let c = [];
+            // let ex = this.me.selectedCard.GetExchangeArray()
             if (this.me.selectedCard != null) {
-                let c = this.me.selectedCard.GetActionArray(this.me);
-                c.forEach((v) => {
-                    if (v.HiLightText != undefined) this.drawText(ctx, -10, 20, v.HiLightText);
-                    if (v.HiLightRLPlayers == true) HiLightRLPlayers = true;
-                    if (v.hasOwnProperty("Button")) {
+                if (this.me.isNowMyTurn) {
+                    let c = this.me.selectedCard.GetActionArray(this.me);
 
+                    c.forEach((v) => {
+                        if (v.HiLightText != undefined) this.drawText(ctx, -10, 20, v.HiLightText);
+                        if (v.HiLightRLPlayers == true) HiLightRLPlayers = true;
 
-                    }
-                });
+                    });
 
+                } else { }
             }
 
             this.players.forEach((v, i) => {
                 let s = 260;
                 if (v == this.me) v.moveOneCard = this.moveOneCard;
                 if (v != this.me) s = 750;
-                let ang = 2 * Math.PI * (- i / (this.players.length + this.players.length / 5));// + 2.5));
-                if (v != this.me) ang -= 0.5;
+                let ang = 2 * Math.PI * (i / (this.players.length + this.players.length / 5));// + 2.5));
+                if (v != this.me) ang += 0.5;
                 let x = Math.cos(ang) * s;
                 let y = - Math.sin(ang) * s;
+                //v.x = x;
+                //v.y = y;
                 ctx.save();
 
                 if (v != this.me) ctx.scale(0.5, 0.5);
                 ctx.translate(y, x);
                 ctx.rotate(ang);
-                if (this.isNearOpponent(v) && HiLightRLPlayers == true) {
+
+                if (this.isNearOpponent(v) && HiLightRLPlayers == true && v != this.me || (HLOpponent && v.place == this.nextplayer)) {
                     ctx.fillStyle = "#003";
                     ctx.strokeStyle = "#a02";
                     ctx.roundRect(-2 * 95, -20, 5 * 95, 250, 20).stroke();
-
                 }
 
                 v.Draw(ctx, e);
+
+
+                this.exchange.filter((a) => {
+                    if (a.nextplayer != v.place) return false;
+
+                    ctx.save();
+                    ctx.translate(-10, -200);
+                    a.card.Draw(ctx);
+                    ctx.restore();
+
+
+                });
+
+
                 ctx.restore();
             });
+
+
+
+
+
+            ctx.save();
+            ctx.translate(-100, -200);
+            Button.DrawAll(ctx, e);
+            ctx.restore();
 
             ctx.save();
             ctx.translate(0, -100);
             this.Deck.Draw(ctx, e);
             ctx.restore();
 
+            ctx.restore();
+
+            this.exchange.forEach((a) => {
+                //    currentplayer: p, nextplayer: v.exchange.nextplayer, card: findCardByNum(v.exchange.card)
+                let n = this.findPlayerByNum(a.nextplayer);
+                if (n == null) return;
+                let p = a.currentplayer;
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(n.x, n.y);
+                ctx.stroke();
+                ctx.closePath();
+
+
+
+            });
+
         }
 
     };
 
 
-    const Phases = {
-        Nothing: 0,
-        Exchange: 1,
-        Action: 2,
-        Answer: 3
 
-    };
 
     const Actions = {
         Nothing: { id: - 1, },
         Drop: {
-            id: 0, Button: { Text: "Drop", },
+            id: 0, Button: { Text: "Drop", action: dropcard },
         },
-        Change: { id: 1, HiLightText: "Select player for change with", },
+
+        outChange: { id: 1, Button: { Text: "Exchange", action: exchangecard } },
         SawOneCard: { id: 2, HiLightText: "Select card of a player", MayMove: true, HiLightRLPlayers: true },
         SawAllCards: { id: 3, HiLightText: "Select player", MayMove: true, HiLightRLPlayers: true },
         RejectExchange: {
-            id: 4, Button: { Text: "Reject exchange" },
+            id: 4, Button: { Text: "Reject" },
         },
-        Burn: { id: 5, HiLightText: "Select player for burn", MayMove: true, HiLightRLPlayers: true },
+        Burn: { id: 5, HiLightText: "Select player", MayMove: true, HiLightRLPlayers: true },
         Defend: {
             id: 6, Button: { Text: "Defend" }
         },
+        exChange: { id: 7, Button: { Text: "Exchange", action: exchangecardin } },
 
 
     };
 
     const Algoritms = {
         MayGiveInfect: function (me, other) {
-            if (me.Thing == true) return Actions.Change;
-            if (me.Infected == true && other.Thing == true && me.InfectCount() > 1) return Actions.Change;
+            if (me.Thing == true) return Actions.outChange;
+            if (me.Infected == true && other.Thing == true && me.InfectCount() > 1) return Actions.outChange;
             return Actions.Nothing;
         },
         MayDropInfect: function (me) {
             if (me.Infected == true && me.InfectCount() == 1) return Actions.Nothing;
             return Actions.Drop;
         },
-        SimpleExchange: (me, other) => Actions.Change,
+        OnlyDropAction: (me) => Actions.Drop,
+        SimpleExchange: (me, other) => Actions.outChange,
         ActionSuspicion: (me) => [Actions.Drop, Actions.SawOneCard],
         ActionAnalysis: (me) => [Actions.Drop, Actions.SawAllCards],
         ActionBurnFire: (me) => [Actions.Drop, Actions.Burn],
@@ -405,6 +691,8 @@
 
     };
 
+
+
     const Cards = {
         UnknownPanic: new Card("Panic", -2, "", "", "", null, null, null, true, true),
         UnknownAction: new Card("Event", -1, "", "", "", null, null, null, false, true),
@@ -413,12 +701,68 @@
         Suspicion: new Card("Suspicion", 2, "Saw one\ncard of a player", "", "", Algoritms.SimpleExchange, Algoritms.ActionSuspicion, null),
         Analysis: new Card("Analysis", 3, "Saw all\nCards player", "", "", Algoritms.SimpleExchange, Algoritms.ActionAnalysis, null),
         BurnFire: new Card("Burn", 4, "Burn \nplayer", "", "", Algoritms.SimpleExchange, Algoritms.ActionBurnFire, null),
-        FireResist: new Card("Defend from Fire", 5, "Defend from Fire", "", "", Algoritms.SimpleExchange, null, Algoritms.FireResistance),
+        FireResist: new Card("Defend\nfrom Fire", 5, "Defend\nfrom Fire", "", "", Algoritms.SimpleExchange, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        Temptation: new Card("Temptation", 6, "Seduce", "", "", Algoritms.SimpleExchange, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        Perseverance: new Card("Perseverance", 7, "Perseverance", "", "", Algoritms.SimpleExchange, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        GetOff: new Card("Get Off", 8, "Get Off", "", "", Algoritms.SimpleExchange, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+
+        ChangeDirection: new Card("Change\nDirection", 9, "Change\nDirection", "", "", Algoritms.SimpleExchange, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        ChangePlace: new Card("Change place", 10, "Change place", "", "", Algoritms.SimpleExchange, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        Whiski: new Card("Whiski", 11, "Whiski", "", "", Algoritms.SimpleExchange, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        Axe: new Card("Axe", 12, "Axe", "", "", Algoritms.SimpleExchange, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+
+        NoThanks: new Card("No Thanks", 13, "No Thanks", "", "", Algoritms.SimpleExchange, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        Fear: new Card("Fear", 14, "Fear", "", "", Algoritms.SimpleExchange, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        Past: new Card("Past", 15, "Past", "", "", Algoritms.SimpleExchange, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        StayHere: new Card("i Stay Here", 16, "i Stay Here", "", "", Algoritms.SimpleExchange, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        Door: new Card("Door", 17, "Door", "", "", Algoritms.SimpleExchange, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        Quarantine: new Card("Quarantine", 18, "Quarantine", "", "", Algoritms.SimpleExchange, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+
+        PanicOldRopes: new Card("Old Ropes down", 19, "Old Ropes", "", "", null, null, null, true),
+        PanicThreeFour: new Card("PanicThreeFour", 20, "Old Ropes", "", "", null, null, null, true),
+        PanicUPS: new Card("Old Ropes down", 21, "Old Ropes", "", "", null, null, null),
+        PanicConfessionTime: new Card("Old Ropes down", 22, "Old Ropes", "", "", null, null, null, true),
+        PanicBetweenUs: new Card("Old Ropes down", 23, "Old Ropes", "", "", null, null, null, true),
+        PanicForgot: new Card("Old Ropes down", 24, "Old Ropes", "", "", null, null, null, true),
+        PanicFriend: new Card("Old Ropes down", 25, "Old Ropes", "", "", null, null, null, true),
+        PanicMeet: new Card("Old Ropes down", 26, "Old Ropes", "", "", null, null, null, true),
+        PanicChain: new Card("Old Ropes down", 27, "Old Ropes", "", "", null, null, null, true),
+        PanicOneTwo: new Card("Old Ropes down", 28, "Old Ropes", "", "", null, null, null, true),
+        PanicGoAway: new Card("Old Ropes down", 29, "Old Ropes", "", "", null, null, null, true),
+        PanicParty: new Card("Old Ropes down", 30, "Old Ropes", "", "", null, null, null, true),
 
     };
 
+    function findCardByNum(num) {
+        for (i in Cards)
+            if (Cards[i].num == num) return Cards[i];
+        return Cards.UnknownAction;
+
+    }
+
+    function findPhaseByNum(num) {
+        for (i in Phases)
+            if (Phases[i] == num) return Phases[i];
+        return Phases.Nothing;
+
+    }
+
+    function findStateByNum(num) {
+        for (i in States)
+            if (States[i] == num) return States[i];
+        return States.Nothing;
+
+    }
 
     //----------------------------------------------------------------
+    const Phases = {
+        Nothing: 0,
+        Exchange: 1,
+        Action: 2,
+        Answer: 3
+
+    };
+
     const Direction = {
         CW: 0,
         CCW: 1
@@ -440,6 +784,64 @@
 
 
     //---------------------------------------------------------
+    var wsUrl = location.origin.replace(/^http/, 'ws')
+    let websocket = null;//new WebSocket(wsUrl);
+
+    function startWS() {
+        websocket = new WebSocket(wsUrl);
+
+        websocket.mysend = function (message) {
+
+            if (websocket.OPEN == websocket.readyState) {
+                websocket.send(message); return;
+            }
+
+            window.setTimeout(() => {
+                websocket.mysend(message);
+            }, 1000);
+
+        }
+
+        websocket.senddata = function (data) {
+            let message = JSON.stringify(data).toString();
+            websocket.mysend(message);
+        }
+
+
+
+        websocket.onopen = (evt) => { console.log(evt) };
+        websocket.onclose = function (evt) {
+            console.log(evt);
+            if (evt.code == '1006') { startWS(); start(); return };
+            alert(evt.reason);
+            startWS();
+            //game = null;
+        };
+        websocket.onerror = function (evt) { console.log(evt) };
+
+        websocket.onmessage = function (evt) {
+            console.log(evt.data);
+            document.getElementById("startgamebutton").hidden = false;
+            let message = JSON.parse(evt.data);
+            if (message.messagetype == 'playerguid') {
+                game = new Game(message.guid);
+                document.cookie = evt.data;
+                return;
+            }
+
+
+            if (message.messagetype == 'playerlist') {
+                game.parsePlayerList(message);
+                return;
+            }
+
+        };
+        autoping();
+
+    }
+
+
+
 
     var RAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
         callback();
@@ -458,30 +860,80 @@
     var h = canvas.height;
 
 
-
     window.addEventListener("mousemove", function (event) {
-
+        if (game == null) return;
         if (game.moveOneCard)
             render(event);
-
-
     });
 
     window.addEventListener("mousedown", function (event) {
+        if (game == null) return;
         render(event);
         if (game.me.selected != null) game.moveOneCard = game.me.isCardMovableNow;
 
     });
 
     window.addEventListener("mouseup", function (e) {
-
+        if (game == null) return;
         game.moveOneCard = false;
     });
 
+    /*
+    // отправить сообщение из формы publish
+    document.forms.publish.onsubmit = function () {
+        var outgoingMessage = this.message.value;
 
+        socket.send(outgoingMessage);
+        return false;
+    };
+    */
+
+    function dropcard(place) {
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "actionDropCard";
+        p.place = place.cardplace;
+        console.log(p);
+        websocket.senddata(p);
+
+    }
+
+    function exchangecard(place) {
+        if (States.IncomeExchange == game.me.state) return exchangecardin(place);
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "outExchangeCard";
+        p.place = place.cardplace;
+        p.nextplayer = game.nextplayer;
+        websocket.senddata(p);
+    }
+
+    function exchangecardin(place) {
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "inExchangeCard";
+        p.place = place.cardplace;
+        
+       
+        websocket.senddata(p);
+    }
 
     function start() {
+        let loginelement = document.getElementById("login");
+        let roomElement = document.getElementById("room");
+        if (document.cookie != "") {
+            try {
+                let p = JSON.parse(document.cookie);
+                p.messagetype = 'newplayer';
+                p.numofPlayers = 1;
+                loginelement.value = p.playername;
+                roomElement.value = p.roomname;
 
+                game = new Game(p.guid);
+                websocket.senddata(p);
+                return;
+            } catch { }
+        }
 
 
 
@@ -502,18 +954,85 @@
 
 
     function render(e) {
-        ctx.clearRect(0, 0, w, h);
-        ctx.save();
-        ctx.translate(w / 2, h / 2);
-        game.Draw(ctx, e);
-        ctx.restore();
+        if (game == null) return;
+       // ctx.clearRect(0, 0, w, h);
+      //  ctx.save();
+      //  ctx.translate(w / 2, h / 2);
+        game.Draw(ctx, e, w, h);
+      //  ctx.restore();
     }
 
+    function sendQuery() {
+        let q = document.getElementById("query").value;
+        websocket.senddata({ messagetype: "query", query: q });
+
+    }
+
+    function sendLogin() {
+        let loginelement = document.getElementById("login");
+        let p = {
+            messagetype: 'newplayer',
+            roomname: document.getElementById("room").value,
+            password: '1',
+            numofPlayers: 1,
+            playername: loginelement.value,
+            guid: game == null ? '' : game.guid
+
+        };
+
+        websocket.senddata(p);
+        document.getElementById("startgamebutton").hidden = false;
+    }
+
+
+
+    function startGame() {
+
+        try {
+            let p = JSON.parse(document.cookie);
+            p.messagetype = 'startgame';
+            websocket.senddata(p);
+            document.getElementById("logindiv").hidden = true;
+            document.getElementById("startgamebutton").hidden = true;
+
+        } catch { }
+    }
+
+    function gameLoop() {
+
+        if (game == null) return;
+        if (game.isStarted == false) return;
+        let p = JSON.parse(document.cookie);
+        //p.messagetype = 'playeraction';
+        //if (game.me.isINeedGetCard) p.action = "getOneCardfromDeckForAction";
+        //websocket.senddata(p);
+
+    }
+
+
+    function autoping() {
+        window.setTimeout(() => {
+
+            gameLoop();
+            let ping = JSON.stringify({ messagetype: 'ping' }).toString();
+            //console.log(ping);
+            if (websocket.OPEN == websocket.readyState)
+                websocket.send(ping);
+            autoping();
+
+        }, 2000);
+    }
+
+    startWS();
 
     start();
 
     update();
 
-
+       // <div id="logindiv">
+       // <input id="login">player</input><button onclick="sendLogin()">Login</button>
+      //  </div>
+           //         <button id ="startgamebutton" onclick="startGame()">Startgame</button>
 </script>
+
 </html>
