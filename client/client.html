@@ -370,13 +370,13 @@
         Drop: {
             id: 0, Button: { Text: "Drop", },
         },
-        Change: { id: 1, HiLightText: "Select player", },
+        Change: { id: 1, HiLightText: "Select player for change with", },
         SawOneCard: { id: 2, HiLightText: "Select card of a player", MayMove: true, HiLightRLPlayers: true },
         SawAllCards: { id: 3, HiLightText: "Select player", MayMove: true, HiLightRLPlayers: true },
         RejectExchange: {
-            id: 4, Button: { Text: "Reject" },
+            id: 4, Button: { Text: "Reject exchange" },
         },
-        Burn: { id: 5, HiLightText: "Select player", MayMove: true, HiLightRLPlayers: true },
+        Burn: { id: 5, HiLightText: "Select player for burn", MayMove: true, HiLightRLPlayers: true },
         Defend: {
             id: 6, Button: { Text: "Defend" }
         },
@@ -412,7 +412,7 @@
         Infect: new Card("Infect", 1, "", "", "", Algoritms.MayGiveInfect, Algoritms.MayDropInfect, null),
         Suspicion: new Card("Suspicion", 2, "Saw one\ncard of a player", "", "", Algoritms.SimpleExchange, Algoritms.ActionSuspicion, null),
         Analysis: new Card("Analysis", 3, "Saw all\nCards player", "", "", Algoritms.SimpleExchange, Algoritms.ActionAnalysis, null),
-        BurnFire: new Card("�������", 4, "Burn \nplayer", "", "", Algoritms.SimpleExchange, Algoritms.ActionBurnFire, null),
+        BurnFire: new Card("Burn", 4, "Burn \nplayer", "", "", Algoritms.SimpleExchange, Algoritms.ActionBurnFire, null),
         FireResist: new Card("Defend from Fire", 5, "Defend from Fire", "", "", Algoritms.SimpleExchange, null, Algoritms.FireResistance),
 
     };
