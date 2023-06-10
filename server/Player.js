@@ -9,7 +9,8 @@ class Player {
         this.playername = playername;
         this.playerCaption = playerCaption;
         this.roomid = roomid;
-        this.guid = this.generateGUID();
+        this.cookieguid = this.generateGUID();//guid for cookie
+        this.id = this.generateGUID();
         this.room = room;
         this.quarantineCount = quarantineCount;
         this.Infected = Infected;
@@ -59,7 +60,7 @@ class Player {
     sendGUIDToPlayer() {
         this.lastseen = Date.now();
         //this.clientDB.query(`update players set (needupdate, lastseen ) = (true, $2) WHERE guid = $1 ; `, [this.guid, new Date()], (err, data) => { });
-        this.send({ messagetype: 'playerguid', guid: this.guid, playername: this.playername, roomname: this.roomid, password: this.room.password, quarantineCount: this.quarantineCount, infected: this.Infected, thing: this.thing, gamenum: this.gamenum });
+        this.send({ messagetype: 'playerguid', guid: this.cookieguid, playername: this.playername, roomname: this.roomid, password: this.room.password, quarantineCount: this.quarantineCount, infected: this.Infected, thing: this.thing, gamenum: this.gamenum });
     }
 
     insertPlayer() {
@@ -197,18 +198,50 @@ class Player {
 
     }
 
+    ShowYourCardToPlayer(player, place) {
+        let cardindex = this.findcardindex(place);
+        let card = this.cards[cardindex];
+        this.room.ShowMyCardToPlayer(player, this, card);
+
+    }
+
+    findcardindex(place) {
+        return this.cards.findIndex((v, i) => { return v.place == place });
+        //return this.cards[cardindex];
+    }
+
+    actionShowMeCard(data) {
+        let otherPlayerName = data.otherPlayerName;
+        let otherCardPlace = data.place;
+        let bymycardplace = data.bymycardplace;
+
+        let cardindex = this.findcardindex(bymycardplace);
+        let mycard = this.card[cardindex]; //
+        //check and validate card here
+        this.dropOneCard(bymycardplace);
+
+        this.room.ShowOneOtherCardToPlayer(this, otherPlayerName, otherCardPlace);
+
+
+
+    }
+
+    dropOneCard(place) {
+        let index = this.findcardindex(place);
+        this.room.dropcards.push(this.cards[index]);
+        //console.log(place + ' ' + this.cards.length)
+        this.cards.splice(index, 1);
+        this.cards.forEach((v, i) => { v.place = i });
+        //console.log('cards ' + this.cards.length)
+    }
+
     actionDropCard(data) {
         this.phase = Player.Phases.Exchange;
         this.state = Player.States.SelectCard;
         //this.room.currentplayer = this.room.nextplayer;
         //this.room.calcNextPlayer();
         let cardplace = data.place;
-        let place = this.cards.findIndex((v, i) => { return v.place == cardplace})
-        this.room.dropcards.push(this.cards[place]);
-        console.log(place + ' ' + this.cards.length)
-        this.cards.splice(place, 1);
-        this.cards.forEach((v, i) => { v.place = i });
-        console.log('cards ' + this.cards.length)
+        this.dropOneCard(cardplace);
         /*
         //console.trace(data);
         //set nextplayer in rooms for next player by place%maxplace
@@ -251,7 +284,7 @@ class Player {
 
     }
 
-    sendplayers(deckData) {
+    sendplayers(deckData, additionalData= undefined) {
         //let playersCards = new Map();
 
         /*        this.cards = [];
@@ -278,15 +311,13 @@ class Player {
        // nextplayer = this.room.nextplayer.place;
         //currentplayer = this.room.currentplayer.place;
 
-
-        exchange.push(this.addCards(this, this));
+        exchange.push(this.addCards(this, this, additionalData));
 
         this.room.players.forEach((v, k) => {
             let p;
             // this.room.players.forEach((v, i) => {
             //let p =playersCards.get(v.playerid );
 
-            //if (p == undefined)
             if (v.playername == this.playername) { return; }//p = this; }
             else p = new Player(null, null, null, v.playername, null, null, v.quarantineCount);
             p.place = v.place;
@@ -316,7 +347,7 @@ class Player {
 
             //exchange.push({guid:v.guid , playername: v.playername, quarantineCount: v.quarantineCount, num: v.place, Infected: p.Infected, thing: p.thing, state: p.state, phase: p.phase, cards: cardsArray, exchange: null });
             */
-            exchange.push(this.addCards(v, p) );
+            exchange.push(this.addCards(v, p, additionalData) );
 
             //playersCards.set(v.playername, p);
 
@@ -334,7 +365,7 @@ class Player {
         this.send({ messagetype: 'playerlist', playerlist: exchange, deck: deckData, nextplayer: nextplayer, currentplayer: currentplayer });
     }
 
-    addCards(v,p) {
+    addCards(v, p, additionalData=undefined) {
 
         let cardsArray = [];
 
@@ -342,11 +373,27 @@ class Player {
             //console.log(card);
             //let card = vCard.num;
             let cardplace = c.place;
+            let str = { cardnum: -1, cardplace: cardplace };
+            if (v.playername == this.playername || c.card.isPanic)                str = { cardnum: c.card.num, cardplace: cardplace };
 
-            // if (card.nextplayerforcard == null) {
-            if (v.playername == this.playername || c.card.isPanic)
-                cardsArray.push({ cardnum: c.card.num, cardplace: cardplace });
-            else cardsArray.push({ cardnum: -1, cardplace: cardplace });
+
+            if (additionalData != undefined) {
+                switch (additionalData.action) {
+                    case "ShowOneCardToPlayer":
+                        str.attention = true;
+                        str.toPlayer = additionalData.PlayerTo.playername;
+                        if (this.playername == additionalData.PlayerTo.playername && v.playername == additionalData.playerFrom.playername && additionalData.Card.place == cardplace)
+                            str.cardnum = c.card.num;
+                        break;
+
+                }
+
+
+
+            }
+
+
+            cardsArray.push(str);
             // } else {
             //     p.exchange = { nextplayer: v.nextplayerforcard, card: -1, cardplace: cardplace };
             // }

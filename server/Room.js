@@ -229,6 +229,20 @@ class Room {
         });
     }
 
+
+    ShowMyCardToPlayer(playerTo, playerFrom, card) {
+
+        this.getDeckAndDrop((deckData) => {
+            this.players.forEach((v, k) => {
+                if (v.needupdate == true)
+                    v.update(deckData, {action:"ShowOneCardToPlayer", PlayerTo: playerTo, PlayerFrom: playerFrom, Card: card});
+                v.needupdate = false;
+            });
+        });
+
+
+    }
+
     findPlayer(playername, callback) {
        // console.log(this.players);
         let player = this.players.get(playername);
@@ -261,7 +275,7 @@ class Room {
         player.insertPlayer();
         //this.needUpdateForPlayer(playerdata.playername);
         //player.sendplayers(undefined);
-        return player.guid;
+        return player.cookieguid;
     }
 
     restorePlayer(socket, playerdata) {
@@ -269,13 +283,13 @@ class Room {
         let player = this.players.get(playerdata.playername);//new Player(this.clientDB, socket, this.roomname, playerdata.playername, playerdata.playername, this, this.gamenum, playerdata.quarantineCount, playerdata.Infected);
         player.socket = socket;
         player.room = this;
-        player.guid = playerdata.guid;
+        player.cookieguid = playerdata.guid;
         this.players.set(playerdata.playername, player);
         player.sendGUIDToPlayer();
         player.insertPlayer();
         //this.needUpdateForPlayer(playerdata.playername);
         //player.sendplayers(undefined);
-        return player.guid;
+        return player.cookieguid;
     }
 
     sendplayers() {
@@ -336,6 +350,13 @@ class Room {
     getPlayerNum(playerid) {
 
 
+
+    }
+
+    ShowOneOtherCardToPlayer(player, otherPlayerName, otherCardPlace) {
+        let otherplayer = this.players.get(otherPlayerName);
+        if (otherplayer == undefined) { socket.close(1001, 'Player not found'); return; }
+        otherplayer.ShowYourCardToPlayer(player, otherCardPlace);
 
     }
 }

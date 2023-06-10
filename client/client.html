@@ -345,6 +345,7 @@
     class Player {
         constructor(name, num, isMe, cards, state, Phase, QuarantineCount = 0) {
             this.name = name;
+            this.playername = name;
             this.place = num;
             this.isMe = isMe;
             this.cards = cards;
@@ -376,7 +377,7 @@
             if (this.Phase == Phases.Nothing) return false;
             if (this.selectedCard == null) return false;
             if (this.Phase == Phases.Action) {
-                return this.selectedCard.isCardMovableForAction(this);
+                return this.selectedCard.card.isCardMovableForAction(this);
             }
         }
 
@@ -397,8 +398,10 @@
 
         Draw(ctx, e, actions) {
             let selectNearPlayersCards = false;
+            let actionOnSelectSecondCard = undefined;
             actions.forEach((v) => {
                 if (v.selectNearPlayersCards != undefined) selectNearPlayersCards = v.selectNearPlayersCards;
+                if (v.actionOnSelectSecondCard != undefined) actionOnSelectSecondCard = v.actionOnSelectSecondCard;
             });
 
             let errortext = '';
@@ -449,10 +452,15 @@
                             } else {
                                 if (selectNearPlayersCards && !this.isMe ) {
                                     
-                                    if (this.isNear) { this.selected = z; this.selectedCard = v.card; }
+                                    if (this.isNear) {
+                                        //game.selectedOpponent = this;
+                                        //game.selectedOtherCardPlace = z;
+                                        this.selected = z; this.selectedCard = v;
+                                        if (actionOnSelectSecondCard != undefined) actionOnSelectSecondCard(this.playername, v);
+                                    }
                                 } else {
 
-                                    this.selected = z; this.selectedCard = v.card; v.card.RemoveOldAddNewButtons(this, v)
+                                    this.selected = z; this.selectedCard = v; v.card.RemoveOldAddNewButtons(this, v)
                                 }
                             }
                         }
@@ -653,7 +661,7 @@
             // let ex = this.me.selectedCard.GetExchangeArray()
             if (this.me.selectedCard != null) {
                 if (this.me.isNowMyTurn) {
-                    c = this.me.selectedCard.GetActionArray(this.me);
+                    c = this.me.selectedCard.card.GetActionArray(this.me);
 
                     c.forEach((v) => {
                         if (v.HiLightText != undefined) this.drawText(ctx, -10, 20, v.HiLightText);
@@ -718,7 +726,7 @@
         },
 
         outChange: { id: 1, Button: { Text: "Exchange", action: exchangecard } },
-        SawOneCard: { id: 2, HiLightText: "Select card of a player", MayMove: true, HiLightRLPlayers: true, selectNearPlayersCards:true },
+        SawOneCard: { id: 2, HiLightText: "Select card of a player", MayMove: true, HiLightRLPlayers: true, selectNearPlayersCards:true,actionOnSelectSecondCard:ShowMeCard },
         SawAllCards: { id: 3, HiLightText: "Select player", MayMove: true, HiLightRLPlayers: true },
         RejectExchange: {
             id: 4, Button: { Text: "Reject" },
@@ -956,9 +964,22 @@
         let p = JSON.parse(document.cookie);
         p.messagetype = 'playeraction';
         p.action = "actionDropCard";
-        p.place = place.cardplace;//как тут мог оказаться 18 ?
+        p.place = place.cardplace;//
         console.log(place);
         websocket.senddata(p);
+
+    }
+
+    function ShowMeCard(otherplayername,place) {
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "actionShowMeCard";
+        p.place = place.cardplace;//
+        p.bymycardplace = game.me.selectedCard.cardplace;
+        p.otherPlayerName = otherplayername;
+        console.log(place);
+        websocket.senddata(p);
+        game.me.selected = null;
 
     }
 
