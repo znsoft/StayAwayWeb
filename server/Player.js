@@ -277,13 +277,15 @@ class Player {
         //currentplayer = this.room.currentplayer.place;
 
 
+        exchange.push(this.addCards(this, this));
+
         this.room.players.forEach((v, k) => {
             let p;
             // this.room.players.forEach((v, i) => {
             //let p =playersCards.get(v.playerid );
 
             //if (p == undefined)
-            if (v.playername == this.playername) { p = this; }
+            if (v.playername == this.playername) { return; }//p = this; }
             else p = new Player(null, null, null, v.playername, null, null, v.quarantineCount);
             p.place = v.place;
             p.state = v.state;
@@ -292,6 +294,8 @@ class Player {
 
             if (this.thing == true) p.Infected = v.Infected;//покажем нечте зараженных
             if (this.Infected == true) p.thing = v.thing;//покажем зараженным нечту
+
+            /*
             let cardsArray = [];
             
             v.cards.forEach((c, i) => {
@@ -308,8 +312,9 @@ class Player {
                 // }
             });
 
-            exchange.push({ playername: v.playername, quarantineCount: v.quarantineCount, num: v.place, Infected: p.Infected, thing: p.thing, state: p.state, phase: p.phase, cards: cardsArray, exchange: null });
-
+            //exchange.push({guid:v.guid , playername: v.playername, quarantineCount: v.quarantineCount, num: v.place, Infected: p.Infected, thing: p.thing, state: p.state, phase: p.phase, cards: cardsArray, exchange: null });
+            */
+            exchange.push(this.addCards(v, p) );
 
             //playersCards.set(v.playername, p);
 
@@ -324,6 +329,30 @@ class Player {
 
         this.send({ messagetype: 'playerlist', playerlist: exchange, deck: deckData, nextplayer: nextplayer, currentplayer: currentplayer });
     }
+
+    addCards(v,p) {
+
+        let cardsArray = [];
+
+        v.cards.forEach((c, i) => {
+            //console.log(card);
+            //let card = vCard.num;
+            let cardplace = c.place;
+
+            // if (card.nextplayerforcard == null) {
+            if (v.playername == this.playername || c.card.isPanic)
+                cardsArray.push({ cardnum: c.card.num, cardplace: cardplace });
+            else cardsArray.push({ cardnum: -1, cardplace: cardplace });
+            // } else {
+            //     p.exchange = { nextplayer: v.nextplayerforcard, card: -1, cardplace: cardplace };
+            // }
+        });
+
+        return {  playername: v.playername, quarantineCount: v.quarantineCount, num: v.place, Infected: p.Infected, thing: p.thing, state: p.state, phase: p.phase, cards: cardsArray, exchange: null };
+
+
+    }
+
 
 }
 
