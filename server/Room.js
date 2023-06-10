@@ -146,7 +146,7 @@ class Room {
             });
 
             this.insertShuffle(res);//оставшиеся карты перетасуем и закинем в деку
-            this.giveOneCardfromDeckToPlayer(this.currentplayer);
+            this.currentplayer.getOneCardfromDeckForAction();
             //this.clientDB.query(`update cards set (isInDeck, place , playerid ) =(  false ,4, $2) WHERE roomid = $1 and isInDeck = true and place in (select max(place) from cards where  roomid = $1 and isInDeck = true); `, [this.roomname, currentPlayer], (err, data) => { });
             //a.forEach(v => { console.log(v.playername+' '+v.cards.length); });
 
@@ -185,6 +185,7 @@ class Room {
 
     giveOneCardfromDeckToPlayer(player) {
         player.cards.push(this.deckcards.pop());
+        
         //player.cards.push(this.deckcards[this.deckcards.length - 1].card);
         //this.deckcards.pop();
     }
@@ -221,7 +222,9 @@ class Room {
     updatePlayers() {
         this.getDeckAndDrop((deckData) => {
             this.players.forEach((v, k) => {
-                v.update(deckData);
+                if (v.needupdate==true)
+                    v.update(deckData);
+                v.needupdate = false;
             });
         });
     }

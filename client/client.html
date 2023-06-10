@@ -162,11 +162,11 @@
         }
 
         get PanicCount() {
-            this.cards.filter(v => v.isPanic == true).length;
+            return this.cards.filter(v => v.card.isPanic == true).length;
 
         }
         get InfectCount() {
-            this.cards.filter(v => v == Cards.Infect).length;
+            return this.cards.filter(v => v.card == Cards.Infect).length;
 
         }
         get isCardMovableNow() {
@@ -194,6 +194,7 @@
 
 
         Draw(ctx, e) {
+            let errortext = '';
             this.transform = ctx.getTransform();
             this.x = this.transform.e;
             this.y = this.transform.f
@@ -206,7 +207,7 @@
                 //else { this.selected = null; this.selectedCard = null; }
 
             }
-
+            
             this.cards.forEach((v, z) => {
                 let i = z - lm;
                 let h = 35;
@@ -228,7 +229,13 @@
                     }
 
                     if (c != undefined)
-                        if (c.x > 0 && c.x < 90 && c.y > 0 && c.y < 150) { this.selected = z; this.selectedCard = v.card; v.card.RemoveOldAddNewButtons(this, v) }
+                        if (c.x > 0 && c.x < 90 && c.y > 0 && c.y < 150) {
+                            if (this.PanicCount > 0 && !v.card.isPanic) {
+                                errortext = 'Select panic!!!';
+                            } else {
+                                this.selected = z; this.selectedCard = v.card; v.card.RemoveOldAddNewButtons(this, v)
+                            }
+                        }
                 }
 
                 if (this.isMe && this.selected == z && this.move != null && this.moveOneCard) {
@@ -249,6 +256,13 @@
             ctx.fillText(this.name, 20, 20);
             ctx.strokeText(this.name, 20, 20);
             ctx.stroke();
+
+            ctx.strokeStyle = "#005";
+            ctx.font = 'bold 48px serif';
+            ctx.fillText(errortext, 10, 10);
+            ctx.strokeText(errortext, 10, 10);
+            ctx.stroke();
+
 
         }
 
@@ -309,10 +323,11 @@
     }
 
     class Deck {
-        constructor(upCard, cardsLeft) {
+        constructor(upCard, cardsLeft,dropCount) {
             this.upCard = upCard;
             this.cardsLeft = cardsLeft;
             this.Doors = [];
+            this.Drop = dropCount;
         }
 
         Draw(ctx, e) {
@@ -337,12 +352,22 @@
             ctx.save();
             // ctx.globalCompositeOperation = 'destination-over';
             ctx.translate(200, -50);
+
+            for (let i = this.Drop; i > 0; i--) {
+
+                ctx.save();
+                ctx.translate(i * 1, i * 1+40);
+                ctx.rotate(Math.PI / 1.5+i/200);
+                Cards.UnknownAction.Draw(ctx);
+                ctx.restore();
+            }
+
             ctx.rotate(Math.PI / 2.5);
             ctx.fillStyle = "#000";
             ctx.font = '16px serif';
             ctx.fillText("Drop", 10, 20);
             ctx.roundRect(0, 0, 95, 150, 10).stroke();
-            //Cards.UnknownAction.Draw(ctx);
+            //if (this.Drop == 0)Cards.UnknownAction.Draw(ctx);
 
             ctx.restore();
 
@@ -369,6 +394,8 @@
             Card.splace++;
             this.place = Card.splace;
             this.opponent = null;
+            this.x = 0;
+            this.y = 0;
         }
 
         GetActionArray(player) {
@@ -426,6 +453,7 @@
         Draw(ctx) {
 
             //ctx.beginPath();
+            if (this.isPanic) ctx.scale(2.0,2.0);
             ctx.fillStyle = "#000";
             ctx.font = '16px serif';
             ctx.fillText(this.name, 10, 20);
@@ -457,10 +485,10 @@
             this.guid = guid;
             //            this.players =
             this.isStarted = false;
-            this.players = [new Player("IAM", 0, true, [], States.SelectCard, Phases.Action, 0)            ];
+            this.players = [new Player("Stay away game", 0, true, [], States.SelectCard, Phases.Action, 0)            ];
 
             this.me = this.players[0];
-            this.Deck = new Deck(Cards.UnknownAction, 4);
+            this.Deck = new Deck(Cards.UnknownAction, 4,2);
             this.moveOneCard = false;
             this.gameDirection = Direction.CW;
             this.selectedOpponent = null;
@@ -477,15 +505,22 @@
 
         parsePlayerList(message) {
             let j = 0;
+            let selected = this.me.selected;
+            if (this.me.selected) return;//заглушка чтобы карты не сбрасывались с мышки 
+
+
             this.exchange = [];
             this.players = [];
             message.playerlist.forEach((v, i) => {
                 for (j in v.cards) {
 
-                        v.cards[j].card = findCardByNum(v.cards[j].cardnum);
+                        v.cards[j].card = findCardByNum(v.cards[j].cardnum); // тут приходит пакет с реквизитами
 
                 }
                 let p = new Player(v.playername, v.num, i == 1, v.cards, findStateByNum(v.state), findPhaseByNum(v.phase));
+                //if (i == 0 && this.me != null && this.me.playername == v.playername) p = this.me;
+                //p.state = findStateByNum(v.state);
+                //p.Phase = findPhaseByNum(v.phase);
                 p.Thing = v.thing;
                 p.Infected = v.Infected;
                 this.players.push(p);
@@ -500,11 +535,13 @@
             this.nextplayer = message.nextplayer;
             this.me.opponent = this.opponent;
             if (message.deck != undefined) {
-                this.Deck = new Deck(findCardByNum(message.deck.card), message.deck.deckCount);
+                this.Deck = new Deck(findCardByNum(message.deck.card), message.deck.deckCount, message.deck.dropCount);
+               // this.Deck.Drop = message.deck.dropCount;
                 this.isStarted = true;
 
             }
-
+            //this.me.isCardMovableNow = game.moveOneCard;
+            //this.me.selected = selected;
 
         }
 
@@ -665,6 +702,7 @@
             id: 6, Button: { Text: "Defend" }
         },
         exChange: { id: 7, Button: { Text: "Exchange", action: exchangecardin } },
+
 
 
     };
@@ -892,8 +930,8 @@
         let p = JSON.parse(document.cookie);
         p.messagetype = 'playeraction';
         p.action = "actionDropCard";
-        p.place = place.cardplace;
-        console.log(p);
+        p.place = place.cardplace;//как тут мог оказаться 18 ?
+        console.log(place);
         websocket.senddata(p);
 
     }

@@ -174,6 +174,7 @@ class Game {
                     //socket.close(1001, 'This player is already in room'); return;
                 }
                 room.restorePlayer(socket, data);
+                sqlplayer.needupdate = true;
                 return;
             } else {
                 if (room.gamestarted == true) { socket.close(1001, 'Room full'); return; }

@@ -141,6 +141,7 @@ let SocketClientWorker = {
             this.upCard = upCard;
             this.cardsLeft = cardsLeft;
             this.Doors = [];
+            this.Drop = 0;
         }
         Draw(ctx, e) {
 
@@ -248,7 +249,7 @@ let SocketClientWorker = {
 
             this.guid = guid;
             this.players = this.GetPlayers;
-            this.players = [new Player("IAM", 0, true, [Cards.Thing, Cards.Infect, Cards.Suspicion, Cards.Analysis, Cards.BurnFire], States.SelectCard, Phases.Action),
+            this.players = [new Player("Stay away game", 0, true, [Cards.Thing, Cards.Infect, Cards.Suspicion, Cards.Analysis, Cards.BurnFire], States.SelectCard, Phases.Action),
             new Player("ENEMY", 1, false, [Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction], States.Nothing, Phases.Nothing),
             new Player("ENEMY1", 2, false, [Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction], States.Nothing, Phases.Nothing),
             new Player("ENEMY2", 3, false, [Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction, Cards.UnknownAction], States.Nothing, Phases.Nothing),

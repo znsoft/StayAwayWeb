@@ -110,7 +110,7 @@ class Player {
 
         this.phase = Player.Phases.Nothing;
         this.state = Player.States.Nothing
-        nextplayer = this.room.nextplayer;
+        let nextplayer = this.room.nextplayer;
         nextplayer.phase = Player.Phases.Action;
         nextplayer.state = Player.States.SelectCard;
 
@@ -200,13 +200,15 @@ class Player {
     actionDropCard(data) {
         this.phase = Player.Phases.Exchange;
         this.state = Player.States.SelectCard;
-        this.room.currentplayer = this.room.nextplayer;
-        this.room.calcNextPlayer();
+        //this.room.currentplayer = this.room.nextplayer;
+        //this.room.calcNextPlayer();
         let cardplace = data.place;
-        this.room.dropcards.push(this.cards[cardplace]);
-        this.cards.slice(cardplace, 1);
+        let place = this.cards.findIndex((v, i) => { return v.place == cardplace})
+        this.room.dropcards.push(this.cards[place]);
+        console.log(place + ' ' + this.cards.length)
+        this.cards.splice(place, 1);
         this.cards.forEach((v, i) => { v.place = i });
-       
+        console.log('cards ' + this.cards.length)
         /*
         //console.trace(data);
         //set nextplayer in rooms for next player by place%maxplace
@@ -326,6 +328,8 @@ class Player {
         playersCards.forEach((v, k) => {
             exchange.push({ playername: v.playername, quarantineCount: v.quarantineCount, num: v.place, Infected: v.Infected, thing: v.thing, state: v.state, phase: v.phase, cards: v.cards, exchange: v.exchange });
         });*/
+        this.lastseen = Date.now;
+        this.needupdate = false;
 
         this.send({ messagetype: 'playerlist', playerlist: exchange, deck: deckData, nextplayer: nextplayer, currentplayer: currentplayer });
     }
