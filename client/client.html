@@ -141,137 +141,6 @@
         };
     }
 
-    class Player {
-        constructor(name, num, isMe, cards, state, Phase, QuarantineCount = 0) {
-            this.name = name;
-            this.place = num;
-            this.isMe = isMe;
-            this.cards = cards;
-            this.Infected = false;
-            this.Thing = false;
-            this.state = state;
-            this.QuarantineCount = QuarantineCount;
-            this.selected = null;
-            this.selectedCard = null;
-            this.Phase = Phase;
-            this.moveOneCard = false;
-            this.move = null;
-            this.x = 0;
-            this.y = 0;
-            this.transform = {};
-        }
-
-        get PanicCount() {
-            return this.cards.filter(v => v.card.isPanic == true).length;
-
-        }
-        get InfectCount() {
-            return this.cards.filter(v => v.card == Cards.Infect).length;
-
-        }
-        get isCardMovableNow() {
-
-            if (this.Phase == Phases.Nothing) return false;
-            if (this.selectedCard == null) return false;
-            if (this.Phase == Phases.Action) {
-                return this.selectedCard.isCardMovableForAction(this);
-            }
-        }
-
-        get isAction() {
-
-            return (this.Phase == Phases.Action);
-        }
-
-        get isNowMyTurn() {
-            return this.Phase == Phases.Action;
-        }
-
-        get isINeedGetCard() {
-
-            return this.Phase == Phases.Action && this.state == States.SelectCard && this.cards.length < 5;
-        }
-
-
-        Draw(ctx, e) {
-            let errortext = '';
-            this.transform = ctx.getTransform();
-            this.x = this.transform.e;
-            this.y = this.transform.f
-                //x: x * invMat.a + y * invMat.c + invMat.e,
-                   // y: x * invMat.b + y * invMat.d + invMat.f
-            let lm = (this.cards.length - 1) / 2;
-
-            if (e != undefined && !this.moveOneCard) {
-                this.selected = null; this.selectedCard = null; this.move = null;
-                //else { this.selected = null; this.selectedCard = null; }
-
-            }
-            
-            this.cards.forEach((v, z) => {
-                let i = z - lm;
-                let h = 35;
-                let mx = 0;
-                ctx.save();
-
-                ctx.strokeStyle = "#af2";
-                //if (this.isMe)
-                if (this.selected == z) { h = -5; ctx.scale(1.2, 1.2); mx = 10; ctx.strokeStyle = "#a00"; }
-                ctx.translate(i * 111 - mx, h);
-
-                if (e != undefined) {
-                    let c = ctx.getWindowToCanvas(e);
-                    if (this.moveOneCard && this.selected == z && this.isMe) {
-                        this.move = { x: c.x - 20, y: c.y - 20 };
-                        c.x = 1;
-                        c.y = 1;
-
-                    }
-
-                    if (c != undefined)
-                        if (c.x > 0 && c.x < 90 && c.y > 0 && c.y < 150) {
-                            if (this.PanicCount > 0 && !v.card.isPanic) {
-                                errortext = 'Select panic!!!';
-                            } else {
-                                this.selected = z; this.selectedCard = v.card; v.card.RemoveOldAddNewButtons(this, v)
-                            }
-                        }
-                }
-
-                if (this.isMe && this.selected == z && this.move != null && this.moveOneCard) {
-                    ctx.translate(this.move.x, this.move.y);
-                } else                    ctx.rotate(i / 50 * Math.PI);
-
-                v.card.Draw(ctx);
-
-
-
-                ctx.strokeStyle = "#af2";
-
-                ctx.restore();
-            });
-
-            ctx.strokeStyle = "#005";
-            ctx.font = 'bold 48px serif';
-            ctx.fillText(this.name, 20, 20);
-            ctx.strokeText(this.name, 20, 20);
-            ctx.stroke();
-
-            ctx.strokeStyle = "#005";
-            ctx.font = 'bold 48px serif';
-            ctx.fillText(errortext, 10, 10);
-            ctx.strokeText(errortext, 10, 10);
-            ctx.stroke();
-
-
-        }
-
-
-
-
-
-    };
-
     class Button {
         constructor(id, text, x, y, w, h, callback, p) {
             this.id = id;
@@ -473,6 +342,157 @@
     };
 
 
+    class Player {
+        constructor(name, num, isMe, cards, state, Phase, QuarantineCount = 0) {
+            this.name = name;
+            this.place = num;
+            this.isMe = isMe;
+            this.cards = cards;
+            this.Infected = false;
+            this.Thing = false;
+            this.state = state;
+            this.QuarantineCount = QuarantineCount;
+            this.selected = null;
+            this.selectedCard = null;
+            this.Phase = Phase;
+            this.moveOneCard = false;
+            this.move = null;
+            this.x = 0;
+            this.y = 0;
+            this.transform = {};
+            this.isNear = false;
+        }
+
+        get PanicCount() {
+            return this.cards.filter(v => v.card.isPanic == true).length;
+
+        }
+        get InfectCount() {
+            return this.cards.filter(v => v.card == Cards.Infect).length;
+
+        }
+        get isCardMovableNow() {
+
+            if (this.Phase == Phases.Nothing) return false;
+            if (this.selectedCard == null) return false;
+            if (this.Phase == Phases.Action) {
+                return this.selectedCard.isCardMovableForAction(this);
+            }
+        }
+
+        get isAction() {
+
+            return (this.Phase == Phases.Action);
+        }
+
+        get isNowMyTurn() {
+            return this.Phase == Phases.Action;
+        }
+
+        get isINeedGetCard() {
+
+            return this.Phase == Phases.Action && this.state == States.SelectCard && this.cards.length < 5;
+        }
+
+
+        Draw(ctx, e, actions) {
+            let selectNearPlayersCards = false;
+            actions.forEach((v) => {
+                if (v.selectNearPlayersCards != undefined) selectNearPlayersCards = v.selectNearPlayersCards;
+            });
+
+            let errortext = '';
+            this.transform = ctx.getTransform();
+            this.x = this.transform.e;
+            this.y = this.transform.f
+            //x: x * invMat.a + y * invMat.c + invMat.e,
+            // y: x * invMat.b + y * invMat.d + invMat.f
+            let lm = (this.cards.length - 1) / 2;
+
+            if (e != undefined && !this.moveOneCard && !selectNearPlayersCards) {
+
+                //if (this.isMe)
+                this.selected = null; this.selectedCard = null; this.move = null;//reset old selection
+                //else { this.selected = null; this.selectedCard = null; }
+
+            }
+
+            this.cards.forEach((v, z) => {
+                let i = z - lm;
+                let h = 35;
+                let mx = 0;
+                ctx.save();
+
+                ctx.strokeStyle = "#af2";
+                //if (this.isMe)
+                if (this.selected == z) { h = -5; ctx.scale(1.2, 1.2); mx = 10; ctx.strokeStyle = "#a00"; }
+                ctx.translate(i * 111 - mx, h);
+
+                if (e != undefined) {
+                    let c = ctx.getWindowToCanvas(e);
+                    if (this.moveOneCard && this.selected == z && this.isMe) {
+                        this.move = { x: c.x - 20, y: c.y - 20 };
+                        c.x = 1;
+                        c.y = 1;
+
+                    }
+
+
+
+                    if (c != undefined)
+                        if (c.x > 0 && c.x < 90 && c.y > 0 && c.y < 150) {
+
+
+
+                            if (this.PanicCount > 0 && !v.card.isPanic) {
+                                errortext = 'Select panic!!!';
+                            } else {
+                                if (selectNearPlayersCards && !this.isMe ) {
+                                    
+                                    if (this.isNear) { this.selected = z; this.selectedCard = v.card; }
+                                } else {
+
+                                    this.selected = z; this.selectedCard = v.card; v.card.RemoveOldAddNewButtons(this, v)
+                                }
+                            }
+                        }
+                }
+
+                if (this.isMe && this.selected == z && this.move != null && this.moveOneCard) {
+                    ctx.translate(this.move.x, this.move.y);
+                } else ctx.rotate(i / 50 * Math.PI);
+
+                v.card.Draw(ctx);
+
+
+
+                ctx.strokeStyle = "#af2";
+
+                ctx.restore();
+            });
+
+            ctx.strokeStyle = "#005";
+            ctx.font = 'bold 48px serif';
+            ctx.fillText(this.name, 20, 20);
+            ctx.strokeText(this.name, 20, 20);
+            ctx.stroke();
+
+            ctx.strokeStyle = "#005";
+            ctx.font = 'bold 48px serif';
+            ctx.fillText(errortext, 10, 10);
+            ctx.strokeText(errortext, 10, 10);
+            ctx.stroke();
+
+
+        }
+
+
+
+
+
+    };
+
+
     class Game {
         //get GetPlayers() { return this.players; }
 
@@ -486,7 +506,7 @@
             //            this.players =
             this.isStarted = false;
             this.players = [new Player("Stay away game", 0, true, [], States.SelectCard, Phases.Action, 0)            ];
-
+            this.selectedOtherCardPlace = null;
             this.me = this.players[0];
             this.Deck = new Deck(Cards.UnknownAction, 4,2);
             this.moveOneCard = false;
@@ -517,7 +537,7 @@
                         v.cards[j].card = findCardByNum(v.cards[j].cardnum); // тут приходит пакет с реквизитами
 
                 }
-                let p = new Player(v.playername, v.num, i == 1, v.cards, findStateByNum(v.state), findPhaseByNum(v.phase));
+                let p = new Player(v.playername, v.num, i == 0, v.cards, findStateByNum(v.state), findPhaseByNum(v.phase));
                 //if (i == 0 && this.me != null && this.me.playername == v.playername) p = this.me;
                 //p.state = findStateByNum(v.state);
                 //p.Phase = findPhaseByNum(v.phase);
@@ -543,6 +563,8 @@
             //this.me.isCardMovableNow = game.moveOneCard;
             //this.me.selected = selected;
 
+            this.players.forEach((v) => { v.isNear = this.isNearOpponent(v) } )
+
         }
 
 
@@ -559,11 +581,14 @@
 
 
         isNearOpponent(player) {
-            return player == this.players[1] || player == this.players[this.players.length - 1];
+            let pldist = Math.abs(player.place - this.me.place);
+            return pldist == 1 || pldist == this.players.length-1;
+
+            //return player == this.players[1] || player == this.players[this.players.length - 1];
 
         }
 
-        DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, i) {
+        DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, i, actions) {
 
             let s = 260;
             if (v == this.me) v.moveOneCard = this.moveOneCard;
@@ -586,7 +611,7 @@
                 ctx.roundRect(-2 * 95, -20, 5 * 95, 250, 20).stroke();
             }
 
-            v.Draw(ctx, e);
+            v.Draw(ctx, e, actions);
 
 
             this.exchange.filter((a) => {
@@ -623,16 +648,17 @@
             }
 
             let HiLightRLPlayers = false;
+            let selectNearPlayersCards = false;
             let c = [];
             // let ex = this.me.selectedCard.GetExchangeArray()
             if (this.me.selectedCard != null) {
                 if (this.me.isNowMyTurn) {
-                    let c = this.me.selectedCard.GetActionArray(this.me);
+                    c = this.me.selectedCard.GetActionArray(this.me);
 
                     c.forEach((v) => {
                         if (v.HiLightText != undefined) this.drawText(ctx, -10, 20, v.HiLightText);
                         if (v.HiLightRLPlayers == true) HiLightRLPlayers = true;
-
+                        //if (v.selectNearPlayersCards != undefined) selectNearPlayersCards = v.selectNearPlayersCards;
                     });
 
                 } else { }
@@ -644,7 +670,7 @@
             this.players.forEach((v, i) => {
                 let newplace = v.place - central;
                 if (newplace < 0) newplace = newplace + this.players.length;
-                this.DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, newplace);
+                this.DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, newplace, c);
             });
 
 
@@ -692,7 +718,7 @@
         },
 
         outChange: { id: 1, Button: { Text: "Exchange", action: exchangecard } },
-        SawOneCard: { id: 2, HiLightText: "Select card of a player", MayMove: true, HiLightRLPlayers: true },
+        SawOneCard: { id: 2, HiLightText: "Select card of a player", MayMove: true, HiLightRLPlayers: true, selectNearPlayersCards:true },
         SawAllCards: { id: 3, HiLightText: "Select player", MayMove: true, HiLightRLPlayers: true },
         RejectExchange: {
             id: 4, Button: { Text: "Reject" },
