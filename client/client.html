@@ -131,7 +131,7 @@
         };
     }
 
-    CanvasRenderingContext2D.prototype.getCanvasToWindow = function (x,y) {
+    CanvasRenderingContext2D.prototype.getCanvasToWindow = function (x, y) {
 
         var invMat = this.getTransform();
         //const invMat = transform.invertSelf();
@@ -192,7 +192,7 @@
     }
 
     class Deck {
-        constructor(upCard, cardsLeft,dropCount) {
+        constructor(upCard, cardsLeft, dropCount) {
             this.upCard = upCard;
             this.cardsLeft = cardsLeft;
             this.Doors = [];
@@ -225,8 +225,8 @@
             for (let i = this.Drop; i > 0; i--) {
 
                 ctx.save();
-                ctx.translate(i * 1, i * 1+40);
-                ctx.rotate(Math.PI / 1.5+i/200);
+                ctx.translate(i * 1, i * 1 + 40);
+                ctx.rotate(Math.PI / 1.5 + i / 200);
                 Cards.UnknownAction.Draw(ctx);
                 ctx.restore();
             }
@@ -301,7 +301,7 @@
 
         RemoveOldAddNewButtons(player, z) {
             Button.DeleteAll();
-          //  if (!(player.State == States.IncomeExchange || player.State == States.SelectCard || player.State == States.SelectPlayer || player.State == States.PerseveranceSelectCard || player.State == States.SuspicionSelectCard)) return;
+            //  if (!(player.State == States.IncomeExchange || player.State == States.SelectCard || player.State == States.SelectPlayer || player.State == States.PerseveranceSelectCard || player.State == States.SuspicionSelectCard)) return;
             if (player.Phase == Phases.Nothing) return;
             let c = [];
             if (player.Phase == Phases.Action)
@@ -322,7 +322,7 @@
         Draw(ctx) {
 
             //ctx.beginPath();
-            if (this.isPanic) ctx.scale(2.0,2.0);
+            if (this.isPanic && !this.isUnknown) ctx.scale(2.0, 2.0);
             ctx.fillStyle = "#000";
             ctx.font = '16px serif';
             ctx.fillText(this.name, 10, 20);
@@ -340,6 +340,83 @@
 
 
     };
+
+    class CardInHand {
+        constructor(player, place, num) {
+            this.name = name;
+
+        }
+
+
+    }
+
+    class TextLabels {
+
+        constructor(id, text, x=0, y=undefined, c = "#000", s=1, t=3000) {
+            this.id = id;
+            this.text = text;
+            this.x = x;
+            this.y = y;
+            this.c = c;
+            this.s = s;
+            this.t = t;
+            //this.h = h;
+            //this.callback = callback;
+            TextLabels.labels.set(id, this);
+            //this.p = p;
+            //this.p1 = p1;
+            if (t > 0) setInterval(() => {
+                TextLabels.Delete(id);
+            }, t);
+
+
+        }
+        static lastY = 230;
+        static offsetY = 0;
+        static labels = new Map();
+
+        static ErrorLabelText(text) {
+
+            new TextLabels(TextLabels.labels.size, text);//, 0, TextLabels.lastY);
+
+
+        }
+
+        static DrawAll(ctx, e) {
+            let offset = 0;
+            TextLabels.labels.forEach((v, k) => { offset = v.Draw(ctx, e, offset) });
+            //TextLabels.lastY -= 17;
+        }
+
+        static Delete(id) {
+            TextLabels.labels.delete(id);
+
+        }
+
+        static DeleteAll() {
+            TextLabels.labels.clear();
+        }
+
+        Draw(ctx, e, offset=0) {
+            let y = this.y;
+            let l = 0;
+            if (this.y == undefined) y = TextLabels.lastY;
+            y += offset;
+            ctx.save();
+            ctx.translate(this.x, y);
+            ctx.fillStyle = this.c;
+            ctx.font = '16px serif';
+            ctx.scale(this.s, this.s);
+            for (var s of this.text.split("\n")) ctx.fillText(s, 0, l += 17);
+            //TextLabels.lastY = y;
+            ctx.restore();
+            //ctx.fillText(this.text);//, 3, this.text.length);
+            return l + offset;
+
+        }
+
+
+    }
 
 
     class Player {
@@ -362,6 +439,7 @@
             this.y = 0;
             this.transform = {};
             this.isNear = false;
+
         }
 
         get PanicCount() {
@@ -379,6 +457,10 @@
             if (this.Phase == Phases.Action) {
                 return this.selectedCard.card.isCardMovableForAction(this);
             }
+        }
+
+        get isEndTurnExchange() {
+            return (this.Phase == Phases.Exchange && this.state == States.SelectCard && this.cards.length < 5);
         }
 
         get isAction() {
@@ -444,25 +526,8 @@
 
                     if (c != undefined)
                         if (c.x > 0 && c.x < 90 && c.y > 0 && c.y < 150) {
+                            errortext = this.OnCardSelect(v, z, actionOnSelectSecondCard, selectNearPlayersCards);
 
-
-
-                            if (this.PanicCount > 0 && !v.card.isPanic) {
-                                errortext = 'Select panic!!!';
-                            } else {
-                                if (selectNearPlayersCards && !this.isMe ) {
-                                    
-                                    if (this.isNear) {
-                                        //game.selectedOpponent = this;
-                                        //game.selectedOtherCardPlace = z;
-                                        this.selected = z; this.selectedCard = v;
-                                        if (actionOnSelectSecondCard != undefined) actionOnSelectSecondCard(this.playername, v);
-                                    }
-                                } else {
-
-                                    this.selected = z; this.selectedCard = v; v.card.RemoveOldAddNewButtons(this, v)
-                                }
-                            }
                         }
                 }
 
@@ -470,9 +535,8 @@
                     ctx.translate(this.move.x, this.move.y);
                 } else ctx.rotate(i / 50 * Math.PI);
 
+                if (v.card.ShowTo == true) ctx.scale(2, 2);
                 v.card.Draw(ctx);
-
-
 
                 ctx.strokeStyle = "#af2";
 
@@ -485,17 +549,30 @@
             ctx.strokeText(this.name, 20, 20);
             ctx.stroke();
 
-            ctx.strokeStyle = "#005";
-            ctx.font = 'bold 48px serif';
-            ctx.fillText(errortext, 10, 10);
-            ctx.strokeText(errortext, 10, 10);
-            ctx.stroke();
+            if (errortext != '') TextLabels.ErrorLabelText(errortext);
+
 
 
         }
 
 
+        OnCardSelect(v, z, actionOnSelectSecondCard, selectNearPlayersCards) {
+            if (game.me.isEndTurnExchange && !this.isMe)               return 'Select your card for exchange!!!';
 
+            if (this.PanicCount > 0 && !v.card.isPanic)                return 'Select panic!!!';
+
+            if (selectNearPlayersCards && !this.isMe) {
+                if (this.isNear) {
+                    this.selected = z; this.selectedCard = v;
+                    if (actionOnSelectSecondCard != undefined) actionOnSelectSecondCard(this.playername, v);
+                    return '';
+                }
+                return 'Select only near player card';
+            }
+
+            this.selected = z; this.selectedCard = v; v.card.RemoveOldAddNewButtons(this, v)
+            return '';
+        }
 
 
     };
@@ -513,16 +590,19 @@
             this.guid = guid;
             //            this.players =
             this.isStarted = false;
-            this.players = [new Player("Stay away game", 0, true, [], States.SelectCard, Phases.Action, 0)            ];
+            this.players = [new Player("Stay away game", 0, true, [], States.SelectCard, Phases.Action, 0)];
             this.selectedOtherCardPlace = null;
             this.me = this.players[0];
-            this.Deck = new Deck(Cards.UnknownAction, 4,2);
+            this.Deck = new Deck(Cards.UnknownAction, 4, 2);
             this.moveOneCard = false;
             this.gameDirection = Direction.CW;
             this.selectedOpponent = null;
             this.opponent = null;
             this.nextplayer = null;
             this.exchange = [];
+            this.ViewlineTo = null;
+            this.ShowOneCard = null;
+
         }
 
 
@@ -534,15 +614,16 @@
         parsePlayerList(message) {
             let j = 0;
             let selected = this.me.selected;
-            if (this.me.selected) return;//заглушка чтобы карты не сбрасывались с мышки 
+            if (this.me.selected) return;//заглушка чтобы карты не сбрасывались с мышки
 
-
+            this.ShowOneCard = null;
             this.exchange = [];
             this.players = [];
             message.playerlist.forEach((v, i) => {
                 for (j in v.cards) {
 
-                        v.cards[j].card = findCardByNum(v.cards[j].cardnum); // тут приходит пакет с реквизитами
+                    v.cards[j].card = findCardByNum(v.cards[j].cardnum); // тут приходит пакет с реквизитами
+                    if (v.cards[j].toPlayer != undefined && v.cards[j].ShowTo == true) this.ShowOneCard = { playername: v.cards[j].toPlayer, cardplace: v.cards[j].cardplace };
 
                 }
                 let p = new Player(v.playername, v.num, i == 0, v.cards, findStateByNum(v.state), findPhaseByNum(v.phase));
@@ -552,7 +633,7 @@
                 p.Thing = v.thing;
                 p.Infected = v.Infected;
                 this.players.push(p);
-               // if (p.guid == this.guid) this.me = p;
+                // if (p.guid == this.guid) this.me = p;
                 if (v.num == message.nextplayer) this.opponent = p;
                 if (v.exchange == null) return;
                 this.exchange.push({ currentplayer: p, nextplayer: v.exchange.nextplayer, card: findCardByNum(v.exchange.card) });
@@ -564,14 +645,14 @@
             this.me.opponent = this.opponent;
             if (message.deck != undefined) {
                 this.Deck = new Deck(findCardByNum(message.deck.card), message.deck.deckCount, message.deck.dropCount);
-               // this.Deck.Drop = message.deck.dropCount;
+                // this.Deck.Drop = message.deck.dropCount;
                 this.isStarted = true;
 
             }
             //this.me.isCardMovableNow = game.moveOneCard;
             //this.me.selected = selected;
 
-            this.players.forEach((v) => { v.isNear = this.isNearOpponent(v) } )
+            this.players.forEach((v) => { v.isNear = this.isNearOpponent(v) })
 
         }
 
@@ -590,7 +671,7 @@
 
         isNearOpponent(player) {
             let pldist = Math.abs(player.place - this.me.place);
-            return pldist == 1 || pldist == this.players.length-1;
+            return pldist == 1 || pldist == this.players.length - 1;
 
             //return player == this.players[1] || player == this.players[this.players.length - 1];
 
@@ -639,7 +720,7 @@
         }
 
 
-        Draw(ctx, e,w,h) {
+        Draw(ctx, e, w, h) {
             ctx.clearRect(0, 0, w, h);
             ctx.save();
             ctx.translate(w / 2, h / 2);
@@ -656,7 +737,7 @@
             }
 
             let HiLightRLPlayers = false;
-            let selectNearPlayersCards = false;
+            //let selectNearPlayersCards = false;
             let c = [];
             // let ex = this.me.selectedCard.GetExchangeArray()
             if (this.me.selectedCard != null) {
@@ -695,6 +776,12 @@
             this.Deck.Draw(ctx, e);
             ctx.restore();
 
+
+            ctx.save();
+            ctx.translate(-10, -200);
+            TextLabels.DrawAll(ctx, e);
+            ctx.restore();
+
             ctx.restore();
 
             this.exchange.forEach((a) => {
@@ -726,7 +813,7 @@
         },
 
         outChange: { id: 1, Button: { Text: "Exchange", action: exchangecard } },
-        SawOneCard: { id: 2, HiLightText: "Select card of a player", MayMove: true, HiLightRLPlayers: true, selectNearPlayersCards:true,actionOnSelectSecondCard:ShowMeCard },
+        SawOneCard: { id: 2, HiLightText: "Select card of a player", MayMove: true, HiLightRLPlayers: true, selectNearPlayersCards: true, actionOnSelectSecondCard: ShowMeCard },
         SawAllCards: { id: 3, HiLightText: "Select player", MayMove: true, HiLightRLPlayers: true },
         RejectExchange: {
             id: 4, Button: { Text: "Reject" },
@@ -970,7 +1057,7 @@
 
     }
 
-    function ShowMeCard(otherplayername,place) {
+    function ShowMeCard(otherplayername, place) {
         let p = JSON.parse(document.cookie);
         p.messagetype = 'playeraction';
         p.action = "actionShowMeCard";
@@ -998,8 +1085,8 @@
         p.messagetype = 'playeraction';
         p.action = "inExchangeCard";
         p.place = place.cardplace;
-        
-       
+
+
         websocket.senddata(p);
     }
 
@@ -1040,11 +1127,11 @@
 
     function render(e) {
         if (game == null) return;
-       // ctx.clearRect(0, 0, w, h);
-      //  ctx.save();
-      //  ctx.translate(w / 2, h / 2);
+        // ctx.clearRect(0, 0, w, h);
+        //  ctx.save();
+        //  ctx.translate(w / 2, h / 2);
         game.Draw(ctx, e, w, h);
-      //  ctx.restore();
+        //  ctx.restore();
     }
 
     function sendQuery() {

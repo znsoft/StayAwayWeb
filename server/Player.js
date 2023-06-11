@@ -216,7 +216,7 @@ class Player {
         let bymycardplace = data.bymycardplace;
 
         let cardindex = this.findcardindex(bymycardplace);
-        let mycard = this.card[cardindex]; //
+        let mycard = this.cards[cardindex]; //
         //check and validate card here
         this.dropOneCard(bymycardplace);
 
@@ -380,7 +380,7 @@ class Player {
             if (additionalData != undefined) {
                 switch (additionalData.action) {
                     case "ShowOneCardToPlayer":
-                        str.attention = true;
+                        str.ShowTo = true;
                         str.toPlayer = additionalData.PlayerTo.playername;
                         if (this.playername == additionalData.PlayerTo.playername && v.playername == additionalData.playerFrom.playername && additionalData.Card.place == cardplace)
                             str.cardnum = c.card.num;

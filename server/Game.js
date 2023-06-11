@@ -171,7 +171,7 @@ class Game {
                 let sqlplayer = sqlplayerdata[0];
                 if (sqlplayer.cookieguid != data.guid) {
                     // only for test  testing
-                    socket.close(1001, 'This player is already in room'); return;
+                    //socket.close(1001, 'This player is already in room'); return;
                 }
                 room.restorePlayer(socket, data);
                 sqlplayer.needupdate = true;
