@@ -24,6 +24,7 @@ class Player {
         this.needupdate = true;
         this.lastseen = Date.now();
         if (room != null) this.place = room.players.size;
+        this.cardForExchangeOut = null;
 
     }
 
@@ -97,98 +98,82 @@ class Player {
         this.sendplayers(deckData);
         this.lastseen = Date.now();
         this.needupdate = false;
-        /*
-        this.clientDB.query(`select * from players where guid = $1 and needupdate = true;`,
-            [this.guid], (err, data) => {
-                if (err) console.log(err);
-                if (data == undefined || data.rows == undefined || data.rows.length == 0) return;
-                this.sendplayers(deckData);
-                this.clientDB.query(`update players set (needupdate, lastseen ) = (false, $2) WHERE guid = $1 ; `, [this.guid, new Date()], (err, data) => { });
-            });*/
+
     }
 
     outExchangeCard(data) {
 
-        this.phase = Player.Phases.Nothing;
-        this.state = Player.States.Nothing
-        let nextplayer = this.room.nextplayer;
-        nextplayer.phase = Player.Phases.Action;
+        let nextplayer = this.room.getPlayerByPlayerName(data.opponent);
+        if (this.phase == Player.Phases.Answer && nextplayer.state == Player.States.OutgoingExchange) {
+
+            inExchangeCard(data);
+
+
+            return;
+        }
+        this.cardForExchangeOut = data.place;
+        this.state = Player.States.OutgoingExchange;
+        nextplayer.phase = Player.Phases.Answer;
         nextplayer.state = Player.States.SelectCard;
-
-        this.room.currentplayer = nextplayer;
-        this.room.calcNextPlayer();
-        /*
-        // console.trace(`outExchangeCard = ${this.gamenum}`);
-        this.clientDB.query(`select * from cards where roomid = $1 and playerid=$2 and not nextplayer is null;`,
-            [this.roomid, this.playername], (err, dta) => {
-                //   console.log(data);
-                if (dta == undefined || dta.rows == undefined) return;
-                if (dta.rows.length > 0) return;
-                this.clientDB.query(`update cards set nextplayer = $4 where roomid = $1 and playerid=$2 and place=$3;`, [this.roomid, this.playername, data.place, data.nextplayer], (err) => {
-                    //  console.log(err);
-                    this.clientDB.query(`update players set (phase, state ) =(  $3, $4) WHERE roomid = $1 and guid = $2; `, [this.roomid, data.guid, Player.Phases.Exchange, Player.States.OutgoingExchange], (err) => {
-                        //   console.log(err);
-                        this.clientDB.query(`update players set (phase, state ) =(  $3, $4) WHERE roomid = $1 and place=$2; `, [this.roomid, data.nextplayer, Player.Phases.Exchange, Player.States.IncomeExchange], (err) => {
-                            //    console.log(err);
-                            this.room.needUpdateForAll();
-
-                        });
-                    });
-                });
-            });*/
 
     }
 
+    startPlay() {
+
+        this.phase = Player.Phases.Action;
+        this.state = Player.States.SelectCard;
+        this.getOneCardfromDeckForAction();
+
+    }
+
+    endTurn() {
+        this.phase = Player.Phases.Exchange;
+        this.state = Player.States.SelectCard;
+
+    }
+
+    stopPlay() {
+        this.phase = Player.Phases.Nothing;
+        this.state = Player.States.Nothing;
+
+    }
+
+
     inExchangeCard(data) {
-        nowNextPlayer();
-        /*
-        this.clientDB.query(`select r.nextplayer, r.currentplayer as oldplayer, p.playerid as currentplayer from rooms as r inner join players as p on  p.roomid = r.roomid and r.nextplayer = p.place and p.gamenum = r.gamenum where r.roomid = $1`, [this.roomid], (err, firstdata) => {
-            if (firstdata == undefined || firstdata.rows == undefined) return;
-            if (firstdata.rows.length == 0) return;
-            row = firstdata.rows[0];
-            this.clientDB.query(`update rooms set (currentplayer, nextplayer ) =(  $2, null) WHERE roomid = $1; `, [this.roomid, row.currentplayer], (err) => {
 
-                this.clientDB.query(`update players set (phase, state ) =(  $3, $4) WHERE roomid = $1 and playerid = $2; `, [this.roomid, row.oldplayer, Player.Phases.Nothing, Player.States.Nothing], (err) => {
-                    //   console.log(err);
-                    this.clientDB.query(`update players set (phase, state ) =(  $3, $4) WHERE roomid = $1 and playerid=$2; `, [this.roomid, row.currentplayer, Player.Phases.Action, Player.States.SelectCard], (err) => {
-                        //    console.log(err);
-                        this.room.needUpdateForAll();
+        let nextplayer = this.room.getPlayerByPlayerName(data.opponent);
+        if (this.phase != Player.Phases.Answer ) {
+            return;
+        }
 
-                    });
-                });
-            });
-        });*/
+        if (nextplayer.cardForExchangeOut == null) {
+            return;
+        }
 
+        let othercardindex = nextplayer.findcardindex(nextplayer.cardForExchangeOut);
+        let othercard = nextplayer.cards[othercardindex];
+        nextplayer.cards.splice(othercardindex, 1);
+        let mycardindex = this.findcardindex(data.place);
+        let mycard = this.cards[mycardindex];
+        this.cards.splice(mycardindex, 1);
+        nextplayer.cards.push(mycard);
+        this.cards.push(othercard);
+        nextplayer.cards.forEach((v, i) => { v.place = i });
+        nextplayer.stopPlay();
 
+        this.room.currentplayer = this;
+        this.startPlay();
     }
 
     nowNextPlayer() {
-        this.phase = Player.Phases.Nothing;
-        this.state = Player.States.Nothing
+        this.stopPlay();
         nextplayer = this.room.nextplayer;
-        nextplayer.phase = Player.Phases.Action;
-        nextplayer.state = Player.States.SelectCard;
+
 
         this.room.currentplayer = nextplayer;
-        this.room.calcNextPlayer();
+        //this.room.calcNextPlayer();
+        nextplayer.startPlay()
 
-        /*
-        this.clientDB.query(`select r.nextplayer, r.currentplayer as oldplayer, p.playerid as currentplayer from rooms as r inner join players as p on  p.roomid = r.roomid and r.nextplayer = p.place and p.gamenum = r.gamenum where r.roomid = $1`, [this.roomid], (err, firstdata) => {
-            if (firstdata == undefined || firstdata.rows == undefined) return;
-            if (firstdata.rows.length == 0) return;
-            row = firstdata.rows[0];
-            this.clientDB.query(`update rooms set (currentplayer, nextplayer ) =(  $2, null) WHERE roomid = $1; `, [this.roomid, row.currentplayer], (err) => {
-
-                this.clientDB.query(`update players set (phase, state ) =(  $3, $4) WHERE roomid = $1 and playerid = $2; `, [this.roomid, row.oldplayer, Player.Phases.Nothing, Player.States.Nothing], (err) => {
-                    //   console.log(err);
-                    this.clientDB.query(`update players set (phase, state ) =(  $3, $4) WHERE roomid = $1 and playerid=$2; `, [this.roomid, row.currentplayer, Player.Phases.Action, Player.States.SelectCard], (err) => {
-                        //    console.log(err);
-                        this.room.needUpdateForAll();
-
-                    });
-                });
-            });
-        });*/
     }
 
 
@@ -221,7 +206,7 @@ class Player {
         this.dropOneCard(bymycardplace);
 
         this.room.ShowOneOtherCardToPlayer(this, otherPlayerName, otherCardPlace);
-
+        this.endTurn();
 
 
     }
@@ -236,55 +221,20 @@ class Player {
     }
 
     actionDropCard(data) {
-        this.phase = Player.Phases.Exchange;
-        this.state = Player.States.SelectCard;
-        //this.room.currentplayer = this.room.nextplayer;
-        //this.room.calcNextPlayer();
+        
+
         let cardplace = data.place;
         this.dropOneCard(cardplace);
-        /*
-        //console.trace(data);
-        //set nextplayer in rooms for next player by place%maxplace
-        this.clientDB.query(`update rooms set nextplayer = (select p.place
-                                from players as c 
-                                inner join rooms as r on r.roomid = c.roomid and r.gamenum = c.gamenum and r.currentplayer = c.playerid 
-                                inner join players as p on r.roomid = p.roomid and r.gamenum = p.gamenum  and (case when r.direction then (c.place+1)%r.numofplayers else case when c.place=0 then r.numofplayers-1 else c.place-1 end end) = p.place
-                                where c.guid = $2 limit 1) where roomid=$1 `,
-            [this.roomid, this.guid], (err) => {
-                //console.log(err);
-                this.clientDB.query(`update cards set (isInDeck, isInDrop , playerid ) =(  false ,true, null) where roomid = $1 and playerid=$2 and place=$3;`, [this.roomid, this.playername, data.place], (err) => {
-                    // console.log(err);
-                    this.clientDB.query(`update players set (phase, state ) =(  $3, $4) WHERE roomid = $1 and guid = $2; `, [this.roomid, data.guid, Player.Phases.Exchange, Player.States.SelectCard], (err) => {
-                        // console.log(err);
-                        
-
-                    });
-                });
-        });*/
-        
+        this.endTurn();
     }
 
     getOneCardfromDeckForAction() {
         this.room.giveOneCardfromDeckToPlayer(this);
-        this.cards.forEach((v, i) => { v.place = i });
-        
-
-/*
-        this.clientDB.query(`select * from cards where roomid = $1 and playerid=$2;`,
-            [this.roomid, this.playername], (err, data) => {
-                if (err) console.log(err);
-                if (data == undefined || data.rows == undefined || data.rows.length == 0) return;
-                if (data.rows.length < 5) {
-                    this.clientDB.query(`update cards set (isInDeck, place , playerid ) =(  false ,4, $2) WHERE roomid = $1 and isInDeck = true and place in (select max(place) from cards where  roomid = $1 and isInDeck = true); `, [this.roomid, this.playername], (err, data) => { });
-                    this.room.needUpdateForAll();
-                }
-
-            });
-            */
-
+        //this.cards.forEach((v, i) => { v.place = i });
     }
 
-    sendplayers(deckData, additionalData= undefined) {
+    sendplayers(deckData) {
+       // console.log(additionalData);
         //let playersCards = new Map();
 
         /*        this.cards = [];
@@ -306,19 +256,16 @@ class Player {
         if (this.room.nextplayer == null) return;
         let nextplayer = this.room.nextplayer.place;
         let currentplayer = this.room.currentplayer.place;
+        let opponent = this.room.nextplayer.place;
+        if (this.place != currentplayer) opponent = currentplayer;
         let exchange = [];
 
-       // nextplayer = this.room.nextplayer.place;
-        //currentplayer = this.room.currentplayer.place;
-
-        exchange.push(this.addCards(this, this, additionalData));
+        exchange.push(this.addCards(this, this));
 
         this.room.players.forEach((v, k) => {
             let p;
-            // this.room.players.forEach((v, i) => {
-            //let p =playersCards.get(v.playerid );
+            if (v.playername == this.playername) { return; }
 
-            if (v.playername == this.playername) { return; }//p = this; }
             else p = new Player(null, null, null, v.playername, null, null, v.quarantineCount);
             p.place = v.place;
             p.state = v.state;
@@ -347,7 +294,7 @@ class Player {
 
             //exchange.push({guid:v.guid , playername: v.playername, quarantineCount: v.quarantineCount, num: v.place, Infected: p.Infected, thing: p.thing, state: p.state, phase: p.phase, cards: cardsArray, exchange: null });
             */
-            exchange.push(this.addCards(v, p, additionalData) );
+            exchange.push(this.addCards(v, p) );
 
             //playersCards.set(v.playername, p);
 
@@ -362,11 +309,11 @@ class Player {
         this.lastseen = Date.now;
         this.needupdate = false;
 
-        this.send({ messagetype: 'playerlist', playerlist: exchange, deck: deckData, nextplayer: nextplayer, currentplayer: currentplayer });
+        this.send({ messagetype: 'playerlist', playerlist: exchange, deck: deckData, nextplayer: nextplayer, currentplayer: currentplayer, opponent: opponent });
     }
 
-    addCards(v, p, additionalData=undefined) {
-
+    addCards(v, p) {
+        let additionalData = this.room.additionalData;
         let cardsArray = [];
 
         v.cards.forEach((c, i) => {
@@ -380,9 +327,13 @@ class Player {
             if (additionalData != undefined) {
                 switch (additionalData.action) {
                     case "ShowOneCardToPlayer":
+                        
+                        if (additionalData.Card.place != cardplace) break;
+                        //console.log(additionalData);
+                        if (v.playername != additionalData.PlayerFrom.playername) break;
                         str.ShowTo = true;
                         str.toPlayer = additionalData.PlayerTo.playername;
-                        if (this.playername == additionalData.PlayerTo.playername && v.playername == additionalData.playerFrom.playername && additionalData.Card.place == cardplace)
+                        if (this.playername == additionalData.PlayerTo.playername)
                             str.cardnum = c.card.num;
                         break;
 

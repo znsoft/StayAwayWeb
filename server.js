@@ -61,4 +61,4 @@ wsServer.on('connection', (wsclient) => {
  */
 setInterval(() => {
     game.checkUpdatesforPlayers();
-}, 1000)
+}, 1500)
