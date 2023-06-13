@@ -160,19 +160,19 @@ class Player {
         this.cards.push(othercard);
         nextplayer.cards.forEach((v, i) => { v.place = i });
         nextplayer.stopPlay();
-
+        nextplayer.cardForExchangeOut = null;
         this.room.currentplayer = this;
         this.startPlay();
     }
 
     nowNextPlayer() {
         this.stopPlay();
-        nextplayer = this.room.nextplayer;
+        let nextplayer = this.room.nextplayer;
 
 
         this.room.currentplayer = nextplayer;
         //this.room.calcNextPlayer();
-        nextplayer.startPlay()
+        nextplayer.startPlay();
 
     }
 
@@ -195,6 +195,19 @@ class Player {
         //return this.cards[cardindex];
     }
 
+    actionBurnPlayer(data) {
+        let otherPlayerName = data.otherPlayerName;
+       // let otherCardPlace = data.place;
+        let bymycardplace = data.bymycardplace;
+
+        let cardindex = this.findcardindex(bymycardplace);
+        let mycard = this.cards[cardindex]; //
+        if (mycard.card != Card.CardsByPlayers.BurnFire) { this.socket.close(1001, 'Error is not burn card'); return; }
+        console.log("Burn " + otherPlayerName);
+
+
+    }
+
     actionShowMeCard(data) {
         let otherPlayerName = data.otherPlayerName;
         let otherCardPlace = data.place;
@@ -203,12 +216,21 @@ class Player {
         let cardindex = this.findcardindex(bymycardplace);
         let mycard = this.cards[cardindex]; //
         //check and validate card here
-        this.dropOneCard(bymycardplace);
+        this.tableCard(bymycardplace);
 
         this.room.ShowOneOtherCardToPlayer(this, otherPlayerName, otherCardPlace);
         this.endTurn();
 
 
+    }
+
+    tableCard(place) {
+        let index = this.findcardindex(place);
+        this.room.tablecards.push(this.cards[index]);
+        //console.log(place + ' ' + this.cards.length)
+        this.cards.splice(index, 1);
+        this.cards.forEach((v, i) => { v.place = i });
+        //console.log('cards ' + this.cards.length)
     }
 
     dropOneCard(place) {
@@ -234,24 +256,7 @@ class Player {
     }
 
     sendplayers(deckData) {
-       // console.log(additionalData);
-        //let playersCards = new Map();
-
-        /*        this.cards = [];
-        this.clientDB.query(`select 
-                        b.playerid as playername, b.quarantineCount as quarantineCount, b.place as num, 
-                        b.Infected as Infected, b.thing as thing , b.state as state, b.phase as phase, 
-                        c.cardid as cardnum, c.place as cardplace, r.direction as direction , 
-                        r.nextplayer as nextplayer, r.currentplayer as currentplayer, 
-                        c.nextplayer as nextplayerforcard
-                        from players as b left join cards as c on c.roomid = b.roomid and c.playerid = b.playerid left join 
-                        (select *  from players  where roomid=$1 and playerid=$2 and gamenum = $3) as p on p.roomid = b.roomid inner join rooms as r on r.roomid = b.roomid 
-                        where b.roomid=$1 and b.gamenum = $3  
-                            order by b.place=p.place desc,b.place>p.place desc,b.place asc,c.place asc`,
-            [this.roomid, this.playername, this.gamenum], (err, data) => {
-                if (err) console.log(err);
-                // console.log(data);
-                if (data == undefined || data.rows == undefined) { this.send({ messagetype: 'playerlist', playerlist: [] }); return; }*/
+ 
 
         if (this.room.nextplayer == null) return;
         let nextplayer = this.room.nextplayer.place;
@@ -275,37 +280,13 @@ class Player {
             if (this.thing == true) p.Infected = v.Infected;//покажем нечте зараженных
             if (this.Infected == true) p.thing = v.thing;//покажем зараженным нечту
 
-            /*
-            let cardsArray = [];
-            
-            v.cards.forEach((c, i) => {
-                //console.log(card);
-                //let card = vCard.num;
-                let cardplace = c.place;
-
-                // if (card.nextplayerforcard == null) {
-                if (v.playername == this.playername || c.card.isPanic)
-                    cardsArray.push({ cardnum: c.card.num, cardplace: cardplace });
-                else cardsArray.push({ cardnum: -1, cardplace: cardplace });
-                // } else {
-                //     p.exchange = { nextplayer: v.nextplayerforcard, card: -1, cardplace: cardplace };
-                // }
-            });
-
-            //exchange.push({guid:v.guid , playername: v.playername, quarantineCount: v.quarantineCount, num: v.place, Infected: p.Infected, thing: p.thing, state: p.state, phase: p.phase, cards: cardsArray, exchange: null });
-            */
             exchange.push(this.addCards(v, p) );
 
-            //playersCards.set(v.playername, p);
+
 
         });
 
 
-        /*
-        let exchange = [];
-        playersCards.forEach((v, k) => {
-            exchange.push({ playername: v.playername, quarantineCount: v.quarantineCount, num: v.place, Infected: v.Infected, thing: v.thing, state: v.state, phase: v.phase, cards: v.cards, exchange: v.exchange });
-        });*/
         this.lastseen = Date.now;
         this.needupdate = false;
 
@@ -315,15 +296,16 @@ class Player {
     addCards(v, p) {
         let additionalData = this.room.additionalData;
         let cardsArray = [];
-
+        
         v.cards.forEach((c, i) => {
             //console.log(card);
             //let card = vCard.num;
             let cardplace = c.place;
+            
             let str = { cardnum: -1, cardplace: cardplace };
             if (v.playername == this.playername || c.card.isPanic)                str = { cardnum: c.card.num, cardplace: cardplace };
 
-
+            if (v.cardForExchangeOut == cardplace) str.ShowTo = true;
             if (additionalData != undefined) {
                 switch (additionalData.action) {
                     case "ShowOneCardToPlayer":
@@ -349,8 +331,8 @@ class Player {
             //     p.exchange = { nextplayer: v.nextplayerforcard, card: -1, cardplace: cardplace };
             // }
         });
-
-        return {  playername: v.playername, quarantineCount: v.quarantineCount, num: v.place, Infected: p.Infected, thing: p.thing, state: p.state, phase: p.phase, cards: cardsArray, exchange: null };
+        
+            return { playername: v.playername, cardForExchangeOut: v.cardForExchangeOut, quarantineCount: v.quarantineCount, num: v.place, Infected: p.Infected, thing: p.thing, state: p.state, phase: p.phase, cards: cardsArray, exchange: null };
 
 
     }

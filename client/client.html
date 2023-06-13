@@ -193,14 +193,20 @@
     }
 
     class Deck {
-        constructor(upCard, cardsLeft, dropCount) {
+        constructor(upCard, cardsLeft, dropCount, drop=[], table=[]) {
             this.upCard = upCard;
             this.cardsLeft = cardsLeft;
             this.Doors = [];
             this.Drop = dropCount;
+            
+            this.drop = drop.reverse().map(v => findCardByNum(v));
+            this.table = table==undefined?[]:table.map((v) => findCardByNum(v));
         }
 
         Draw(ctx, e) {
+
+
+
 
             ctx.save();
             // ctx.globalCompositeOperation = 'destination-over';
@@ -221,9 +227,47 @@
 
             ctx.save();
             // ctx.globalCompositeOperation = 'destination-over';
-            ctx.translate(200, -50);
+            ctx.translate(0, 100);
+            //ctx.rotate(Math.PI / 2);
 
-            for (let i = this.Drop; i > 0; i--) {
+            this.table.forEach((v, i) => {
+
+                ctx.save();
+                ctx.translate(i * 102, i * 2);
+                //ctx.rotate(Math.PI / 2);
+                v.Draw(ctx);
+                ctx.restore();
+
+            });
+
+
+            ctx.restore();
+
+
+            ctx.save();
+            // ctx.globalCompositeOperation = 'destination-over';
+            ctx.translate(200, -50);
+            /*
+            ctx.save();
+            ctx.translate(1 * 1, 1 * 1 + 40);
+            ctx.rotate(Math.PI / 1.5 + 1 / 200);
+            //if (this.lastDrop != null)
+              //  this.lastDrop.Draw(ctx);
+            ctx.restore();
+            */
+            //ctx.globalCompositeOperation = 'destination-over';
+            this.drop.forEach((v, i) => {
+
+                ctx.save();
+                ctx.translate(i * 1, i * 1 + 40);
+                ctx.rotate(Math.PI / 1.5 + i / 120);
+                v.Draw(ctx);
+                ctx.restore();
+
+
+            });
+            //ctx.globalCompositeOperation = 'destination-over';
+            /*for (let i = this.Drop; i > 1; i--) {
 
                 ctx.save();
                 ctx.translate(i * 1, i * 1 + 40);
@@ -231,7 +275,7 @@
                 Cards.UnknownAction.Draw(ctx);
                 ctx.restore();
             }
-
+            */
             ctx.rotate(Math.PI / 2.5);
             ctx.fillStyle = "#000";
             ctx.font = '16px serif';
@@ -369,9 +413,9 @@
         outChange: { id: 1, Button: { Text: "Exchange", action: exchangecard }, isOutExchange: true },// OnSelectAction: exchangecard },
         inChange: { id: 1, Button: { Text: "Exchange", action: exchangecardin }, isInExchange: true },// OnSelectAction: exchangecard },
         SawOneCard: { id: 2, HiLightText: "Select card of a player", MayMove: true, HiLightRLPlayers: true, selectNearPlayersCards: true, actionOnSelectSecondCard: ShowMeCard },
-        SawAllCards: { id: 3, HiLightText: "Select player", MayMove: true, HiLightRLPlayers: true },
+        SawAllCards: { id: 3, HiLightText: "Select player", MayMove: true, HiLightRLPlayers: true , selectPlayer:true},
         RejectExchange: { id: 4, Button: { Text: "Reject",action:rejectExchange }, },
-        Burn: { id: 5, HiLightText: "Select player", MayMove: true, HiLightRLPlayers: true },
+        Burn: { id: 5, HiLightText: "Select player", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer :BurnPlayer},
         Defend: { id: 6, Button: { Text: "Defend" } },
         exChange: { id: 7, Button: { Text: "Exchange", action: exchangecardin } },
 
@@ -410,29 +454,29 @@
 
 
     const Cards = {
-        UnknownPanic: new Card("Panic", -2, "", "", "", null,null, null, null, true, true),
-        UnknownAction: new Card("Event", -1, "", "", "", null,null, null, null, false, true),
-        Thing: new Card("Thing", 0, "", "", "", null, null, null,null),
-        Infect: new Card("Infect", 1, "", "", "", Algoritms.MayGiveInfect, Algoritms.MayGiveInfectIn, Algoritms.MayDropInfect, null),
-        Suspicion: new Card("Suspicion", 2, "Saw one\ncard of a player", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionSuspicion, null),
-        Analysis: new Card("Analysis", 3, "Saw all\nCards player", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionAnalysis, null),
-        BurnFire: new Card("Burn", 4, "Burn \nplayer", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer,Algoritms.ActionBurnFire, null),
-        FireResist: new Card("Defend\nfrom Fire", 5, "Defend\nfrom Fire", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
-        Temptation: new Card("Temptation", 6, "Seduce", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
-        Perseverance: new Card("Perseverance", 7, "Perseverance", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
-        GetOff: new Card("Get Off", 8, "Get Off", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        UnknownPanic: new Card("Panic", -2, "Паника", "", "", null,null, null, null, true, true),//неизвестная паника
+        UnknownAction: new Card("Event", -1, "Событие", "", "", null,null, null, null, false, true),//неизвестное событие
+        Thing: new Card("Thing", 0, "Нечто", "Вы нечто! эту карту нельзя передать", "", null, null, null,null),//нечто
+        Infect: new Card("Infect", 1, "Заражение", "Получив эту карту от другого игрока вы становитесь зараженным и обязаны держать ее на руке до конца игры", "", Algoritms.MayGiveInfect, Algoritms.MayGiveInfectIn, Algoritms.MayDropInfect, null),//заражение
+        Suspicion: new Card("Suspicion", 2, "Подозрение", "Посмотрите одну карту на руке соседнего игрока", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionSuspicion, null),//подозрение
+        Analysis: new Card("Analysis", 3, "Анализ", "Посмотрите все карты на руке соседнего игрока", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionAnalysis, null),//анализ
+        BurnFire: new Card("Burn", 4, "Огнемет", "Соседний игрок выбывает из игры", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer,Algoritms.ActionBurnFire, null),//огнемет
+        FireResist: new Card("Defend\nfrom Fire", 5, "Никакого шашлыка", "Отмените эффект карты огнемет, если стали ее целью. возьмите 1 карту событие", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),//шашлык
+        Temptation: new Card("Temptation", 6, "Соблазн", "Поменяйтесь одной картой с любым игроком, если он не на карантине. Ваш ход заканчивается", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),//соблазн
+        Perseverance: new Card("Perseverance", 7, "Упорство", "Возьмите 3 карты событий, оставтье на руке одну. Затем сыграйте или сбросьте одну карту", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),//Упорство
+        GetOff: new Card("Get Off", 8, "Сматывай удочки", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
 
-        ChangeDirection: new Card("Change\nDirection", 9, "Change\nDirection", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
-        ChangePlace: new Card("Change place", 10, "Change place", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
-        Whiski: new Card("Whiski", 11, "Whiski", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
-        Axe: new Card("Axe", 12, "Axe", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        ChangeDirection: new Card("Change\nDirection", 9, "Change\nDirection", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
+        ChangePlace: new Card("Change place", 10, "Меняемся местами", "Поменяйтесь местами с соседним игроком, если он не на карантие и не за заколоченной дверью", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
+        Whiski: new Card("Whiski", 11, "Виски", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
+        Axe: new Card("Axe", 12, "Топор", "Сбросте сыгранную на вас или на соседнего игрока карту Карантин или выложенную между вами карту Заколоченная дверь", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
 
-        NoThanks: new Card("No Thanks", 13, "No Thanks", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
-        Fear: new Card("Fear", 14, "Fear", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
-        Past: new Card("Past", 15, "Past", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
-        StayHere: new Card("i Stay Here", 16, "i Stay Here", "", "", Algoritms.SimpleAnswer, Algoritms.SimpleExchange, Algoritms.OnlyDropAction, Algoritms.FireResistance),
-        Door: new Card("Door", 17, "Door", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
-        Quarantine: new Card("Quarantine", 18, "Quarantine", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        NoThanks: new Card("No Thanks", 13, "Нет уж, спасибо", "Откажитесь от обмена картами. возьмите 1 карту событие", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        Fear: new Card("Fear", 14, "Страх", "Откажитесь от обмена картами и посмотрите карту, от которой отказались. возьмите 1 карту событие", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        Past: new Card("Past", 15, "Мимо", "Откажитесь от обмена картами. Вместо вас картами меняется слкдующий за вами игрок. возьмите 1 карту событие", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        StayHere: new Card("i Stay Here", 16, "i Stay Here", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        Door: new Card("Door", 17, "Заколоченная дверь", "Положите эту карту между собой и соседним игроком. Между вами не может совершаться никаких действий и обменов", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
+        Quarantine: new Card("Quarantine", 18, "Карантин", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
 
         PanicOldRopes: new Card("Old Ropes down", 19, "Old Ropes", "", "", null, null,null, null, true),
         PanicThreeFour: new Card("Panic Three Four", 20, "Three Four", "", "", null, null, null, null, true),
@@ -555,7 +599,13 @@
             this.y = 0;
             this.transform = {};
             this.isNear = false;
+            this.cardForExchangeOut = null;
 
+        }
+
+        get isNear_() {
+
+            return game.isNearOpponent(this);
         }
 
         toString() {
@@ -606,9 +656,15 @@
         Draw(ctx, e, actions) {
             let selectNearPlayersCards = false;
             let actionOnSelectSecondCard = undefined;
+            let selectPlayer = false;
+            let OnSelectPlayer = undefined;
+            let HiLightRLPlayers = false;
             actions.forEach((v) => {
                 if (v.selectNearPlayersCards != undefined) selectNearPlayersCards = v.selectNearPlayersCards;
                 if (v.actionOnSelectSecondCard != undefined) actionOnSelectSecondCard = v.actionOnSelectSecondCard;
+                if (v.selectPlayer != undefined) selectPlayer = v.selectPlayer;
+                if (v.OnSelectPlayer != undefined) OnSelectPlayer = v.OnSelectPlayer;
+                if (v.HiLightRLPlayers != undefined)HiLightRLPlayers = v.HiLightRLPlayers;
             });
 
             let errortext = '';
@@ -619,6 +675,14 @@
             // y: x * invMat.b + y * invMat.d + invMat.f
             let lm = (this.cards.length - 1) / 2;
 
+            if (selectPlayer == true) {
+                if (e != undefined) {
+                    let p = ctx.getWindowToCanvas(e);
+                    if (p != undefined)
+                        if (p.x > -2 * 95 && p.x < 5 * 95 && p.y > -20 && p.y < 250) errortext = this.OnPlayerSelect(OnSelectPlayer, HiLightRLPlayers);
+                }
+            }
+
             if (e != undefined && !this.moveOneCard && !selectNearPlayersCards) {
 
                 //if (this.isMe)
@@ -626,6 +690,9 @@
                 //else { this.selected = null; this.selectedCard = null; }
 
             }
+
+
+
 
             this.cards.forEach((v, z) => {
                 let i = z - lm;
@@ -635,7 +702,7 @@
 
                 ctx.strokeStyle = "#af2";
                 //if (this.isMe)
-                if (this.selected == z) { h = -5; ctx.scale(1.2, 1.2); mx = 10; ctx.strokeStyle = "#a00"; }
+                if (this.selected == z || v.ShowTo == true) { h = -5; ctx.scale(1.2, 1.2); mx = 10; ctx.strokeStyle = "#a00"; }
                 ctx.translate(i * 111 - mx, h);
 
                 if (e != undefined) {
@@ -660,7 +727,7 @@
                     ctx.translate(this.move.x, this.move.y);
                 } else ctx.rotate(i / 50 * Math.PI);
 
-                if (v.card.ShowTo == true) ctx.scale(2, 2);
+
                 v.card.Draw(ctx);
 
                 ctx.strokeStyle = "#af2";
@@ -676,6 +743,15 @@
 
             if (errortext != '') TextLabels.ErrorLabelText(errortext);
 
+
+
+        }
+
+        OnPlayerSelect(callback, isNearOnly) {
+            if (this.isMe) return 'Select other player!';
+            if (!this.isNear && isNearOnly == true) return 'Select near player!';
+
+            if (callback != undefined) callback(this);
 
 
         }
@@ -732,11 +808,7 @@
 
 
     class Game {
-        //get GetPlayers() { return this.players; }
 
-        //get GetMe() { return this.players[0]; }
-
-        //get GetDeck() { return new Deck(Cards.UnknownAction, 4); }
 
         constructor(guid) {
 
@@ -767,7 +839,7 @@
         parsePlayerList(message) {
             let j = 0;
             let selected = this.me.selected;
-            if (this.me.selected) return;//заглушка чтобы карты не сбрасывались с мышки
+            if (this.me.selected) return;//заглушка чтобы карты не сбрасывались с мышки когда поступает пакет от сервера
 
             this.ShowOneCard = null;
             this.exchange = [];
@@ -780,13 +852,11 @@
 
                 }
                 let p = new Player(v.playername, v.num, i == 0, v.cards, findStateByNum(v.state), findPhaseByNum(v.phase));
-                //if (i == 0 && this.me != null && this.me.playername == v.playername) p = this.me;
-                //p.state = findStateByNum(v.state);
-                //p.Phase = findPhaseByNum(v.phase);
+
                 p.Thing = v.thing;
                 p.Infected = v.Infected;
                 this.players.push(p);
-                // if (p.guid == this.guid) this.me = p;
+
                 if (v.num == message.opponent) this.opponent = p;
                 if (v.exchange == null) return;
                 this.exchange.push({ currentplayer: p, nextplayer: v.exchange.nextplayer, card: findCardByNum(v.exchange.card) });
@@ -797,13 +867,12 @@
             this.nextplayer = message.nextplayer;
             this.me.opponent = this.opponent;
             if (message.deck != undefined) {
-                this.Deck = new Deck(findCardByNum(message.deck.card), message.deck.deckCount, message.deck.dropCount);
-                // this.Deck.Drop = message.deck.dropCount;
+                this.Deck = new Deck(findCardByNum(message.deck.card), message.deck.deckCount, message.deck.dropCount, message.deck.drop, message.deck.table);
+
                 this.isStarted = true;
 
             }
-            //this.me.isCardMovableNow = game.moveOneCard;
-            //this.me.selected = selected;
+
 
             this.players.forEach((v) => { v.isNear = this.isNearOpponent(v) })
 
@@ -954,7 +1023,7 @@
             ctx.restore();
 
             ctx.save();
-            ctx.translate(0, -100);
+            ctx.translate(-20, -200);
             this.Deck.Draw(ctx, e);
             ctx.restore();
 
@@ -1137,7 +1206,21 @@
         return false;
     };
     */
+    function BurnPlayer(player) {
 
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "actionBurnPlayer";
+       
+        p.bymycardplace = game.me.selectedCard.cardplace;
+        p.otherPlayerName = player.name;
+        //console.log(p);
+        websocket.senddata(p);
+        game.me.selected = null;
+
+
+
+    }
 
     function rejectExchange(place) {
 

@@ -14,6 +14,7 @@ class Room {
         if (isNewDBObject == true) this.insertRoom();
         this.deckcards = [];
         this.dropcards = [];
+        this.tablecards = [];
         this.cardscount = 0;
         this.gamenum = gamenum;
         this.direction = 0;
@@ -82,13 +83,7 @@ class Room {
         this.getPlayers((a) => {
             let l = a.length;
 
-            //console.log(a);
-
-            
-
             this.gamestarted = true;
-
-            //this.clientDB.query(`delete from cards where roomid IN (SELECT roomid FROM rooms WHERE roomid = $1 and gamestarted = false);`, [this.roomid,], (err, data) => { });
 
             a.forEach((v, i) => {
                
@@ -103,29 +98,14 @@ class Room {
 
             playercards.set(thing.playerid, [0]);
 
-            //let ppp = this.players.get(thing.playerid);
-            //ppp.cards = [0];
-            //this.players.set(thing.playerid, ppp);
-            //this.clientDB.query(`update players set thing = true WHERE roomid = $1 and playerid = $2`, [this.roomname, thing.playerid], (err, data) => { if (err) console.log(err); });
-
-            //this.clientDB.query(`update rooms as r set currentplayer = r.last_thing WHERE roomid = $1`, [this.roomname], (err, data) => { if (err) console.log(err); });
-
-            //this.clientDB.query(`update rooms set last_thing = $1 WHERE roomid = $2`, [thing.playerid, this.roomname], (err, data) => { if (err) console.log(err); });
-
             let currentPlayer = last_thing;
             if (last_thing == null) {
                 currentPlayer = a[Math.round(Math.random() * (l - 1))].playerid;
                 //this.clientDB.query(`update rooms as r set currentplayer = $2 WHERE roomid = $1`, [this.roomname, currentPlayer], (err, data) => { if (err) console.log(err); });
             }
             let curplayer = this.players.get(currentPlayer);
-            //curplayer.phase = Player.Phases.Action;
-            //curplayer.state = Player.States.SelectCard;
             this.currentplayer = curplayer;
-            //console.log(this.currentplayer);
             this.players.set(currentPlayer, curplayer);
-            //this.calcNextPlayer();
-            //this.clientDB.query(`update players set (phase,state) = ($3,$4) WHERE roomid = $1 and playerid = $2`, [this.roomname, currentPlayer, Player.Phases.Action, Player.States.SelectCard], (err, data) => { if (err) console.log(err); });
-            //console.log(this);
             let res = [];//тут будут все доступные для игры карты с учетом их количества каждого типа
             let index = l - 4;//количество игроков - 4  
             m.forEach((v, k) => {
@@ -151,7 +131,7 @@ class Room {
                 this.insertShuffle(v, k);//перемешаем карты игрока и отдаем ему в руку
                 //console.log();
             });
-/* на время тестирования
+/* на время тестирования отключаю паники и заражения
             m.forEach((v, k) => {//подмешаем карты заражений и паники в оставшуюся колоду 
                 if (v.firstDeck == true) return;
                 if (v.playDeck == false) return;
@@ -161,9 +141,6 @@ class Room {
 */
             this.insertShuffle(res);//оставшиеся карты перетасуем и закинем в деку
             this.currentplayer.startPlay();
-            // this.currentplayer.getOneCardfromDeckForAction();
-            //this.clientDB.query(`update cards set (isInDeck, place , playerid ) =(  false ,4, $2) WHERE roomid = $1 and isInDeck = true and place in (select max(place) from cards where  roomid = $1 and isInDeck = true); `, [this.roomname, currentPlayer], (err, data) => { });
-            //a.forEach(v => { console.log(v.playername+' '+v.cards.length); });
 
             this.gamestarted = true;           // this.clientDB.query('update rooms set gamestarted = true where roomid = $1; ', [this.roomname], (err, data) => { if (err) console.trace(err); });
             this.needUpdateForAll();
@@ -187,9 +164,8 @@ class Room {
                 let p = this.players.get(playerid);
                 p.cards.push(new Card(this.clientDB, res[r], this, p.cards.length));
                 this.players.set(playerid, p);
-                //playercards.set(v.playerid, [])
+
             };
-            //this.clientDB.query(`insert into cards (roomid , cardid , isInDeck, place , playerid ) values(  $1 ,$2, $3, $4, $5 ); `, [this.roomname, res[r], playername == null, len, playername], (err, data) => { if (err) console.trace(err); });
             res.splice(r, 1);
 
         }
@@ -201,8 +177,7 @@ class Room {
     giveOneCardfromDeckToPlayer(player) {
         player.cards.push(this.deckcards.pop());
         player.cards.forEach((v, i) => { v.place = i });
-        //player.cards.push(this.deckcards[this.deckcards.length - 1].card);
-        //this.deckcards.pop();
+
     }
 
 
@@ -223,15 +198,7 @@ class Room {
 
     getPlayers(callback) {
         callback(Array.from(this.players, ([name, value]) => (value)));
-        /*this.clientDB.query(`select * from players where roomid = $1 and gamenum = $2;`,
-            [this.roomname, this.gamenum], (err, data) => {
-                if (err) console.log(err);
-                if (data == undefined)
-                    callback([]);
-                else
-                    callback(data.rows);
-            });
-            */
+
     }
 
     updatePlayers() {
@@ -268,15 +235,8 @@ class Room {
             return;
         }
         callback([]);
-        /*
-        this.clientDB.query(`select * from players where roomid = $1 and playerid = $2 and gamenum = $3;`,
-            [this.roomname, playername, this.gamenum], (err, data) => {
-                if (err) console.log(err);
-                if (data == undefined)
-                    callback([]);
-                else
-                    callback(data.rows);
-            });*/
+        
+
     }
 
     clearPlayers() {
@@ -313,6 +273,11 @@ class Room {
 
     }
 
+    tableToDrop() {
+
+        this.tablecards.forEach(v => this.dropcards.push(v));
+        this.tablecards = [];
+    }
 
 
     getDeckAndDrop(callback) {
@@ -324,36 +289,22 @@ class Room {
         let card = this.deckcards[this.deckcards.length - 1];
         //console.log(card);
 
-        //console.log(card.CardsByPlayers);
-       // let card = Card.findCardByNum(lastcardofDeck);
-        let deck = { deckCount: this.deckcards.length, dropCount: this.dropcards.length, card: card.card.isPanic ? card.CardsByPlayers.UnknownPanic.num : card.CardsByPlayers.UnknownAction.num, isGameStarted: true, direction: this.direction };
+        //console.log(this.dropcards);
+        // let card = Card.findCardByNum(lastcardofDeck);
+        let lastdrop = this.dropcards[this.dropcards.length - 1];
+        let drop = this.dropcards.map((v) => v.card.num);
+        let table = this.tablecards.map((v) => v.card.num);
+        let deck = { table: table, drop: drop, deckCount: this.deckcards.length, dropCount: this.dropcards.length, card: card.card.isPanic ? Card.CardsByPlayers.UnknownPanic.num : Card.CardsByPlayers.UnknownAction.num, isGameStarted: true, direction: this.direction };
         //console.log(deck);
         callback(deck);
 
-        /*
-        this.clientDB.query(`select cm.roomid as room,sum(case when cm.isInDeck=true then 1 else 0 end) as deck, sum(case when cm.isInDrop=true then 1 else 0 end) as drop , ca.cardid  as card , r.direction as direction
-                                from cards as cm
-                                    inner join cards as ca 
-                                        on cm.roomid = ca.roomid and ca.place=0
-                                        inner join rooms as r
-                                            on cm.roomid = r.roomid and r.gamestarted = true
-                                                where cm.roomid =$1 and ca.isInDeck = true group by room, card, direction; `, [this.roomname], (err, data) => {
-            if (err) console.trace(err);
-            if (data == undefined || data.rows == undefined) return callback(undefined);
-            let row = data.rows[0];
-            //console.log(data.rows);
-            if (row == undefined) return callback(undefined);
-            let card = this.findCardByNum(row.card);
-            let deck = { deckCount: row.deck, dropCount: row.drop, card: card.isPanic ? this.CardsByPlayers.UnknownPanic.num : this.CardsByPlayers.UnknownAction.num, isGameStarted: true, direction:row.direction };
-            //console.log(deck);
-            callback(deck);
-        });
-        */
+
     }
 
     doAction(socket, data) {
         console.log(data);
         this.additionalData = undefined;
+        this.tableToDrop();
         let player = this.players.get(data.playername);
         if (player == undefined) { socket.close(1001, 'Player not found'); return; }
         //console.log(player[data.action]);

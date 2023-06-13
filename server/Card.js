@@ -1,6 +1,6 @@
 
 class Card {
-     CardsByPlayers = {
+     static CardsByPlayers = {
          UnknownPanic: { num: -2, players: [], firstDeck: false, playDeck: false, isPanic: true, exchangeAfter:true},
          UnknownAction: { num: -1, players: [], firstDeck: false, playDeck: false, isPanic: false, exchangeAfter: true },
          Thing: { num: 0, players: [], firstDeck: false, playDeck: false, isPanic: false, exchangeAfter: true },
@@ -9,7 +9,7 @@ class Card {
          Analysis: { num: 3, players: [0, 1, 2, 2, 2, 3, 3, 3, 3], firstDeck: true, playDeck: true, isPanic: false, exchangeAfter: true},
          BurnFire: { num: 4, players: [2, 2, 3, 3, 3, 4, 4, 5, 5], firstDeck: true, playDeck: true, isPanic: false, exchangeAfter: true},
          FireResist: { num: 5, players: [1, 1, 2, 2, 2, 2, 2, 3, 3], firstDeck: true, playDeck: true, isPanic: false, exchangeAfter: true},
-         Temptation: { num: 6, players: [2, 2, 3, 4, 5, 5, 6, 7, 7], firstDeck: true, playDeck: true, isPanic: false, exchangeAfter: true },
+         Temptation: { num: 6, players: [2, 2, 3, 4, 5, 5, 6, 7, 7], firstDeck: true, playDeck: true, isPanic: false, exchangeAfter: false },
          Perseverance: { num: 7, players: [2, 2, 3, 3, 3, 4, 5, 5, 5], firstDeck: true, playDeck: true, isPanic: false, exchangeAfter: true },
          GetOff: { num: 8, players: [2, 2, 2, 3, 3, 4, 4, 5, 5], firstDeck: true, playDeck: true, isPanic: false, exchangeAfter: true},
          ChangeDirection: { num: 9, players: [1, 1, 1, 1, 1, 2, 2, 2, 2], firstDeck: true, playDeck: true, isPanic: false, exchangeAfter: true},
@@ -51,13 +51,13 @@ class Card {
     }
 
     getCardTypes() {
-        return new Map(Object.entries(this.CardsByPlayers));
+        return new Map(Object.entries(Card.CardsByPlayers));
     }
 
     findCardByNum(num) {
 
-        let m = new Map(Object.entries(this.CardsByPlayers));
-        let find = this.CardsByPlayers.UnknownAction;
+        let m = new Map(Object.entries(Card.CardsByPlayers));
+        let find = Card.CardsByPlayers.UnknownAction;
         m.forEach((v, k) => {
             if (v.num == num) find = v;
 
