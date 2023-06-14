@@ -102,15 +102,9 @@ class Player {
     }
 
     outExchangeCard(data) {
-
+        if (this.phase != Player.Phases.Exchange) throw 'Error is not you Exchange now';
+        if (this.state != Player.States.SelectCard)  throw 'Error is not you state now'; 
         let nextplayer = this.room.getPlayerByPlayerName(data.opponent);
-        if (this.phase == Player.Phases.Answer && nextplayer.state == Player.States.OutgoingExchange) {
-
-            inExchangeCard(data);
-
-
-            return;
-        }
         this.cardForExchangeOut = data.place;
         this.state = Player.States.OutgoingExchange;
         nextplayer.phase = Player.Phases.Answer;
@@ -140,15 +134,10 @@ class Player {
 
 
     inExchangeCard(data) {
-
+        if (this.phase != Player.Phases.Answer) throw 'Error is not you answer now';
+        if (this.state != Player.States.IncomeExchange) throw 'Error is not you state now';
         let nextplayer = this.room.getPlayerByPlayerName(data.opponent);
-        if (this.phase != Player.Phases.Answer ) {
-            return;
-        }
-
-        if (nextplayer.cardForExchangeOut == null) {
-            return;
-        }
+        if (nextplayer.cardForExchangeOut == null)  throw  'Error no card for exchange'; 
 
         let othercardindex = nextplayer.findcardindex(nextplayer.cardForExchangeOut);
         let othercard = nextplayer.cards[othercardindex];
@@ -177,14 +166,15 @@ class Player {
     }
 
     actionShowAllCards(data) {
-        
+        if (this.phase != Player.Phases.Action) throw 'Error is not you action now'; 
+        if (this.state != Player.States.SelectCard) throw 'Error is not you state now'; 
         
         let bymycardplace = data.place;
         
 
         let cardindex = this.findcardindex(bymycardplace);
         let mycard = this.cards[cardindex]; //
-        if (mycard.card != Card.CardsByPlayers.Whiski) { this.socket.close(1001, 'Error is not Whiski card'); return; }
+        if (mycard.card != Card.CardsByPlayers.Whiski) throw 'Error is not Whiski card'; 
         //this.ShowAllCards = true;
         //check and validate card here
         this.tableCard(bymycardplace);
@@ -207,8 +197,8 @@ class Player {
     }
 
     actionBurnPlayer(data) {
-        if (this.phase != Player.Phases.Action) { this.socket.close(1001, 'Error is not you answer now'); return; }
-        if (this.state != Player.States.SelectCard) { this.socket.close(1001, 'Error is not you defend now'); return; }
+        if (this.phase != Player.Phases.Action) throw 'Error is not you action now'; 
+        if (this.state != Player.States.SelectCard) throw 'Error is not you state now'; 
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
        // let otherCardPlace = data.place;
@@ -216,8 +206,7 @@ class Player {
 
         let cardindex = this.findcardindex(bymycardplace);
         let mycard = this.cards[cardindex]; //
-        if (mycard.card != Card.CardsByPlayers.BurnFire) { this.socket.close(1001, 'Error is not burn card'); return; }
-        if (this.phase != Player.Phases.Action) { this.socket.close(1001, 'Error is not you action now'); return;     }
+        if (mycard.card != Card.CardsByPlayers.BurnFire) throw 'Error is not burn card'; 
 
         console.log(this.playername + " try Burn " + otherPlayerName);
         this.tableCard(bymycardplace);
@@ -230,13 +219,13 @@ class Player {
     }
 
     actionDefendFromFire(data) {
-        if (this.phase != Player.Phases.Answer) { this.socket.close(1001, 'Error is not you answer now'); return; }
-        if (this.state != Player.States.DefendFireSelectCard) { this.socket.close(1001, 'Error is not you defend now'); return; }
+        if (this.phase != Player.Phases.Answer) throw 'Error is not you answer now'; 
+        if (this.state != Player.States.DefendFireSelectCard) throw 'Error is not you defend now'; 
         let bymycardplace = data.bymycardplace;
 
         let cardindex = this.findcardindex(bymycardplace);
         let mycard = this.cards[cardindex]; //
-        if (mycard.card != Card.CardsByPlayers.FireResist) { this.socket.close(1001, 'Error is not defend card'); return; }
+        if (mycard.card != Card.CardsByPlayers.FireResist) throw 'Error is not defend card'; 
 
         console.log(this.playername + " defend from fire ");
         this.tableCard(bymycardplace);
@@ -248,15 +237,15 @@ class Player {
 
 
     actionShowMeCard(data) {
-        if (this.phase != Player.Phases.Action) { this.socket.close(1001, 'Error is not you answer now'); return; }
-        if (this.state != Player.States.SelectCard) { this.socket.close(1001, 'Error is not you defend now'); return; }
+        if (this.phase != Player.Phases.Action) throw 'Error is not you action now'; 
+        if (this.state != Player.States.SelectCard) throw 'Error is not you state now'; 
         let otherPlayerName = data.otherPlayerName;
         let otherCardPlace = data.place;
         let bymycardplace = data.bymycardplace;
 
         let cardindex = this.findcardindex(bymycardplace);
         let mycard = this.cards[cardindex]; //
-        if (mycard.card != Card.CardsByPlayers.Suspicion) { this.socket.close(1001, 'Error is not suspicion card'); return; }
+        if (mycard.card != Card.CardsByPlayers.Suspicion) throw 'Error is not suspicion card';
 
         //check and validate card here
         this.tableCard(bymycardplace);
@@ -286,8 +275,8 @@ class Player {
     }
 
     actionDropCard(data) {
-        if (this.phase != Player.Phases.Action) { this.socket.close(1001, 'Error is not you action now'); return; }
-        if (this.state != Player.States.SelectCard) { this.socket.close(1001, 'Error is not you drop now'); return; }
+        if (this.phase != Player.Phases.Action) throw 'Error is not you action now'; 
+        if (this.state != Player.States.SelectCard) throw 'Error is not you drop now'; 
 
         let cardplace = data.place;
         this.dropOneCard(cardplace);

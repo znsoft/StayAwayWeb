@@ -159,6 +159,11 @@
 
         static buttons = new Map();
 
+        static add() {
+
+
+        }
+
         static DrawAll(ctx, e) {
             Button.buttons.forEach((v, k) => v.Draw(ctx, e));
 
@@ -174,7 +179,7 @@
         }
 
         Draw(ctx, e) {
-
+            ctx.save();
             ctx.translate(this.x, this.y);
 
             ctx.fillStyle = "#000";
@@ -187,6 +192,7 @@
                 if (c != undefined)
                     if (c.x > 0 && c.x < this.w && c.y > 0 && c.y < this.h && this.callback != undefined) { this.callback(this.p); game.me.selected = null; game.moveOneCard = false;}
             }
+            ctx.restore();
 
         }
 
@@ -247,15 +253,8 @@
             ctx.save();
             // ctx.globalCompositeOperation = 'destination-over';
             ctx.translate(200, -50);
-            /*
-            ctx.save();
-            ctx.translate(1 * 1, 1 * 1 + 40);
-            ctx.rotate(Math.PI / 1.5 + 1 / 200);
-            //if (this.lastDrop != null)
-              //  this.lastDrop.Draw(ctx);
-            ctx.restore();
-            */
-            //ctx.globalCompositeOperation = 'destination-over';
+
+
             this.drop.forEach((v, i) => {
 
                 ctx.save();
@@ -266,16 +265,8 @@
 
 
             });
-            //ctx.globalCompositeOperation = 'destination-over';
-            /*for (let i = this.Drop; i > 1; i--) {
 
-                ctx.save();
-                ctx.translate(i * 1, i * 1 + 40);
-                ctx.rotate(Math.PI / 1.5 + i / 200);
-                Cards.UnknownAction.Draw(ctx);
-                ctx.restore();
-            }
-            */
+
             ctx.rotate(Math.PI / 2.5);
             ctx.fillStyle = "#000";
             ctx.font = '16px serif';
@@ -379,7 +370,7 @@
             c.forEach((v) => {
                 if (v.hasOwnProperty("Button")) {
                     new Button(v.Button.Text, v.Button.Text, x, y, v.Button.Text.length * 10, 20, v.Button.action, z);
-                    x += v.Button.Text.length * 10 + 3;
+                    x += v.Button.Text.length * 10 + 5;
                 }
             });
 
@@ -442,7 +433,10 @@
         },
         OnlyDropAction: (me) => Actions.Drop,
         SimpleExchange: (me, other) => Actions.outChange,
-        SimpleAnswer: (me, other) => Actions.inChange,
+        SimpleAnswer: (me, other) => {
+            if (me.state == States.IncomeExchange) return Actions.inChange;
+            return Actions.Nothing;
+        },
         ActionSuspicion: (me) => [Actions.Drop, Actions.SawOneCard],
         ActionAnalysis: (me) => [Actions.Drop, Actions.SawAllCards],
         ActionBurnFire: (me) => [Actions.Drop, Actions.Burn],

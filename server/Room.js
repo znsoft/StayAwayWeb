@@ -361,15 +361,21 @@ class Room {
     }
 
     doAction(socket, data) {
-        console.log(data);
-        this.additionalData = undefined;
-        this.tableToDrop();
+ //       console.log(data);
         let player = this.players.get(data.playername);
         if (player == undefined) { socket.close(1001, 'Player not found'); return; }
         //console.log(player[data.action]);
         if (data.action == undefined) return;
 
-        player[data.action](data);
+        this.additionalData = undefined;
+        this.tableToDrop();
+
+
+        try { player[data.action](data); } catch (e) {
+            socket.close(1001, e);
+        };
+
+
         this.needUpdateForAll();
 
     }
