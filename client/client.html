@@ -185,7 +185,7 @@
                 let c = ctx.getWindowToCanvas(e);
 
                 if (c != undefined)
-                    if (c.x > 0 && c.x < this.w && c.y > 0 && c.y < this.h && this.callback != undefined) { this.callback(this.p); }
+                    if (c.x > 0 && c.x < this.w && c.y > 0 && c.y < this.h && this.callback != undefined) { this.callback(this.p); game.me.selected = null; game.moveOneCard = false;}
             }
 
         }
@@ -298,6 +298,8 @@
 
 
     class Card {
+        static width= 95;
+        static height= 150;
         static splace = 0;
         constructor(name, num, CardCaption, Description, img, Exchange, Answer, Action, Defend, isPanic = false, isUnknown = false) {
             this.name = name;
@@ -394,7 +396,7 @@
             let y = 30;
             for (var s of this.CardCaption.split("\n")) ctx.fillText(s, 1, y += 12);
 
-            ctx.roundRect(0, 0, 95, 150, 10);
+            ctx.roundRect(0, 0, Card.width, Card.height, 10);
             ctx.fillStyle = this.isUnknown ? "#b92" : "#f5fb";
             ctx.fill();
 
@@ -416,7 +418,7 @@
         SawAllCards: { id: 3, HiLightText: "Select player", MayMove: true, HiLightRLPlayers: true , selectPlayer:true},
         RejectExchange: { id: 4, Button: { Text: "Reject",action:rejectExchange }, },
         Burn: { id: 5, HiLightText: "Select player", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer :BurnPlayer},
-        DefendFromFire: { id: 6, Button: { Text: "Defend" } },
+        DefendFromFire: { id: 6, Button: { Text: "Defend", action: DefendFromFire } },
         exChange: { id: 7, Button: { Text: "Exchange", action: exchangecardin } },
 
 
@@ -445,9 +447,9 @@
         ActionAnalysis: (me) => [Actions.Drop, Actions.SawAllCards],
         ActionBurnFire: (me) => [Actions.Drop, Actions.Burn],
         FireResistance: (me, other) => {
-            if (me.state == States.DefendFireSelectCard) return Action.DefendFromFire;
+            if (me.state == States.DefendFireSelectCard) return Actions.DefendFromFire;
             return Actions.inChange;
-        };
+        }
 
     };
 
@@ -634,6 +636,9 @@
             return (this.Phase == Phases.Exchange && this.state == States.SelectCard && this.cards.length < 5);
         }
 
+        get isMyTurnToDefend() {
+            return (this.Phase == Phases.Answer && this.state == States.DefendFireSelectCard && this.cards.length < 5);
+        }
         get isStartTurnExchangeIn() {
             return (this.Phase == Phases.Answer && this.state == States.IncomeExchange && this.cards.length < 5);
         }
@@ -679,7 +684,7 @@
                 if (e != undefined) {
                     let p = ctx.getWindowToCanvas(e);
                     if (p != undefined)
-                        if (p.x > -2 * 95 && p.x < 5 * 95 && p.y > -20 && p.y < 250) errortext = this.OnPlayerSelect(OnSelectPlayer, HiLightRLPlayers);
+                        if (p.x > -2 * Card.width && p.x < 5 * Card.width && p.y > -20 && p.y < 250) errortext = this.OnPlayerSelect(OnSelectPlayer, HiLightRLPlayers);
                 }
             }
 
@@ -760,6 +765,11 @@
         OnCardSelect(v, z, actionOnSelectSecondCard, selectNearPlayersCards) {
 
 
+            if (game.me.isMyTurnToDefend && !this.isMe) return 'Select your card for defend from fire!!!';
+            if (game.me.isMyTurnToDefend && this.isMe) {
+
+
+            }
 
             if (game.me.isStartTurnExchangeIn && !this.isMe) return 'Select your card for exchange or decline!!!';
             if (game.me.isStartTurnExchangeIn && this.isMe) {
@@ -839,14 +849,14 @@
         parsePlayerList(message) {
             let j = 0;
             let selected = this.me.selected;
-            if (this.me.selected) return;//заглушка чтобы карты не сбрасывались с мышки когда поступает пакет от сервера
+            //if (this.me.selected!=null) return;//заглушка чтобы карты не сбрасывались с мышки когда поступает пакет от сервера
 
             this.ShowOneCard = null;
             this.exchange = [];
             this.players = [];
             message.playerlist.forEach((v, i) => {
                 for (j in v.cards) {
-
+                    //if
                     v.cards[j].card = findCardByNum(v.cards[j].cardnum); // тут приходит пакет с реквизитами
                     if (v.cards[j].toPlayer != undefined && v.cards[j].ShowTo == true) this.ShowOneCard = { playername: v.cards[j].toPlayer, cardplace: v.cards[j].cardplace };
 
@@ -1220,7 +1230,20 @@
         p.otherPlayerName = player.name;
         //console.log(p);
         websocket.senddata(p);
-        game.me.selected = null;
+       // game.me.selected = null;
+
+    }
+
+    function DefendFromFire(pl) {
+
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "actionDefendFromFire";
+
+        p.bymycardplace = pl.cardplace;
+        
+        websocket.senddata(p);
+       // game.me.selected = null;
 
 
 
@@ -1251,7 +1274,7 @@
         p.otherPlayerName = otherplayername;
         //console.log(p);
         websocket.senddata(p);
-        game.me.selected = null;
+       // game.me.selected = null;
 
     }
 

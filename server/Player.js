@@ -177,12 +177,6 @@ class Player {
     }
 
 
-    giveCardfromUpDeck() {
-
-        getOneCardfromDeckForAction();
-
-    }
-
     ShowYourCardToPlayer(player, place) {
         let cardindex = this.findcardindex(place);
         let card = this.cards[cardindex];
@@ -215,6 +209,24 @@ class Player {
 
 
     }
+
+    actionDefendFromFire(data) {
+        if (this.phase != Player.Phases.Answer) { this.socket.close(1001, 'Error is not you answer now'); return; }
+
+        let bymycardplace = data.bymycardplace;
+
+        let cardindex = this.findcardindex(bymycardplace);
+        let mycard = this.cards[cardindex]; //
+        if (mycard.card != Card.CardsByPlayers.FireResist) { this.socket.close(1001, 'Error is not defend card'); return; }
+
+        console.log(this.playername + " defend from fire ");
+        this.tableCard(bymycardplace);
+        this.room.giveOneActionCardfromDeckToPlayer(this);
+        this.stopPlay();
+        this.room.currentplayer.endTurn();
+
+    }
+
 
     actionShowMeCard(data) {
         let otherPlayerName = data.otherPlayerName;
@@ -264,6 +276,8 @@ class Player {
         this.room.giveOneCardfromDeckToPlayer(this);
         //this.cards.forEach((v, i) => { v.place = i });
     }
+
+
 
     sendplayers(deckData) {
  

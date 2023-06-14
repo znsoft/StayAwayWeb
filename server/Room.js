@@ -172,7 +172,29 @@ class Room {
     }
 
 
-    
+    nowNextPlayer() {
+        this.stopPlay();
+        let nextplayer = this.room.nextplayer;
+
+
+        this.room.currentplayer = nextplayer;
+        //this.room.calcNextPlayer();
+        nextplayer.startPlay();
+
+    }
+
+    giveOneActionCardfromDeckToPlayer(player) {
+        let card = undefined;
+
+        while (this.deckcards.length > 0) {
+            card = this.deckcards.pop();
+            if (!card.card.isPanic) break;
+            this.dropcards.push(v);
+                }
+        player.cards.push(card);
+        player.cards.forEach((v, i) => { v.place = i });
+
+    }
 
     giveOneCardfromDeckToPlayer(player) {
         player.cards.push(this.deckcards.pop());
