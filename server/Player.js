@@ -28,6 +28,10 @@ class Player {
 
     }
 
+    toString() {
+        return this.playername;
+    }
+
     static Phases = {
         Nothing: 0,
         Exchange: 1,
@@ -65,22 +69,7 @@ class Player {
     }
 
     insertPlayer() {
-        /*
-        //console.trace(`gamenum = ${this.gamenum}`);
-        //console.log(`gamenum = ${this.gamenum}`);
-        this.clientDB.query(`INSERT INTO players (place , roomid ,playerid , name , lastseen , guid, quarantineCount, Infected , gamenum ,needupdate)
-                            (select COALESCE(max(place)+1,0) as place , $1, $2, $3, $4, $5, $6, $7, $8, true from players where roomid = $1 and gamenum = $8) 
-                            on conflict on CONSTRAINT roomplayer do
-                            UPDATE SET ( gamenum , lastseen, guid, needupdate ) = (  EXCLUDED.gamenum , EXCLUDED.lastseen , EXCLUDED.guid, true );`,
-            //and gamenum = $8)
-            [this.roomid, this.playername, this.playerCaption, new Date(), this.guid, this.quarantineCount, this.Infected, this.gamenum], (err, data) => {
-                if (err) console.log(err);
-                //callback(data.rows);
-            });
-
-
-        this.clientDB.query(`delete from cards where roomid IN (SELECT roomid FROM rooms WHERE roomid = $1 and gamestarted = false); `, [this.roomid,], (err, data) => { });
-        */
+        this.room.log(this + " вошел в игру");
     }
 
     generateGUID() {
@@ -109,6 +98,8 @@ class Player {
         this.state = Player.States.OutgoingExchange;
         nextplayer.phase = Player.Phases.Answer;
         nextplayer.state = Player.States.IncomeExchange;
+        this.room.log(this + " обменивается картами с " + nextplayer );
+
 
     }
 
@@ -117,6 +108,7 @@ class Player {
         this.phase = Player.Phases.Action;
         this.state = Player.States.SelectCard;
         this.getOneCardfromDeckForAction();
+        this.room.log(this + " начал ход");
 
     }
 
@@ -180,7 +172,7 @@ class Player {
         this.tableCard(bymycardplace);
         this.endTurn();
         this.room.ShowMyCardsToAll(this);
-
+        this.room.log(this + " показал карты всем");
 
     }
 
@@ -214,7 +206,7 @@ class Player {
         this.state = Player.States.Nothing;
         nextplayer.phase = Player.Phases.Answer;
         nextplayer.state = Player.States.DefendFireSelectCard;
-
+        this.room.log(this + " сыграл огнемет на " + nextplayer);
 
     }
 
@@ -232,6 +224,7 @@ class Player {
         this.room.giveOneActionCardfromDeckToPlayer(this);
         this.stopPlay();
         this.room.currentplayer.endTurn();
+        this.room.log(this + " сыграл шашлык");
 
     }
 
@@ -252,6 +245,7 @@ class Player {
 
         this.room.ShowOneOtherCardToPlayer(this, otherPlayerName, otherCardPlace);
         this.endTurn();
+        this.room.log(this + " подозрение на " + otherPlayerName);
 
 
     }
@@ -281,6 +275,7 @@ class Player {
         let cardplace = data.place;
         this.dropOneCard(cardplace);
         this.endTurn();
+        this.room.log(this + " сбросил карту");
     }
 
     getOneCardfromDeckForAction() {
@@ -326,6 +321,7 @@ class Player {
         this.needupdate = false;
 
         this.send({ messagetype: 'playerlist', playerlist: exchange, deck: deckData, nextplayer: nextplayer, currentplayer: currentplayer, opponent: opponent });
+        this.send({ messagetype: 'gamelog', gamelog: this.room.gamelog });
     }
 
     addCards(v, p) {

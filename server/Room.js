@@ -21,6 +21,12 @@ class Room {
         this.nextplayer = null;
         this.currentPlayer = null;
         this.additionalData = undefined;
+        this.gamelog = [];
+    }
+
+    log(v) {
+        this.gamelog.push(v);
+        console.log(v);
     }
 
     get currentplayer() {
@@ -161,7 +167,7 @@ class Room {
 
             this.gamestarted = true;           // this.clientDB.query('update rooms set gamestarted = true where roomid = $1; ', [this.roomname], (err, data) => { if (err) console.trace(err); });
             this.needUpdateForAll();
-
+            this.log("игра начата");
 
         });
 
@@ -300,11 +306,12 @@ class Room {
     }
 
     addPlayer(socket, playerdata) {
-
+       
         let player = new Player(this.clientDB, socket, this.roomname, playerdata.playername, playerdata.playername, this, this.gamenum, 0);
         this.players.set(playerdata.playername, player);
         player.sendGUIDToPlayer();
         player.insertPlayer();
+        
         //this.needUpdateForPlayer(playerdata.playername);
         //player.sendplayers(undefined);
         return player.cookieguid;

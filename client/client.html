@@ -76,22 +76,24 @@
 <body>
 
     <div id="logindiv">
-        Room:<input id="room" value="1" hidden="true">|            </input>
-        Player:<input id="login">  </input><button id="loginbutton" onclick="sendLogin()">Login</button>
+        Room:<input id="room" value="1" hidden="true"></input>
+        Player:<input id="login"></input>
+        <button id="loginbutton" onclick="sendLogin()">Login</button>
         <button id="startgamebutton" hidden="true" onclick="startGame()">Startgame</button>
 
     </div>
- 
 
-    <canvas id="canvas" width="2000" height="2000">Please update your browser</a> in order to view this page.</canvas>
+    <textarea id="gamelog" style="opacity: 0.4; position: absolute; transition: opacity 1s;" cols="90" rows="10" onclick="console.log('click')" readonly="true"></textarea>
+
+    <canvas id="canvas" width="2000" height="2000">Please update your browser<br> in order to view this page.</canvas>
     <pre id="chat"></pre>
+
+
 
 </body>
 
 <script>
 
-
-    //    <textarea id="query" style="opacity: 0.4; position: absolute; transition: opacity 1s;" cols="90" rows="10" onclick="console.log(this.selectionStart)"></textarea>
 
 
 
@@ -383,7 +385,7 @@
             ctx.fillStyle = "#000";
             ctx.font = '16px serif';
             ctx.fillText(this.name, 10, 20);
-            ctx.font = '11px serif';
+            ctx.font = '16px serif';
             let y = 30;
             for (var s of this.CardCaption.split("\n")) ctx.fillText(s, 1, y += 12);
 
@@ -832,6 +834,7 @@
             this.exchange = [];
             this.ViewlineTo = null;
             this.ShowOneCard = null;
+            this.gamelog = [];
 
         }
 
@@ -840,6 +843,17 @@
             for (var p of this.players) if (p.place == num) return p;
             return null;
         }
+
+        parseGamelog(message) {
+            let result = "";
+            this.gamelog = message.gamelog;
+            this.gamelog.forEach((v) => { result = result+v+"\r" });
+
+            let q = document.getElementById("gamelog");
+            q.value = result;
+
+        }
+
 
         parsePlayerList(message) {
             let j = 0;
@@ -1152,7 +1166,7 @@
             if (message.messagetype == 'playerguid') {
                 game = new Game(message.guid);
                 document.cookie = evt.data;
-                document.getElementById("loginbutton").hidden = true;
+                //document.getElementById("loginbutton").hidden = true;
                 //document.getElementById("login").setAttribute("readonly", true);//hidden = true;
                 return;
             }
@@ -1160,6 +1174,10 @@
 
             if (message.messagetype == 'playerlist') {
                 game.parsePlayerList(message);
+                return;
+            }
+            if (message.messagetype == 'gamelog') {
+                game.parseGamelog(message);
                 return;
             }
 
