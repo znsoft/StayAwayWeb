@@ -67,6 +67,24 @@ class Room {
 
     }
 
+    dropToDeckWithShuffle() {
+        let res = this.dropcards;
+        let len = res.length - 1;
+
+        for (; len >= 0; len--) {
+
+            let r = Math.round(Math.random() * (res.length - 1));
+
+            this.deckcards.push(res[r]);
+
+            res.splice(r, 1);
+
+        }
+
+
+
+    }
+
 
     startgame(player) {
         if (this.gamestarted == true) return;
@@ -86,7 +104,7 @@ class Room {
             this.gamestarted = true;
 
             a.forEach((v, i) => {
-               
+
                 playercards.set(v.playerid, []);
                 let ppp = this.players.get(v.playerid);
                 ppp.cards = [];
@@ -127,18 +145,18 @@ class Room {
             });
 
             playercards.forEach((v, k) => {
-               // console.log(v);
+                // console.log(v);
                 this.insertShuffle(v, k);//перемешаем карты игрока и отдаем ему в руку
                 //console.log();
             });
-/* на время тестирования отключаю паники и заражения
-            m.forEach((v, k) => {//подмешаем карты заражений и паники в оставшуюся колоду 
-                if (v.firstDeck == true) return;
-                if (v.playDeck == false) return;
-                let numofthiscards = v.players[index];
-                for (; numofthiscards > 0; numofthiscards--)res.push(v.num);
-            });
-*/
+            /* на время тестирования отключаю паники и заражения
+                        m.forEach((v, k) => {//подмешаем карты заражений и паники в оставшуюся колоду 
+                            if (v.firstDeck == true) return;
+                            if (v.playDeck == false) return;
+                            let numofthiscards = v.players[index];
+                            for (; numofthiscards > 0; numofthiscards--)res.push(v.num);
+                        });
+            */
             this.insertShuffle(res);//оставшиеся карты перетасуем и закинем в деку
             this.currentplayer.startPlay();
 
@@ -186,17 +204,20 @@ class Room {
     giveOneActionCardfromDeckToPlayer(player) {
         let card = undefined;
 
-        while (this.deckcards.length > 0) {
+        while (true) {
+            if (this.deckcards.length <1) this.dropToDeckWithShuffle();
+
             card = this.deckcards.pop();
             if (!card.card.isPanic) break;
             this.dropcards.push(v);
-                }
+        }
         player.cards.push(card);
         player.cards.forEach((v, i) => { v.place = i });
 
     }
 
     giveOneCardfromDeckToPlayer(player) {
+        if (this.deckcards.length < 1) this.dropToDeckWithShuffle();
         player.cards.push(this.deckcards.pop());
         player.cards.forEach((v, i) => { v.place = i });
 
@@ -226,7 +247,7 @@ class Room {
     updatePlayers() {
         this.getDeckAndDrop((deckData) => {
             this.players.forEach((v, k) => {
-                if (v.needupdate==true)
+                if (v.needupdate == true)
                     v.update(deckData);
                 v.needupdate = false;
             });
@@ -240,7 +261,7 @@ class Room {
             this.players.forEach((v, k) => {
                 //if (v.needupdate == true)
                 this.additionalData = { action: "ShowOneCardToPlayer", PlayerTo: playerTo, PlayerFrom: playerFrom, Card: card };
-                    v.update(deckData);
+                v.update(deckData);
                 v.needupdate = false;
             });
         });
@@ -249,7 +270,7 @@ class Room {
     }
 
     findPlayer(playername, callback) {
-       // console.log(this.players);
+        // console.log(this.players);
         let player = this.players.get(playername);
 
         if (player != undefined) {
@@ -257,7 +278,7 @@ class Room {
             return;
         }
         callback([]);
-        
+
 
     }
 
@@ -334,7 +355,7 @@ class Room {
 
         player[data.action](data);
         this.needUpdateForAll();
-       
+
     }
 
     getPlayerNum(playerid) {
