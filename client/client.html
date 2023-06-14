@@ -416,7 +416,7 @@
         SawAllCards: { id: 3, HiLightText: "Select player", MayMove: true, HiLightRLPlayers: true , selectPlayer:true},
         RejectExchange: { id: 4, Button: { Text: "Reject",action:rejectExchange }, },
         Burn: { id: 5, HiLightText: "Select player", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer :BurnPlayer},
-        Defend: { id: 6, Button: { Text: "Defend" } },
+        DefendFromFire: { id: 6, Button: { Text: "Defend" } },
         exChange: { id: 7, Button: { Text: "Exchange", action: exchangecardin } },
 
 
@@ -444,10 +444,10 @@
         ActionSuspicion: (me) => [Actions.Drop, Actions.SawOneCard],
         ActionAnalysis: (me) => [Actions.Drop, Actions.SawAllCards],
         ActionBurnFire: (me) => [Actions.Drop, Actions.Burn],
-        FireResistance: (Card) => {
-            if (Card == Cards.BurnFire) return Actions.Defend;
-            return Actions.Nothing;
-        }
+        FireResistance: (me, other) => {
+            if (me.state == States.DefendFireSelectCard) return Action.DefendFromFire;
+            return Actions.inChange;
+        };
 
     };
 
@@ -461,7 +461,7 @@
         Suspicion: new Card("Suspicion", 2, "Подозрение", "Посмотрите одну карту на руке соседнего игрока", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionSuspicion, null),//подозрение
         Analysis: new Card("Analysis", 3, "Анализ", "Посмотрите все карты на руке соседнего игрока", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionAnalysis, null),//анализ
         BurnFire: new Card("Burn", 4, "Огнемет", "Соседний игрок выбывает из игры", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer,Algoritms.ActionBurnFire, null),//огнемет
-        FireResist: new Card("Defend\nfrom Fire", 5, "Никакого шашлыка", "Отмените эффект карты огнемет, если стали ее целью. возьмите 1 карту событие", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),//шашлык
+        FireResist: new Card("Defend\nfrom Fire", 5, "Никакого шашлыка", "Отмените эффект карты огнемет, если стали ее целью. возьмите 1 карту событие", "", Algoritms.SimpleExchange, Algoritms.FireResistance, Algoritms.OnlyDropAction, Algoritms.FireResistance),//шашлык
         Temptation: new Card("Temptation", 6, "Соблазн", "Поменяйтесь одной картой с любым игроком, если он не на карантине. Ваш ход заканчивается", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),//соблазн
         Perseverance: new Card("Perseverance", 7, "Упорство", "Возьмите 3 карты событий, оставтье на руке одну. Затем сыграйте или сбросьте одну карту", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),//Упорство
         GetOff: new Card("Get Off", 8, "Сматывай удочки", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
@@ -567,7 +567,7 @@
             ctx.fillStyle = this.c;
             ctx.font = '16px serif';
             ctx.scale(this.s, this.s);
-            for (var s of this.text.split("\n")) ctx.fillText(s, 0, l += 17);
+            if (this.text!=undefined)for (var s of this.text.split("\n")) ctx.fillText(s, 0, l += 17);
             //TextLabels.lastY = y;
             ctx.restore();
             //ctx.fillText(this.text);//, 3, this.text.length);
@@ -635,7 +635,7 @@
         }
 
         get isStartTurnExchangeIn() {
-            return (this.Phase == Phases.Answer && this.state == States.SelectCard && this.cards.length < 5);
+            return (this.Phase == Phases.Answer && this.state == States.IncomeExchange && this.cards.length < 5);
         }
 
         get isAction() {
@@ -683,7 +683,7 @@
                 }
             }
 
-            if (e != undefined && !this.moveOneCard && !selectNearPlayersCards) {
+            if (e != undefined && !this.moveOneCard && !selectNearPlayersCards && !selectPlayer) {
 
                 //if (this.isMe)
                 this.selected = null; this.selectedCard = null; this.move = null;//reset old selection
@@ -947,6 +947,10 @@
             if (this.opponent != null) stateText = "Now turn " + this.opponent;
             let phaseText = "";
             switch (this.me.state) {
+                case States.IncomeExchange:
+                    stateText = "Select your card";
+
+                    break;
                 case States.SelectCard:
                     stateText = "Select your card";
                     switch (this.me.Phase) {
@@ -978,7 +982,7 @@
             ctx.translate(w / 2, h / 2);
 
 
-            if (this.me.selectedCard == null || this.me.Phase == Phases.Nothing || !(this.me.state == States.SelectCard || this.me.state == States.IncomeExchange || this.me.state == States.PerseveranceSelectCard)) Button.DeleteAll()
+            if (this.me.selectedCard == null || this.me.Phase == Phases.Nothing || !(this.me.state == States.SelectCard || this.me.state == States.IncomeExchange || this.me.state == States.DefendFireSelectCard)) Button.DeleteAll()
             this.drawStatePhase();
 
             let HLOpponent = false;
@@ -1092,7 +1096,7 @@
         IncomeExchange: 4,
         PerseveranceSelectCard: 5,
         SelectPlayer: 6,
-        SuspicionSelectCard: 7,
+        DefendFireSelectCard: 7,
         Panic: 8
 
 

@@ -321,6 +321,9 @@ class Room {
 
     }
 
+
+
+
     ShowOneOtherCardToPlayer(player, otherPlayerName, otherCardPlace) {
         let otherplayer = this.players.get(otherPlayerName);
         if (otherplayer == undefined) { socket.close(1001, 'Player not found'); return; }

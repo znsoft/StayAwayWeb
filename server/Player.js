@@ -43,7 +43,7 @@ class Player {
         IncomeExchange: 4,
         PerseveranceSelectCard: 5,
         SelectPlayer: 6,
-        SuspicionSelectCard: 7,
+        DefendFireSelectCard: 7,
         Panic: 8
 
 
@@ -114,7 +114,7 @@ class Player {
         this.cardForExchangeOut = data.place;
         this.state = Player.States.OutgoingExchange;
         nextplayer.phase = Player.Phases.Answer;
-        nextplayer.state = Player.States.SelectCard;
+        nextplayer.state = Player.States.IncomeExchange;
 
     }
 
@@ -197,13 +197,21 @@ class Player {
 
     actionBurnPlayer(data) {
         let otherPlayerName = data.otherPlayerName;
+        let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
        // let otherCardPlace = data.place;
         let bymycardplace = data.bymycardplace;
 
         let cardindex = this.findcardindex(bymycardplace);
         let mycard = this.cards[cardindex]; //
         if (mycard.card != Card.CardsByPlayers.BurnFire) { this.socket.close(1001, 'Error is not burn card'); return; }
-        console.log("Burn " + otherPlayerName);
+        if (this.phase != Player.Phases.Action) { this.socket.close(1001, 'Error is not you action now'); return;     }
+
+        console.log(this.playername + " try Burn " + otherPlayerName);
+        this.tableCard(bymycardplace);
+
+        this.state = Player.States.Nothing;
+        nextplayer.phase = Player.Phases.Answer;
+        nextplayer.state = Player.States.DefendFireSelectCard;
 
 
     }
@@ -215,6 +223,8 @@ class Player {
 
         let cardindex = this.findcardindex(bymycardplace);
         let mycard = this.cards[cardindex]; //
+        if (mycard.card != Card.CardsByPlayers.Suspicion) { this.socket.close(1001, 'Error is not suspicion card'); return; }
+
         //check and validate card here
         this.tableCard(bymycardplace);
 
