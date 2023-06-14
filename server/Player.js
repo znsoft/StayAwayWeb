@@ -176,6 +176,23 @@ class Player {
 
     }
 
+    actionShowAllCards(data) {
+        
+        
+        let bymycardplace = data.place;
+        
+
+        let cardindex = this.findcardindex(bymycardplace);
+        let mycard = this.cards[cardindex]; //
+        if (mycard.card != Card.CardsByPlayers.Whiski) { this.socket.close(1001, 'Error is not Whiski card'); return; }
+        //this.ShowAllCards = true;
+        //check and validate card here
+        this.tableCard(bymycardplace);
+        this.endTurn();
+        this.room.ShowMyCardsToAll(this);
+
+
+    }
 
     ShowYourCardToPlayer(player, place) {
         let cardindex = this.findcardindex(place);
@@ -190,6 +207,8 @@ class Player {
     }
 
     actionBurnPlayer(data) {
+        if (this.phase != Player.Phases.Action) { this.socket.close(1001, 'Error is not you answer now'); return; }
+        if (this.state != Player.States.SelectCard) { this.socket.close(1001, 'Error is not you defend now'); return; }
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
        // let otherCardPlace = data.place;
@@ -212,7 +231,7 @@ class Player {
 
     actionDefendFromFire(data) {
         if (this.phase != Player.Phases.Answer) { this.socket.close(1001, 'Error is not you answer now'); return; }
-
+        if (this.state != Player.States.DefendFireSelectCard) { this.socket.close(1001, 'Error is not you defend now'); return; }
         let bymycardplace = data.bymycardplace;
 
         let cardindex = this.findcardindex(bymycardplace);
@@ -229,6 +248,8 @@ class Player {
 
 
     actionShowMeCard(data) {
+        if (this.phase != Player.Phases.Action) { this.socket.close(1001, 'Error is not you answer now'); return; }
+        if (this.state != Player.States.SelectCard) { this.socket.close(1001, 'Error is not you defend now'); return; }
         let otherPlayerName = data.otherPlayerName;
         let otherCardPlace = data.place;
         let bymycardplace = data.bymycardplace;
@@ -265,7 +286,8 @@ class Player {
     }
 
     actionDropCard(data) {
-        
+        if (this.phase != Player.Phases.Action) { this.socket.close(1001, 'Error is not you action now'); return; }
+        if (this.state != Player.States.SelectCard) { this.socket.close(1001, 'Error is not you drop now'); return; }
 
         let cardplace = data.place;
         this.dropOneCard(cardplace);
@@ -341,6 +363,11 @@ class Player {
                         str.toPlayer = additionalData.PlayerTo.playername;
                         if (this.playername == additionalData.PlayerTo.playername)
                             str.cardnum = c.card.num;
+                        break;
+                    case "ShowAllCards":
+                        if (v.playername != additionalData.Player.playername) break;
+                        str.ShowTo = true;
+                        str.cardnum = c.card.num;
                         break;
 
                 }

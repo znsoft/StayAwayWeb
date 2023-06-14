@@ -420,7 +420,7 @@
         Burn: { id: 5, HiLightText: "Select player", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer :BurnPlayer},
         DefendFromFire: { id: 6, Button: { Text: "Defend", action: DefendFromFire } },
         exChange: { id: 7, Button: { Text: "Exchange", action: exchangecardin } },
-
+        ShowAllCards: { id: 8, HiLightText: "Show all cards",Button: { Text: "Use", action: showAllCards}, },
 
 
     };
@@ -446,6 +446,7 @@
         ActionSuspicion: (me) => [Actions.Drop, Actions.SawOneCard],
         ActionAnalysis: (me) => [Actions.Drop, Actions.SawAllCards],
         ActionBurnFire: (me) => [Actions.Drop, Actions.Burn],
+        ActionWhiski: (me) => [Actions.Drop, Actions.ShowAllCards],
         FireResistance: (me, other) => {
             if (me.state == States.DefendFireSelectCard) return Actions.DefendFromFire;
             return Actions.inChange;
@@ -470,7 +471,7 @@
 
         ChangeDirection: new Card("Change\nDirection", 9, "Change\nDirection", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
         ChangePlace: new Card("Change place", 10, "Меняемся местами", "Поменяйтесь местами с соседним игроком, если он не на карантие и не за заколоченной дверью", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
-        Whiski: new Card("Whiski", 11, "Виски", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
+        Whiski: new Card("Whiski", 11, "Виски", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionWhiski, null),
         Axe: new Card("Axe", 12, "Топор", "Сбросте сыгранную на вас или на соседнего игрока карту Карантин или выложенную между вами карту Заколоченная дверь", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
 
         NoThanks: new Card("No Thanks", 13, "Нет уж, спасибо", "Откажитесь от обмена картами. возьмите 1 карту событие", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
@@ -1248,6 +1249,18 @@
 
 
     }
+
+    function showAllCards(place) {
+
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "actionShowAllCards";
+        p.place = place.cardplace;//
+        //console.log(place);
+        websocket.senddata(p);
+
+    }
+
 
     function rejectExchange(place) {
 

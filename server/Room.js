@@ -45,9 +45,8 @@ class Room {
                                 UPDATE SET (playername, timestamp , password ,  gamenum  ) = ( EXCLUDED.playername,  EXCLUDED.timestamp , EXCLUDED.password ,  r.gamenum +1) ;`,
             [this.roomname, this.playername,  new Date(), this.password], (err, data) => {
                 if (err) console.log(err);
-
             });
-*/
+            */
 
     }
 
@@ -269,6 +268,20 @@ class Room {
 
     }
 
+    ShowMyCardsToAll(player) {
+
+        this.getDeckAndDrop((deckData) => {
+            this.players.forEach((v, k) => {
+                //if (v.needupdate == true)
+                this.additionalData = { action: "ShowAllCards", Player: player };
+                v.update(deckData);
+                v.needupdate = false;
+            });
+        });
+
+
+    }
+
     findPlayer(playername, callback) {
         // console.log(this.players);
         let player = this.players.get(playername);
@@ -324,11 +337,14 @@ class Room {
 
 
     getDeckAndDrop(callback) {
-        if (this.deckcards.length == 0 || this.startgame == false) {
+        if (this.startgame == false) {
             //
             //callback(undefined);
             return;
         }
+
+        if (this.deckcards.length == 0) this.dropToDeckWithShuffle();
+        if (this.deckcards.length == 0) return;
         let card = this.deckcards[this.deckcards.length - 1];
         //console.log(card);
 
