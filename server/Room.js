@@ -4,7 +4,8 @@ const Card = require('./Card')
 class Room {
     constructor(clientDB, roomname, password, numofPlayers, playername, isNewDBObject, gamenum) {
         this.gamestarted = false;
-        this.players = new Map(); //key == playername , 
+        this.players = new Map(); //key == playername ,
+        this.spectators = []; 
         this.clientDB = clientDB;
         this.roomname = roomname;
         this.password = password;
@@ -48,6 +49,16 @@ class Room {
     }
 
 
+    killPlayer(player){
+        
+        //this.spectators.push(player);
+        //this.players.delete(player.playername);
+        this.getPlayers((playersArray) => {
+            playersArray.filter(pl=>!pl.isDead).sort((a,b)=>a.place-b.place).forEach((player,i)=>player.place = i);
+            this. calcNextPlayer();
+        });
+
+    }
 
 
     calcNextPlayer() {
@@ -296,6 +307,10 @@ class Room {
 
     }
 
+
+        
+
+
     addPlayer(socket, playerdata) {
        
         let player = new Player(this.clientDB, socket, this.roomname, playerdata.playername, playerdata.playername, this, this.gamenum, 0);
@@ -303,8 +318,6 @@ class Room {
         player.sendGUIDToPlayer();
         player.insertPlayer();
         
-        //this.needUpdateForPlayer(playerdata.playername);
-        //player.sendplayers(undefined);
         return player.cookieguid;
     }
 
@@ -316,9 +329,7 @@ class Room {
         player.cookieguid = playerdata.guid;
         this.players.set(playerdata.playername, player);
         player.sendGUIDToPlayer();
-        player.insertPlayer();
-        //this.needUpdateForPlayer(playerdata.playername);
-        //player.sendplayers(undefined);
+
         return player.cookieguid;
     }
 
@@ -364,9 +375,12 @@ class Room {
         if (player == undefined) { socket.close(1001, 'Player not found'); return; }
         //console.log(player[data.action]);
         if (data.action == undefined) return;
+        if(player.isDead==true){ socket.close(1001, 'Player is dead'); return; }
 
         this.additionalData = undefined;
         this.tableToDrop();
+
+
 
 
         try { player[data.action](data); } catch (e) {

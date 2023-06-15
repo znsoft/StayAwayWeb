@@ -25,6 +25,7 @@ class Player {
         this.lastseen = Date.now();
         if (room != null) this.place = room.players.size;
         this.cardForExchangeOut = null;
+        this.isDead = false;
 
     }
 
@@ -207,8 +208,17 @@ class Player {
         nextplayer.phase = Player.Phases.Answer;
         nextplayer.state = Player.States.DefendFireSelectCard;
         this.room.log(this + " сыграл огнемет на " + nextplayer);
+        let defend = nextplayer.cards.filter((v)=>{v.card ==Card.CardsByPlayers.FireResist});
+        if(defend.length>0)return;
+        this.room.log(nextplayer+" выбывает");
+        nextplayer.dead();
+        this.endTurn();
+        //nextplayer.cards.fil
+
 
     }
+
+
 
     actionDefendFromFire(data) {
         if (this.phase != Player.Phases.Answer) throw 'Error is not you answer now'; 
@@ -224,7 +234,8 @@ class Player {
         this.room.giveOneActionCardfromDeckToPlayer(this);
         this.stopPlay();
         this.room.currentplayer.endTurn();
-        this.room.log(this + " сыграл шашлык");
+
+        this.room.log(this + " никакого шашлыка");
 
     }
 
@@ -245,9 +256,21 @@ class Player {
 
         this.room.ShowOneOtherCardToPlayer(this, otherPlayerName, otherCardPlace);
         this.endTurn();
-        this.room.log(this + " подозрение на " + otherPlayerName);
+        this.room.log(this + " подозревает " + otherPlayerName);
 
 
+    }
+
+
+    dead(){
+        this.isDead = true;
+        this.cards.forEach(v=>this.room.dropcards.push(v));
+        this.cards = [];
+        this.place = null;
+        this.stopPlay();
+        this.room.killPlayer(this);
+        //
+                //.delete()
     }
 
     tableCard(place) {
@@ -368,7 +391,7 @@ class Player {
             // }
         });
         
-            return { playername: v.playername, cardForExchangeOut: v.cardForExchangeOut, quarantineCount: v.quarantineCount, num: v.place, Infected: p.Infected, thing: p.thing, state: p.state, phase: p.phase, cards: cardsArray, exchange: null };
+            return { playername: v.playername, cardForExchangeOut: v.cardForExchangeOut, quarantineCount: v.quarantineCount, num: v.place, isDead: v.isDead, Infected: p.Infected, thing: p.thing, state: p.state, phase: p.phase, cards: cardsArray, exchange: null };
 
 
     }

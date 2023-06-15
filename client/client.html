@@ -83,7 +83,7 @@
 
     </div>
 
-    <textarea id="gamelog" style="opacity: 0.4; position: absolute; transition: opacity 1s;" cols="90" rows="10" onclick="console.log('click')" readonly="true"></textarea>
+    <textarea id="gamelog" style="opacity: 0.4; position: absolute; transition: opacity 1s;" cols="40" rows="20" onclick="console.log('click')" readonly="true"></textarea>
 
     <canvas id="canvas" width="2000" height="2000">Please update your browser<br> in order to view this page.</canvas>
     <pre id="chat"></pre>
@@ -851,6 +851,7 @@
 
             let q = document.getElementById("gamelog");
             q.value = result;
+            q.scrollTop = q.scrollHeight;
 
         }
 
@@ -864,6 +865,7 @@
             this.exchange = [];
             this.players = [];
             message.playerlist.forEach((v, i) => {
+                if(v.isDead==true)return;
                 for (j in v.cards) {
                     //if
                     v.cards[j].card = findCardByNum(v.cards[j].cardnum); // тут приходит пакет с реквизитами
@@ -1030,7 +1032,7 @@
 
             let central = this.me.place;
 
-            this.players.forEach((v, i) => {
+            this.players.sort((a,b)=>a.place-b.place).forEach((v, i) => {
                 let newplace = v.place - central;
                 if (newplace < 0) newplace = newplace + this.players.length;
                 this.DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, newplace, c);
