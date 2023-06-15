@@ -25,8 +25,8 @@ class Room {
     }
 
     log(v) {
-        this.gamelog.push(v);
-        console.log(v);
+        this.gamelog.push(v.toString('utf8'));
+        console.log(v.toString('hex'));
     }
 
     get currentplayer() {
@@ -43,16 +43,7 @@ class Room {
     }
 
     insertRoom() {
-        //console.trace('INSERT ROOM');
-        /*
-        this.clientDB.query(`INSERT INTO rooms as r (roomid, playername, timestamp , password , gamenum )
-                             VALUES ($1, $2, $3, $4,  0)
-                                ON CONFLICT (roomid) DO
-                                UPDATE SET (playername, timestamp , password ,  gamenum  ) = ( EXCLUDED.playername,  EXCLUDED.timestamp , EXCLUDED.password ,  r.gamenum +1) ;`,
-            [this.roomname, this.playername,  new Date(), this.password], (err, data) => {
-                if (err) console.log(err);
-            });
-            */
+
 
     }
 
@@ -129,12 +120,12 @@ class Room {
             let curplayer = this.players.get(currentPlayer);
             this.currentplayer = curplayer;
             this.players.set(currentPlayer, curplayer);
-            let res = [];//тут будут все доступные для игры карты с учетом их количества каждого типа
-            let index = l - 4;//количество игроков - 4  
+            let res = [];//С‚СѓС‚ Р±СѓРґСѓС‚ РІСЃРµ РґРѕСЃС‚СѓРїРЅС‹Рµ РґР»СЏ РёРіСЂС‹ РєР°СЂС‚С‹ СЃ СѓС‡РµС‚РѕРј РёС… РєРѕР»РёС‡РµСЃС‚РІР° РєР°Р¶РґРѕРіРѕ С‚РёРїР°
+            let index = l - 4;//РєРѕР»РёС‡РµСЃС‚РІРѕ РёРіСЂРѕРєРѕРІ - 4  
             m.forEach((v, k) => {
                 if (v.firstDeck == false) return;
                 let numofthiscards = v.players[index];
-                for (; numofthiscards > 0; numofthiscards--)res.push(v.num);//собираем массив доступных для игры карт
+                for (; numofthiscards > 0; numofthiscards--)res.push(v.num);//СЃРѕР±РёСЂР°РµРј РјР°СЃСЃРёРІ РґРѕСЃС‚СѓРїРЅС‹С… РґР»СЏ РёРіСЂС‹ РєР°СЂС‚
             });
 
 
@@ -143,31 +134,31 @@ class Room {
                 let l = v.length;
                 for (; l < 4; l++) {
                     let r = Math.round(Math.random() * (res.length - 1)); ////console.log(`r:${r} l:${res.length} c:${res[r]}`);
-                    v.push(res[r]);//добавляем игроку карту
-                    res.splice(r, 1);//удаляем карту из общего пула
+                    v.push(res[r]);//РґРѕР±Р°РІР»СЏРµРј РёРіСЂРѕРєСѓ РєР°СЂС‚Сѓ
+                    res.splice(r, 1);//СѓРґР°Р»СЏРµРј РєР°СЂС‚Сѓ РёР· РѕР±С‰РµРіРѕ РїСѓР»Р°
                 }
 
             });
 
             playercards.forEach((v, k) => {
                 // console.log(v);
-                this.insertShuffle(v, k);//перемешаем карты игрока и отдаем ему в руку
+                this.insertShuffle(v, k);//РїРµСЂРµРјРµС€Р°РµРј РєР°СЂС‚С‹ РёРіСЂРѕРєР° Рё РѕС‚РґР°РµРј РµРјСѓ РІ СЂСѓРєСѓ
                 //console.log();
             });
-            /* на время тестирования отключаю паники и заражения
-                        m.forEach((v, k) => {//подмешаем карты заражений и паники в оставшуюся колоду 
+            /* РЅР° РІСЂРµРјСЏ С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ РѕС‚РєР»СЋС‡Р°СЋ РїР°РЅРёРєРё Рё Р·Р°СЂР°Р¶РµРЅРёСЏ
+                        m.forEach((v, k) => {//РїРѕРґРјРµС€Р°РµРј РєР°СЂС‚С‹ Р·Р°СЂР°Р¶РµРЅРёР№ Рё РїР°РЅРёРєРё РІ РѕСЃС‚Р°РІС€СѓСЋСЃСЏ РєРѕР»РѕРґСѓ 
                             if (v.firstDeck == true) return;
                             if (v.playDeck == false) return;
                             let numofthiscards = v.players[index];
                             for (; numofthiscards > 0; numofthiscards--)res.push(v.num);
                         });
             */
-            this.insertShuffle(res);//оставшиеся карты перетасуем и закинем в деку
+            this.insertShuffle(res);//РѕСЃС‚Р°РІС€РёРµСЃСЏ РєР°СЂС‚С‹ РїРµСЂРµС‚Р°СЃСѓРµРј Рё Р·Р°РєРёРЅРµРј РІ РґРµРєСѓ
             this.currentplayer.startPlay();
 
             this.gamestarted = true;           // this.clientDB.query('update rooms set gamestarted = true where roomid = $1; ', [this.roomname], (err, data) => { if (err) console.trace(err); });
             this.needUpdateForAll();
-            this.log("игра начата");
+            this.log("РёРіСЂР° РЅР°С‡Р°С‚Р°");
 
         });
 

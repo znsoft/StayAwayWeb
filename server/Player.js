@@ -69,7 +69,7 @@ class Player {
     }
 
     insertPlayer() {
-        this.room.log(this + " вошел в игру");
+        this.room.log(this + " РІРѕС€РµР» РІ РёРіСЂСѓ");
     }
 
     generateGUID() {
@@ -98,7 +98,7 @@ class Player {
         this.state = Player.States.OutgoingExchange;
         nextplayer.phase = Player.Phases.Answer;
         nextplayer.state = Player.States.IncomeExchange;
-        this.room.log(this + " обменивается картами с " + nextplayer );
+        this.room.log(this + " РѕР±РјРµРЅРёРІР°РµС‚СЃСЏ РєР°СЂС‚Р°РјРё СЃ " + nextplayer );
 
 
     }
@@ -108,7 +108,7 @@ class Player {
         this.phase = Player.Phases.Action;
         this.state = Player.States.SelectCard;
         this.getOneCardfromDeckForAction();
-        this.room.log(this + " начал ход");
+        this.room.log(this + " РЅР°С‡Р°Р» С…РѕРґ");
 
     }
 
@@ -172,7 +172,7 @@ class Player {
         this.tableCard(bymycardplace);
         this.endTurn();
         this.room.ShowMyCardsToAll(this);
-        this.room.log(this + " показал карты всем");
+        this.room.log(this + " РїРѕРєР°Р·Р°Р» РєР°СЂС‚С‹ РІСЃРµРј");
 
     }
 
@@ -206,7 +206,7 @@ class Player {
         this.state = Player.States.Nothing;
         nextplayer.phase = Player.Phases.Answer;
         nextplayer.state = Player.States.DefendFireSelectCard;
-        this.room.log(this + " сыграл огнемет на " + nextplayer);
+        this.room.log(this + " СЃС‹РіСЂР°Р» РѕРіРЅРµРјРµС‚ РЅР° " + nextplayer);
 
     }
 
@@ -224,7 +224,7 @@ class Player {
         this.room.giveOneActionCardfromDeckToPlayer(this);
         this.stopPlay();
         this.room.currentplayer.endTurn();
-        this.room.log(this + " сыграл шашлык");
+        this.room.log(this + " СЃС‹РіСЂР°Р» С€Р°С€Р»С‹Рє");
 
     }
 
@@ -245,7 +245,7 @@ class Player {
 
         this.room.ShowOneOtherCardToPlayer(this, otherPlayerName, otherCardPlace);
         this.endTurn();
-        this.room.log(this + " подозрение на " + otherPlayerName);
+        this.room.log(this + " РїРѕРґРѕР·СЂРµРЅРёРµ РЅР° " + otherPlayerName);
 
 
     }
@@ -275,7 +275,7 @@ class Player {
         let cardplace = data.place;
         this.dropOneCard(cardplace);
         this.endTurn();
-        this.room.log(this + " сбросил карту");
+        this.room.log(this + " СЃР±СЂРѕСЃРёР» РєР°СЂС‚Сѓ");
     }
 
     getOneCardfromDeckForAction() {
@@ -307,8 +307,8 @@ class Player {
             p.phase = v.phase;
 
 
-            if (this.thing == true) p.Infected = v.Infected;//покажем нечте зараженных
-            if (this.Infected == true) p.thing = v.thing;//покажем зараженным нечту
+            if (this.thing == true) p.Infected = v.Infected;//РїРѕРєР°Р¶РµРј РЅРµС‡С‚Рµ Р·Р°СЂР°Р¶РµРЅРЅС‹С…
+            if (this.Infected == true) p.thing = v.thing;//РїРѕРєР°Р¶РµРј Р·Р°СЂР°Р¶РµРЅРЅС‹Рј РЅРµС‡С‚Сѓ
 
             exchange.push(this.addCards(v, p) );
 

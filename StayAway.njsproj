@@ -39,7 +39,6 @@
     <Content Include="package-lock.json" />
     <Content Include="package.json" />
     <Content Include="README.md" />
-    <Content Include=".eslintrc.js" />
     <Content Include="server.js" />
     <Content Include="webpack.config.js" />
     <Content Include="client\client.html" />
