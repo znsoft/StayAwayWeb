@@ -349,11 +349,7 @@
 
         isCardMovableForAction(player) {
             let c = this.GetActionArray(player);
-            //Actions.Drop.
             return c.filter((v) => v.MayMove == true).length > 0;
-            //v.hasOwnProperty("MayMove") &&
-            //for (var c of check) { }
-
         }
 
         RemoveOldAddNewButtons(player, z) {
@@ -378,7 +374,7 @@
 
         }
 
-        Draw(ctx) {
+        Draw(ctx,e) {
 
             //ctx.beginPath();
             if (this.isPanic && !this.isUnknown) ctx.scale(2.0, 2.0);
@@ -392,9 +388,15 @@
             ctx.roundRect(0, 0, Card.width, Card.height, 10);
             ctx.fillStyle = this.isUnknown ? "#b92" : "#f5fb";
             ctx.fill();
-
-            ctx.stroke(); // Draw it
-            //ctx.closePath();
+            ctx.stroke();
+            if (e != undefined) {
+                    let c = ctx.getWindowToCanvas(e);
+                    if (c != undefined)
+                        if (c.x > 0 && c.x < Card.width && c.y > 0 && c.y < Card.height) {
+                            return true;
+                        }
+                }
+            return false;
         }
 
 
@@ -579,6 +581,13 @@
 
 
     class Player {
+
+        static x1 = -2 * Card.width;
+        static y1 = -20;
+        static x2 = 5 * Card.width;
+        static y2 = 250;
+        
+
         constructor(name, num, isMe, cards, state, Phase, QuarantineCount = 0) {
             this.name = name;
             this.playername = name;
@@ -681,7 +690,7 @@
                 if (e != undefined) {
                     let p = ctx.getWindowToCanvas(e);
                     if (p != undefined)
-                        if (p.x > -2 * Card.width && p.x < 5 * Card.width && p.y > -20 && p.y < 250) errortext = this.OnPlayerSelect(OnSelectPlayer, HiLightRLPlayers);
+                        if (p.x > Player.x1 && p.x < Player.x2 && p.y > Player.y1 && p.y < Player.y2) errortext = this.OnPlayerSelect(OnSelectPlayer, HiLightRLPlayers);
                 }
             }
 
@@ -717,12 +726,6 @@
                     }
 
 
-
-                    if (c != undefined)
-                        if (c.x > 0 && c.x < 90 && c.y > 0 && c.y < 150) {
-                            errortext = this.OnCardSelect(v, z, actionOnSelectSecondCard, selectNearPlayersCards);
-
-                        }
                 }
 
                 if (this.isMe && this.selected == z && this.move != null && this.moveOneCard) {
@@ -730,7 +733,7 @@
                 } else ctx.rotate(i / 50 * Math.PI);
 
 
-                v.card.Draw(ctx);
+                if(v.card.Draw(ctx,e)) errortext = this.OnCardSelect(v, z, actionOnSelectSecondCard, selectNearPlayersCards);
 
                 ctx.strokeStyle = "#af2";
 
@@ -750,8 +753,8 @@
         }
 
         OnPlayerSelect(callback, isNearOnly) {
-            if (this.isMe) return 'Select other player!';
-            if (!this.isNear && isNearOnly == true) return 'Select near player!';
+            if (this.isMe) return 'Выбери другого игрока';
+            if (!this.isNear && isNearOnly == true) return 'Выбери ближайшего игрока';
 
             if (callback != undefined) callback(this);
 
@@ -762,13 +765,13 @@
         OnCardSelect(v, z, actionOnSelectSecondCard, selectNearPlayersCards) {
 
 
-            if (game.me.isMyTurnToDefend && !this.isMe) return 'Select your card for defend from fire!!!';
+            if (game.me.isMyTurnToDefend && !this.isMe) return 'Выбери никакого шашлыка';
             if (game.me.isMyTurnToDefend && this.isMe) {
 
 
             }
 
-            if (game.me.isStartTurnExchangeIn && !this.isMe) return 'Select your card for exchange or decline!!!';
+            if (game.me.isStartTurnExchangeIn && !this.isMe) return 'Выбери свою карту для обмена в ответ';
             if (game.me.isStartTurnExchangeIn && this.isMe) {
                 let isInExchange = undefined;
                 let c = v.card.GetAnswerArray(this, game.opponent);
@@ -777,10 +780,10 @@
                     if (i.isInExchange != undefined) isInExchange = i.isInExchange;
                 });
                 
-                if (isInExchange == undefined || isInExchange == false) return 'Select other card for exchange or decline!!!';
+                if (isInExchange == undefined || isInExchange == false) return 'Выбери другую карту для обмена в ответ';
             }
 
-            if (game.me.isEndTurnExchange && !this.isMe) return 'Select your card for exchange!!!';
+            if (game.me.isEndTurnExchange && !this.isMe) return 'Выбери свою карту для обмена';
             if (game.me.isEndTurnExchange && this.isMe) {
                 let isOutExchange = undefined;
                 let c = v.card.GetExchangeArray(this, game.opponent);
@@ -788,14 +791,14 @@
                 c.forEach((i) => {
                     if (i.isOutExchange != undefined) isOutExchange = i.isOutExchange;
                 });
-                if (isOutExchange == undefined || isOutExchange==false) return 'Select other card for exchange!!!';
+                if (isOutExchange == undefined || isOutExchange==false) return 'Выбери другую карту для обмена';
                 //outChangeAction(v);
 
             }
 
  
             
-            if (this.PanicCount > 0 && !v.card.isPanic)                return 'Select panic!!!';
+            if (this.PanicCount > 0 && !v.card.isPanic)                return 'Выбери панику';
 
             if (selectNearPlayersCards && !this.isMe) {
                 if (this.isNear) {
@@ -803,7 +806,7 @@
                     if (actionOnSelectSecondCard != undefined) actionOnSelectSecondCard(this.playername, v);
                     return '';
                 }
-                return 'Select only near player card';
+                return 'Выбери карту ближайшего игрока';
             }
 
             this.selected = z; this.selectedCard = v; v.card.RemoveOldAddNewButtons(this, v)
@@ -915,9 +918,6 @@
         isNearOpponent(player) {
             let pldist = Math.abs(player.place - this.me.place);
             return pldist == 1 || pldist == this.players.length - 1;
-
-            //return player == this.players[1] || player == this.players[this.players.length - 1];
-
         }
 
         DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, i, actions) {
@@ -940,7 +940,7 @@
             if (this.isNearOpponent(v) && HiLightRLPlayers == true && v != this.me || (HLOpponent && v.place == this.nextplayer)) {
                 ctx.fillStyle = "#003";
                 ctx.strokeStyle = "#a02";
-                ctx.roundRect(-2 * 95, -20, 5 * 95, 250, 20).stroke();
+                ctx.roundRect(Player.x1, Player.y1, Player.x2, Player.y2, 20).stroke();
             }
 
             v.Draw(ctx, e, actions);
@@ -962,27 +962,37 @@
 
         }
 
+        drawDescriptionSelectedCard(ctx){
+
+
+
+
+
+
+
+        }
+
         drawStatePhase() {
 
             let stateText = "";
-            if (this.opponent != null) stateText = "Now turn " + this.opponent;
+            if (this.opponent != null) stateText = "сейчас ход " + this.opponent;
             let phaseText = "";
             switch (this.me.state) {
                 case States.IncomeExchange:
-                    stateText = "Select your card";
+                    stateText = "Выбери свою карту";
 
                     break;
                 case States.SelectCard:
-                    stateText = "Select your card";
+                    stateText = "Выбери свою карту";
                     switch (this.me.Phase) {
                         case Phases.Exchange:
-                            phaseText = "for exchange";
+                            phaseText = "для обмена";
                             break;
                         case Phases.Action:
-                            phaseText = "for action";
+                            phaseText = "для действия";
                             break;
                         case Phases.Answer:
-                            phaseText = "for answer";
+                            phaseText = "для ответа";
                             break;
 
                     }
@@ -1000,15 +1010,16 @@
         Draw(ctx, e, w, h) {
             ctx.clearRect(0, 0, w, h);
             ctx.save();
-            ctx.translate(w / 2, h / 2);
-
+            ctx.translate(w / 2, h / 2); //центр экрана это (0,0)
 
             if (this.me.selectedCard == null || this.me.Phase == Phases.Nothing || !(this.me.state == States.SelectCard || this.me.state == States.IncomeExchange || this.me.state == States.DefendFireSelectCard)) Button.DeleteAll()
+            if (this.me.selectedCard != null) if(this.me.selectedCard.card.Description!=undefined)    
+            this.drawText(ctx, -w / 2, h / 2 - 100, this.me.selectedCard.card.Description);
+            //this.drawDescriptionSelectedCard(ctx);
             this.drawStatePhase();
 
             let HLOpponent = false;
             if (this.me.Phase == Phases.Exchange) {
-                //this.drawText(ctx, -10, -190, "Select card \nfor exchange");
                 HLOpponent = this.nextplayer != null;
             }
 
@@ -1226,26 +1237,15 @@
         game.moveOneCard = false;
     });
 
-    /*
-    // отправить сообщение из формы publish
-    document.forms.publish.onsubmit = function () {
-        var outgoingMessage = this.message.value;
 
-        socket.send(outgoingMessage);
-        return false;
-    };
-    */
     function BurnPlayer(player) {
 
         let p = JSON.parse(document.cookie);
         p.messagetype = 'playeraction';
-        p.action = "actionBurnPlayer";
-       
+        p.action = "BurnPlayer";
         p.bymycardplace = game.me.selectedCard.cardplace;
         p.otherPlayerName = player.name;
-        //console.log(p);
         websocket.senddata(p);
-       // game.me.selected = null;
 
     }
 
@@ -1253,14 +1253,11 @@
 
         let p = JSON.parse(document.cookie);
         p.messagetype = 'playeraction';
-        p.action = "actionDefendFromFire";
+        p.action = "DefendFromFire";
 
         p.bymycardplace = pl.cardplace;
         
         websocket.senddata(p);
-       // game.me.selected = null;
-
-
 
     }
 
@@ -1268,7 +1265,7 @@
 
         let p = JSON.parse(document.cookie);
         p.messagetype = 'playeraction';
-        p.action = "actionShowAllCards";
+        p.action = "ShowAllCards";
         p.place = place.cardplace;//
         //console.log(place);
         websocket.senddata(p);
@@ -1285,7 +1282,7 @@
     function dropcard(place) {
         let p = JSON.parse(document.cookie);
         p.messagetype = 'playeraction';
-        p.action = "actionDropCard";
+        p.action = "DropCard";
         p.place = place.cardplace;//
         console.log(place);
         websocket.senddata(p);
@@ -1295,7 +1292,7 @@
     function ShowMeCard(otherplayername, place) {
         let p = JSON.parse(document.cookie);
         p.messagetype = 'playeraction';
-        p.action = "actionShowMeCard";
+        p.action = "ShowMeCard";
         p.place = place.cardplace;//
         p.bymycardplace = game.me.selectedCard.cardplace;
         p.otherPlayerName = otherplayername;
@@ -1340,9 +1337,6 @@
                 return;
             } catch { }
         }
-
-
-
 
     }
 

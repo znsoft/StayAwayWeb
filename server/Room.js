@@ -51,11 +51,12 @@ class Room {
 
     killPlayer(player){
         
-        //this.spectators.push(player);
-        //this.players.delete(player.playername);
+        this.spectators.push(player);
+        this.players.delete(player.playername);
         this.getPlayers((playersArray) => {
-            playersArray.filter(pl=>!pl.isDead).sort((a,b)=>a.place-b.place).forEach((player,i)=>player.place = i);
-            this. calcNextPlayer();
+            //this.players = new Map();
+            playersArray.filter(pl=>!pl.isDead).sort((a,b)=>a.place-b.place).forEach((player,i)=>{player.place = i});
+            this.calcNextPlayer();
         });
 
     }
@@ -98,9 +99,8 @@ class Room {
         this.numofplayers = this.players.size;//.length;       // this.clientDB.query(`update rooms set numofplayers = (select count(*) from players as p inner join rooms as r on r.roomid=p.roomid and r.gamenum=p.gamenum  where p.roomid = $1) where roomid = $1`, [this.roomname,], (err, data) => { });
         player.readyforstart = true;
         if (this.numofplayers < 4) return;
-        // this.clientDB.query(`delete from cards where roomid IN (SELECT roomid FROM rooms WHERE roomid = $1 and gamestarted = false);`, [this.roomname,], (err, data) => { });
+
         let last_thing = null;
-        //this.clientDB.query(`select last_thing from rooms WHERE roomid = $1`, [this.roomname], (err, data) => { if (err) console.log(err); last_thing = data.rows[0].last_thing; });
 
         let playercards = new Map();
         //console.log(Card);
@@ -111,22 +111,20 @@ class Room {
             this.gamestarted = true;
 
             a.forEach((v, i) => {
-
                 playercards.set(v.playerid, []);
                 let ppp = this.players.get(v.playerid);
                 ppp.cards = [];
                 ppp.place = i;
                 this.players.set(v.playerid, ppp);
-
             });
-            let thing = a[Math.round(Math.random() * (l - 1))];
 
+            let thing = a[Math.round(Math.random() * (l - 1))];
+            thing.thing = true;
             playercards.set(thing.playerid, [0]);
 
             let currentPlayer = last_thing;
             if (last_thing == null) {
                 currentPlayer = a[Math.round(Math.random() * (l - 1))].playerid;
-                //this.clientDB.query(`update rooms as r set currentplayer = $2 WHERE roomid = $1`, [this.roomname, currentPlayer], (err, data) => { if (err) console.log(err); });
             }
             let curplayer = this.players.get(currentPlayer);
             this.currentplayer = curplayer;
@@ -139,8 +137,6 @@ class Room {
                 for (; numofthiscards > 0; numofthiscards--)res.push(v.num);//собираем массив доступных для игры карт
             });
 
-
-            //this.players.forEach((v, k) => {
             playercards.forEach((v, k) => {
                 let l = v.length;
                 for (; l < 4; l++) {
@@ -148,28 +144,25 @@ class Room {
                     v.push(res[r]);//добавляем игроку карту
                     res.splice(r, 1);//удаляем карту из общего пула
                 }
-
             });
 
             playercards.forEach((v, k) => {
-                // console.log(v);
                 this.insertShuffle(v, k);//перемешаем карты игрока и отдаем ему в руку
-                //console.log();
             });
-            /* на время тестирования отключаю паники и заражения
+             
                         m.forEach((v, k) => {//подмешаем карты заражений и паники в оставшуюся колоду 
                             if (v.firstDeck == true) return;
                             if (v.playDeck == false) return;
                             let numofthiscards = v.players[index];
                             for (; numofthiscards > 0; numofthiscards--)res.push(v.num);
                         });
-            */
+            
             this.insertShuffle(res);//оставшиеся карты перетасуем и закинем в деку
             this.currentplayer.startPlay();
 
             this.gamestarted = true;           // this.clientDB.query('update rooms set gamestarted = true where roomid = $1; ', [this.roomname], (err, data) => { if (err) console.trace(err); });
             this.needUpdateForAll();
-            this.log("игра начата");
+            this.log("игра началась");
 
         });
 
@@ -200,10 +193,7 @@ class Room {
     nowNextPlayer() {
         this.stopPlay();
         let nextplayer = this.room.nextplayer;
-
-
         this.room.currentplayer = nextplayer;
-        //this.room.calcNextPlayer();
         nextplayer.startPlay();
 
     }
@@ -234,14 +224,12 @@ class Room {
 
     needUpdateForAll() {
         this.players.forEach((v, k) => { v.needupdate = true });
-        // this.clientDB.query(`update players set needupdate = true where roomid = $1;`, [this.roomname], (err, data) => { if (err) console.trace(err); });
     }
 
     needUpdateForPlayer(playername) {
         let p = this.players.get(playername);
         p.needupdate = true;
         this.players.set(playername, p);
-        //this.clientDB.query(`update players set needupdate = true where roomid = $1 and playerid=$2;`, [this.roomname, playername], (err, data) => { if (err) console.trace(err); });
     }
 
     getPlayerByPlayerName(playername) { return this.players.get(playername); }
@@ -258,6 +246,8 @@ class Room {
                     v.update(deckData);
                 v.needupdate = false;
             });
+            this.spectators.forEach(v=>v.update(deckData));
+
         });
     }
 
@@ -266,7 +256,6 @@ class Room {
 
         this.getDeckAndDrop((deckData) => {
             this.players.forEach((v, k) => {
-                //if (v.needupdate == true)
                 this.additionalData = { action: "ShowOneCardToPlayer", PlayerTo: playerTo, PlayerFrom: playerFrom, Card: card };
                 v.update(deckData);
                 v.needupdate = false;
@@ -280,7 +269,6 @@ class Room {
 
         this.getDeckAndDrop((deckData) => {
             this.players.forEach((v, k) => {
-                //if (v.needupdate == true)
                 this.additionalData = { action: "ShowAllCards", Player: player };
                 v.update(deckData);
                 v.needupdate = false;
@@ -291,7 +279,6 @@ class Room {
     }
 
     findPlayer(playername, callback) {
-        // console.log(this.players);
         let player = this.players.get(playername);
 
         if (player != undefined) {
@@ -306,9 +293,6 @@ class Room {
     clearPlayers() {
 
     }
-
-
-        
 
 
     addPlayer(socket, playerdata) {
@@ -347,33 +331,24 @@ class Room {
 
     getDeckAndDrop(callback) {
         if (this.startgame == false) {
-            //
-            //callback(undefined);
             return;
         }
 
         if (this.deckcards.length == 0) this.dropToDeckWithShuffle();
         if (this.deckcards.length == 0) return;
         let card = this.deckcards[this.deckcards.length - 1];
-        //console.log(card);
-
-        //console.log(this.dropcards);
-        // let card = Card.findCardByNum(lastcardofDeck);
         let lastdrop = this.dropcards[this.dropcards.length - 1];
         let drop = this.dropcards.map((v) => v.card.num);
         let table = this.tablecards.map((v) => v.card.num);
         let deck = { table: table, drop: drop, deckCount: this.deckcards.length, dropCount: this.dropcards.length, card: card.card.isPanic ? Card.CardsByPlayers.UnknownPanic.num : Card.CardsByPlayers.UnknownAction.num, isGameStarted: true, direction: this.direction };
-        //console.log(deck);
         callback(deck);
 
 
     }
 
     doAction(socket, data) {
- //       console.log(data);
         let player = this.players.get(data.playername);
         if (player == undefined) { socket.close(1001, 'Player not found'); return; }
-        //console.log(player[data.action]);
         if (data.action == undefined) return;
         if(player.isDead==true){ socket.close(1001, 'Player is dead'); return; }
 
@@ -381,9 +356,10 @@ class Room {
         this.tableToDrop();
 
 
+        console.log("action"+data.action);
+        console.log(player["action"+data.action]);
+        try { player["action"+data.action](data); } catch (e) {
 
-
-        try { player[data.action](data); } catch (e) {
             socket.close(1001, e);
         };
 
@@ -397,9 +373,6 @@ class Room {
 
 
     }
-
-
-
 
     ShowOneOtherCardToPlayer(player, otherPlayerName, otherCardPlace) {
         let otherplayer = this.players.get(otherPlayerName);

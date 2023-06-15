@@ -65,12 +65,11 @@ class Player {
 
     sendGUIDToPlayer() {
         this.lastseen = Date.now();
-        //this.clientDB.query(`update players set (needupdate, lastseen ) = (true, $2) WHERE guid = $1 ; `, [this.guid, new Date()], (err, data) => { });
         this.send({ messagetype: 'playerguid', guid: this.cookieguid, playername: this.playername, roomname: this.roomid, password: this.room.password, quarantineCount: this.quarantineCount, infected: this.Infected, thing: this.thing, gamenum: this.gamenum });
     }
 
     insertPlayer() {
-        this.room.log(this + " вошел в игру");
+        this.room.log(this + " входит в игру");
     }
 
     generateGUID() {
@@ -80,9 +79,9 @@ class Player {
 
     update(deckData) {
 
-        //console.log(this.guid);
+
         if (!this.isonline()) {
-            //console.log("offline");
+ 
             return;
         }
         this.sendplayers(deckData);
@@ -91,7 +90,7 @@ class Player {
 
     }
 
-    outExchangeCard(data) {
+    actionoutExchangeCard(data) {
         if (this.phase != Player.Phases.Exchange) throw 'Error is not you Exchange now';
         if (this.state != Player.States.SelectCard)  throw 'Error is not you state now'; 
         let nextplayer = this.room.getPlayerByPlayerName(data.opponent);
@@ -109,7 +108,7 @@ class Player {
         this.phase = Player.Phases.Action;
         this.state = Player.States.SelectCard;
         this.getOneCardfromDeckForAction();
-        this.room.log(this + " начал ход");
+        this.room.log(this + " начинает ход");
 
     }
 
@@ -126,7 +125,7 @@ class Player {
     }
 
 
-    inExchangeCard(data) {
+    actioninExchangeCard(data) {
         if (this.phase != Player.Phases.Answer) throw 'Error is not you answer now';
         if (this.state != Player.States.IncomeExchange) throw 'Error is not you state now';
         let nextplayer = this.room.getPlayerByPlayerName(data.opponent);
@@ -173,7 +172,7 @@ class Player {
         this.tableCard(bymycardplace);
         this.endTurn();
         this.room.ShowMyCardsToAll(this);
-        this.room.log(this + " показал карты всем");
+        this.room.log(this + " показывает карты всем");
 
     }
 
@@ -201,14 +200,16 @@ class Player {
         let mycard = this.cards[cardindex]; //
         if (mycard.card != Card.CardsByPlayers.BurnFire) throw 'Error is not burn card'; 
 
-        console.log(this.playername + " try Burn " + otherPlayerName);
+        //console.log(this.playername + " try Burn " + otherPlayerName);
         this.tableCard(bymycardplace);
 
         this.state = Player.States.Nothing;
         nextplayer.phase = Player.Phases.Answer;
         nextplayer.state = Player.States.DefendFireSelectCard;
-        this.room.log(this + " сыграл огнемет на " + nextplayer);
-        let defend = nextplayer.cards.filter((v)=>{v.card ==Card.CardsByPlayers.FireResist});
+        this.room.log(this + " играет огнемет на " + nextplayer);
+        let defend = nextplayer.cards.filter((v)=>
+            v.card.num == Card.CardsByPlayers.FireResist.num);
+        //console.log(defend);
         if(defend.length>0)return;
         this.room.log(nextplayer+" выбывает");
         nextplayer.dead();
@@ -298,7 +299,7 @@ class Player {
         let cardplace = data.place;
         this.dropOneCard(cardplace);
         this.endTurn();
-        this.room.log(this + " сбросил карту");
+        this.room.log(this + " сбрасывает карту");
     }
 
     getOneCardfromDeckForAction() {
@@ -352,8 +353,7 @@ class Player {
         let cardsArray = [];
         
         v.cards.forEach((c, i) => {
-            //console.log(card);
-            //let card = vCard.num;
+
             let cardplace = c.place;
             
             let str = { cardnum: -1, cardplace: cardplace };
@@ -386,9 +386,6 @@ class Player {
 
 
             cardsArray.push(str);
-            // } else {
-            //     p.exchange = { nextplayer: v.nextplayerforcard, card: -1, cardplace: cardplace };
-            // }
         });
         
             return { playername: v.playername, cardForExchangeOut: v.cardForExchangeOut, quarantineCount: v.quarantineCount, num: v.place, isDead: v.isDead, Infected: p.Infected, thing: p.thing, state: p.state, phase: p.phase, cards: cardsArray, exchange: null };
