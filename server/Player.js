@@ -37,7 +37,8 @@ class Player {
         Nothing: 0,
         Exchange: 1,
         Action: 2,
-        Answer: 3
+        Answer: 3,
+        SecondAction: 4
 
     }
 
@@ -49,7 +50,8 @@ class Player {
         PerseveranceSelectCard: 5,
         SelectPlayer: 6,
         DefendFireSelectCard: 7,
-        Panic: 8
+        Panic: 8,
+        SelectCardAndPlayerForOutgoingExchange:9
 
 
     }
@@ -90,14 +92,36 @@ class Player {
 
     }
 
+    actionStartTemptation(data){
+        if(this.phase != Player.Phases.Action) throw 'Error is not you Action now';
+        if(this.state != Player.States.SelectCard)throw 'Error is not you state now';
+        let cardindex = this.findcardindex(data.bymycardplace);
+        let mycard = this.cards[cardindex];       
+        if (mycard.card != Card.CardsByPlayers.Temptation)throw 'Error is not temptation';
+        this.state = Player.States.SelectCardAndPlayerForOutgoingExchange;
+        this.tableCard(data.bymycardplace);
+        this.room.log(this + " играет соблазн");
+
+
+    } 
+
     actionoutExchangeCard(data) {
         if (this.phase != Player.Phases.Exchange) throw 'Error is not you Exchange now';
         if (this.state != Player.States.SelectCard)  throw 'Error is not you state now'; 
         let nextplayer = this.room.getPlayerByPlayerName(data.opponent);
+        
+        let cardindex = this.findcardindex(data.place);
+        let mycard = this.cards[cardindex];       
+        if (mycard.card == Card.CardsByPlayers.Infect){
+            if(!(this.thing||nextplayer.thing && this.Infected))throw 'you cant infect other, you not the thing';
+        }
+        
+        
         this.cardForExchangeOut = data.place;
         this.state = Player.States.OutgoingExchange;
         nextplayer.phase = Player.Phases.Answer;
         nextplayer.state = Player.States.IncomeExchange;
+
         this.room.log(this + " обменивается картами с " + nextplayer );
 
 
@@ -133,12 +157,15 @@ class Player {
 
         let othercardindex = nextplayer.findcardindex(nextplayer.cardForExchangeOut);
         let othercard = nextplayer.cards[othercardindex];
+        if (othercard.card == Card.CardsByPlayers.Infect)this.Infected = true;
         nextplayer.cards.splice(othercardindex, 1);
         let mycardindex = this.findcardindex(data.place);
         let mycard = this.cards[mycardindex];
+        if (mycard.card == Card.CardsByPlayers.Infect)nextplayer.Infected = true;
         this.cards.splice(mycardindex, 1);
         nextplayer.cards.push(mycard);
         this.cards.push(othercard);
+        this.cards.forEach((v, i) => { v.place = i });
         nextplayer.cards.forEach((v, i) => { v.place = i });
         nextplayer.stopPlay();
         nextplayer.cardForExchangeOut = null;
@@ -149,7 +176,6 @@ class Player {
     nowNextPlayer() {
         this.stopPlay();
         let nextplayer = this.room.nextplayer;
-
 
         this.room.currentplayer = nextplayer;
         //this.room.calcNextPlayer();

@@ -149,13 +149,14 @@ class Room {
             playercards.forEach((v, k) => {
                 this.insertShuffle(v, k);//перемешаем карты игрока и отдаем ему в руку
             });
-             
+             /*
                         m.forEach((v, k) => {//подмешаем карты заражений и паники в оставшуюся колоду 
                             if (v.firstDeck == true) return;
                             if (v.playDeck == false) return;
                             let numofthiscards = v.players[index];
                             for (; numofthiscards > 0; numofthiscards--)res.push(v.num);
                         });
+                        */
             
             this.insertShuffle(res);//оставшиеся карты перетасуем и закинем в деку
             this.currentplayer.startPlay();

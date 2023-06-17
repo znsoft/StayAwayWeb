@@ -294,7 +294,7 @@
         static width= 95;
         static height= 150;
         static splace = 0;
-        constructor(name, num, CardCaption, Description, img, Exchange, Answer, Action, Defend, isPanic = false, isUnknown = false) {
+        constructor(name, num, CardCaption, Description, img, Exchange, Answer, Action, SecondAction, isPanic = false, isUnknown = false) {
             this.name = name;
             this.num = num;
             this.isPanic = isPanic;
@@ -305,10 +305,10 @@
             this.Exchange = Exchange;
             this.Answer = Answer;
             this.Action = Action;
-            this.Defend = Defend;
+            this.SecondAction = SecondAction;
             Card.splace++;
             this.place = Card.splace;
-            this.opponent = null;
+            //this.opponent = null;//?????  opponent in card ???
             this.x = 0;
             this.y = 0;
         }
@@ -318,6 +318,17 @@
             let check = null;
             if (Array.isArray(this.Action)) check = this.Action; else check = [this.Action];
             if (typeof (this.Action) == "function") check = this.Action(player);
+            if (check == null || check == undefined) return [];
+            if (!Array.isArray(check)) check = [check];
+            return check;
+
+        }
+
+        GetSecondActionArray(player,other,card) {
+            if (this.SecondAction == null) return [];
+            let check = null;
+            if (Array.isArray(this.SecondAction)) check = this.SecondAction; else check = [this.SecondAction];
+            if (typeof (this.SecondAction) == "function") check = this.SecondAction(player,card);
             if (check == null || check == undefined) return [];
             if (!Array.isArray(check)) check = [check];
             return check;
@@ -355,14 +366,29 @@
         RemoveOldAddNewButtons(player, z) {
             Button.DeleteAll();
             //  if (!(player.State == States.IncomeExchange || player.State == States.SelectCard || player.State == States.SelectPlayer || player.State == States.PerseveranceSelectCard || player.State == States.SuspicionSelectCard)) return;
-            if (player.Phase == Phases.Nothing) return;
+            //if (player.Phase == Phases.Nothing) return;
             let c = [];
-            if (player.Phase == Phases.Action)
+            switch(player.Phase){
+                case Phases.Nothing:
+                    return;
+                case Phases.Action:
                 c = this.GetActionArray(player);
-            if (player.Phase == Phases.Exchange)
-                c = this.GetExchangeArray(player, this.opponent);
-            if (player.Phase == Phases.Answer)
-                c = this.GetAnswerArray(player, this.opponent);
+                break;
+                case Phases.Exchange:
+                c = this.GetExchangeArray(player, game.opponent);//?????  opponent in card ???
+                break;
+
+                case Phases.Answer:
+                c = this.GetAnswerArray(player, game.opponent);
+                break;
+                case Phases.SecondAction:
+                game.Deck.table.forEach((v)=>c = v.GetSecondActionArray(player,this));
+                break;
+
+
+            }
+
+
             let x = 220;
             let y = 250;
             c.forEach((v) => {
@@ -380,7 +406,7 @@
             if (this.isPanic && !this.isUnknown) ctx.scale(2.0, 2.0);
             ctx.fillStyle = "#000";
             ctx.font = '16px serif';
-            ctx.fillText(this.name, 10, 20);
+            //ctx.fillText(this.name, 10, 20);
             ctx.font = '16px serif';
             let y = 30;
             for (var s of this.CardCaption.split("\n")) ctx.fillText(s, 1, y += 12);
@@ -406,17 +432,17 @@
 
     const Actions = {
         Nothing: { id: - 1, },
-        Drop: { id: 0, Button: { Text: "Drop", action: dropcard }, },
-        outChange: { id: 1, Button: { Text: "Exchange", action: exchangecard }, isOutExchange: true },// OnSelectAction: exchangecard },
-        inChange: { id: 1, Button: { Text: "Exchange", action: exchangecardin }, isInExchange: true },// OnSelectAction: exchangecard },
-        SawOneCard: { id: 2, HiLightText: "Select card of a player", MayMove: true, HiLightRLPlayers: true, selectNearPlayersCards: true, actionOnSelectSecondCard: ShowMeCard },
-        SawAllCards: { id: 3, HiLightText: "Select player", MayMove: true, HiLightRLPlayers: true , selectPlayer:true},
-        RejectExchange: { id: 4, Button: { Text: "Reject",action:rejectExchange }, },
-        Burn: { id: 5, HiLightText: "Select player", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer :BurnPlayer},
-        DefendFromFire: { id: 6, Button: { Text: "Defend", action: DefendFromFire } },
-        exChange: { id: 7, Button: { Text: "Exchange", action: exchangecardin } },
-        ShowAllCards: { id: 8, HiLightText: "Show all cards",Button: { Text: "Use", action: showAllCards}, },
-
+        Drop: { id: 0, Button: { Text: "Скинуть", action: dropcard }, },
+        outChange: { id: 1, Button: { Text: "Обмен", action: exchangecard }, isOutExchange: true },// OnSelectAction: exchangecard },
+        inChange: { id: 1, Button: { Text: "Обмен", action: exchangecardin }, isInExchange: true },// OnSelectAction: exchangecard },
+        SawOneCard: { id: 2, HiLightText: "Выбери карту игрока", MayMove: true, HiLightRLPlayers: true, selectNearPlayersCards: true, actionOnSelectSecondCard: ShowMeCard },
+        SawAllCards: { id: 3, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true , selectPlayer:true},
+        RejectExchange: { id: 4, Button: { Text: "Отклонить",action:rejectExchange }, },
+        Burn: { id: 5, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer :BurnPlayer},
+        DefendFromFire: { id: 6, Button: { Text: "Шашлык", action: DefendFromFire } },
+        exChange: { id: 7, Button: { Text: "Обмен", action: exchangecardin } },
+        ShowAllCards: { id: 8, HiLightText: "Показать все карты", Button: { Text: "Использовать", action: showAllCards}, },
+        Temptation:{ id: 9, HiLightText: "Обмен с любым игроком", Button: { Text: "Использовать", action: useTemptation}},
 
     };
 
@@ -445,6 +471,11 @@
         ActionAnalysis: (me) => [Actions.Drop, Actions.SawAllCards],
         ActionBurnFire: (me) => [Actions.Drop, Actions.Burn],
         ActionWhiski: (me) => [Actions.Drop, Actions.ShowAllCards],
+        ActionTemptation:(me)=>[Actions.Drop,Actions.Temptation],
+        ActionTemptation2:(me,card)=>{
+
+
+        },
         FireResistance: (me, other) => {
             if (me.state == States.DefendFireSelectCard) return Actions.DefendFromFire;
             return Actions.inChange;
@@ -463,7 +494,7 @@
         Analysis: new Card("Analysis", 3, "Анализ", "Посмотрите все карты на руке соседнего игрока", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionAnalysis, null),//анализ
         BurnFire: new Card("Burn", 4, "Огнемет", "Соседний игрок выбывает из игры", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer,Algoritms.ActionBurnFire, null),//огнемет
         FireResist: new Card("Defend\nfrom Fire", 5, "Никакого шашлыка", "Отмените эффект карты огнемет, если стали ее целью. возьмите 1 карту событие", "", Algoritms.SimpleExchange, Algoritms.FireResistance, Algoritms.OnlyDropAction, Algoritms.FireResistance),//шашлык
-        Temptation: new Card("Temptation", 6, "Соблазн", "Поменяйтесь одной картой с любым игроком, если он не на карантине. Ваш ход заканчивается", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),//соблазн
+        Temptation: new Card("Temptation", 6, "Соблазн", "Поменяйтесь одной картой с любым игроком, если он не на карантине. Ваш ход заканчивается", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionTemptation, Algoritms.ActionTemptation2),//соблазн
         Perseverance: new Card("Perseverance", 7, "Упорство", "Возьмите 3 карты событий, оставтье на руке одну. Затем сыграйте или сбросьте одну карту", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),//Упорство
         GetOff: new Card("Get Off", 8, "Сматывай удочки", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
 
@@ -608,7 +639,7 @@
             this.transform = {};
             this.isNear = false;
             this.cardForExchangeOut = null;
-
+            this.isPlayerSelected = false;
         }
 
         get isNear_() {
@@ -639,7 +670,7 @@
         }
 
         get isEndTurnExchange() {
-            return (this.Phase == Phases.Exchange && this.state == States.SelectCard && this.cards.length < 5);
+            return (this.Phase == Phases.Exchange && (this.state == States.SelectCard || this.state == States.SelectCardAndPlayerForOutgoingExchange )&& this.cards.length < 5);
         }
 
         get isMyTurnToDefend() {
@@ -682,11 +713,10 @@
             this.transform = ctx.getTransform();
             this.x = this.transform.e;
             this.y = this.transform.f
-            //x: x * invMat.a + y * invMat.c + invMat.e,
-            // y: x * invMat.b + y * invMat.d + invMat.f
+
             let lm = (this.cards.length - 1) / 2;
 
-            if (selectPlayer == true) {
+            if (selectPlayer == true||game.me.state==States.SelectCardAndPlayerForOutgoingExchange) {
                 if (e != undefined) {
                     let p = ctx.getWindowToCanvas(e);
                     if (p != undefined)
@@ -752,9 +782,13 @@
 
         }
 
+
+
         OnPlayerSelect(callback, isNearOnly) {
             if (this.isMe) return 'Выбери другого игрока';
             if (!this.isNear && isNearOnly == true) return 'Выбери ближайшего игрока';
+            game.selectedOpponent = this;
+            this.isPlayerSelected = true;
 
             if (callback != undefined) callback(this);
 
@@ -818,29 +852,39 @@
 
 
     class Game {
-
+  
 
         constructor(guid) {
-
+            
             this.guid = guid;
             //            this.players =
             this.isStarted = false;
-            this.players = [new Player("Stay away game", 0, true, [], States.SelectCard, Phases.Action, 0)];
+            this.players = [new Player("Игра Нечто", 0, true, [], States.SelectCard, Phases.Action, 0)];
             this.selectedOtherCardPlace = null;
             this.me = this.players[0];
             this.Deck = new Deck(Cards.UnknownAction, 4, 2);
             this.moveOneCard = false;
             this.gameDirection = Direction.CW;
             this.selectedOpponent = null;
+            //this.selectedCard = null
             this.opponent = null;
             this.nextplayer = null;
             this.exchange = [];
             this.ViewlineTo = null;
             this.ShowOneCard = null;
             this.gamelog = [];
+            this.width= 0;
+            this.height= 0;
+            //events
+
+            
 
         }
 
+        get isSecondAction(){
+            this.Deck.table.length > 0;
+
+        }
 
         findPlayerByNum(num) {
             for (var p of this.players) if (p.place == num) return p;
@@ -937,6 +981,13 @@
             ctx.translate(y, x);
             ctx.rotate(ang);
 
+            if(this.selectedOpponent == v ){
+                ctx.scale(1.2, 1.2);
+                ctx.fillStyle = "#503";
+                ctx.strokeStyle = "#a52";
+                ctx.roundRect(Player.x1-10, Player.y1-10, Player.x2+20, Player.y2+20, 20).stroke();
+            }
+
             if (this.isNearOpponent(v) && HiLightRLPlayers == true && v != this.me || (HLOpponent && v.place == this.nextplayer)) {
                 ctx.fillStyle = "#003";
                 ctx.strokeStyle = "#a02";
@@ -962,15 +1013,7 @@
 
         }
 
-        drawDescriptionSelectedCard(ctx){
 
-
-
-
-
-
-
-        }
 
         drawStatePhase() {
 
@@ -978,6 +1021,12 @@
             if (this.opponent != null) stateText = "сейчас ход " + this.opponent;
             let phaseText = "";
             switch (this.me.state) {
+                case States.SelectCardAndPlayerForOutgoingExchange:
+                    stateText = "Выбери свою карту и игрока с кем обменяться";
+
+                break;
+
+
                 case States.IncomeExchange:
                     stateText = "Выбери свою карту";
 
@@ -1008,25 +1057,59 @@
         }
 
         Draw(ctx, e, w, h) {
+            this.width = w;
+            this.height = h;
             ctx.clearRect(0, 0, w, h);
             ctx.save();
             ctx.translate(w / 2, h / 2); //центр экрана это (0,0)
 
-            if (this.me.selectedCard == null || this.me.Phase == Phases.Nothing || !(this.me.state == States.SelectCard || this.me.state == States.IncomeExchange || this.me.state == States.DefendFireSelectCard)) Button.DeleteAll()
+            if (this.me.selectedCard == null 
+            || this.me.Phase == Phases.Nothing 
+           // || !(this.me.state == States.SelectCard 
+            //|| this.me.state == States.IncomeExchange 
+            //|| this.me.state == States.DefendFireSelectCard
+            //|| this.me.state == States.SelectCardAndPlayerForOutgoingExchange)
+            ) Button.DeleteAll();
+
             if (this.me.selectedCard != null) if(this.me.selectedCard.card.Description!=undefined)    
-            this.drawText(ctx, -w / 2, h / 2 - 100, this.me.selectedCard.card.Description);
-            //this.drawDescriptionSelectedCard(ctx);
+            this.drawText(ctx, -this.width / 2, this.height / 2 - 100, this.me.selectedCard.card.Description);
+            
             this.drawStatePhase();
 
             let HLOpponent = false;
-            if (this.me.Phase == Phases.Exchange) {
-                HLOpponent = this.nextplayer != null;
-            }
-
             let HiLightRLPlayers = false;
-            //let selectNearPlayersCards = false;
             let c = [];
-            // let ex = this.me.selectedCard.GetExchangeArray()
+
+            switch(this.me.Phase){
+                case Phases.Exchange:
+                    HLOpponent = this.nextplayer != null;
+                break;
+                case Phases.Action:
+                    let card = null;
+                    if(this.me.selectedCard != null)card= this.me.selectedCard.card;
+                    if(this.isSecondAction)this.Deck.table.forEach((v)=>card=v);
+                    if(card==null)break;
+                    if (this.me.isNowMyTurn) {
+                    c = card.GetActionArray(this.me);
+                    if(this.isSecondAction)c=card.GetSecondActionArray(this.me);
+                    c.forEach((v) => {
+                        if (v.HiLightText != undefined) this.drawText(ctx, -10, 20, v.HiLightText);
+                        if (v.HiLightRLPlayers == true) HiLightRLPlayers = true;
+                        //if (v.selectNearPlayersCards != undefined) selectNearPlayersCards = v.selectNearPlayersCards;
+                    });
+
+                }
+
+
+                break;
+
+                case Phases.Answer:
+
+                break;
+
+
+            }
+/*
             if (this.me.selectedCard != null) {
                 if (this.me.isNowMyTurn) {
                     c = this.me.selectedCard.card.GetActionArray(this.me);
@@ -1038,7 +1121,7 @@
                     });
 
                 } else { }
-            }
+            }*/
 
 
             let central = this.me.place;
@@ -1112,7 +1195,8 @@
         Nothing: 0,
         Exchange: 1,
         Action: 2,
-        Answer: 3
+        Answer: 3,
+        SecondAction: 4
 
     };
 
@@ -1129,9 +1213,8 @@
         PerseveranceSelectCard: 5,
         SelectPlayer: 6,
         DefendFireSelectCard: 7,
-        Panic: 8
-
-
+        Panic: 8,
+        SelectCardAndPlayerForOutgoingExchange: 9
     };
 
 
@@ -1245,6 +1328,18 @@
         p.action = "BurnPlayer";
         p.bymycardplace = game.me.selectedCard.cardplace;
         p.otherPlayerName = player.name;
+        websocket.senddata(p);
+
+    }
+
+    function useTemptation(pl){
+
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "StartTemptation";
+
+        p.bymycardplace = pl.cardplace;
+        
         websocket.senddata(p);
 
     }
