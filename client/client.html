@@ -324,7 +324,7 @@
 
         }
 
-        GetSecondActionArray(player,other,card) {
+        GetSecondActionArray(player,card) {
             if (this.SecondAction == null) return [];
             let check = null;
             if (Array.isArray(this.SecondAction)) check = this.SecondAction; else check = [this.SecondAction];
@@ -365,8 +365,7 @@
 
         RemoveOldAddNewButtons(player, z) {
             Button.DeleteAll();
-            //  if (!(player.State == States.IncomeExchange || player.State == States.SelectCard || player.State == States.SelectPlayer || player.State == States.PerseveranceSelectCard || player.State == States.SuspicionSelectCard)) return;
-            //if (player.Phase == Phases.Nothing) return;
+
             let c = [];
             switch(player.Phase){
                 case Phases.Nothing:
@@ -473,8 +472,8 @@
         ActionWhiski: (me) => [Actions.Drop, Actions.ShowAllCards],
         ActionTemptation:(me)=>[Actions.Drop,Actions.Temptation],
         ActionTemptation2:(me,card)=>{
-
-
+            if(game.selectedOpponent == null)return Actions.Nothing;
+            return card.GetExchangeArray(me, game.selectedOpponent);
         },
         FireResistance: (me, other) => {
             if (me.state == States.DefendFireSelectCard) return Actions.DefendFromFire;
@@ -500,13 +499,13 @@
 
         ChangeDirection: new Card("Change\nDirection", 9, "Change\nDirection", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
         ChangePlace: new Card("Change place", 10, "Меняемся местами", "Поменяйтесь местами с соседним игроком, если он не на карантие и не за заколоченной дверью", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
-        Whiski: new Card("Whiski", 11, "Виски", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionWhiski, null),
+        Whiski: new Card("Whiski", 11, "Виски", "Покажи все на руке карты всем игрокам", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionWhiski, null),
         Axe: new Card("Axe", 12, "Топор", "Сбросте сыгранную на вас или на соседнего игрока карту Карантин или выложенную между вами карту Заколоченная дверь", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
 
         NoThanks: new Card("No Thanks", 13, "Нет уж, спасибо", "Откажитесь от обмена картами. возьмите 1 карту событие", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
         Fear: new Card("Fear", 14, "Страх", "Откажитесь от обмена картами и посмотрите карту, от которой отказались. возьмите 1 карту событие", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
         Past: new Card("Past", 15, "Мимо", "Откажитесь от обмена картами. Вместо вас картами меняется слкдующий за вами игрок. возьмите 1 карту событие", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
-        StayHere: new Card("i Stay Here", 16, "i Stay Here", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        StayHere: new Card("i Stay Here", 16, "Мне и здесь неплохо", "Откажитесь от смены мест", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
         Door: new Card("Door", 17, "Заколоченная дверь", "Положите эту карту между собой и соседним игроком. Между вами не может совершаться никаких действий и обменов", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
         Quarantine: new Card("Quarantine", 18, "Карантин", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
 
@@ -787,6 +786,7 @@
         OnPlayerSelect(callback, isNearOnly) {
             if (this.isMe) return 'Выбери другого игрока';
             if (!this.isNear && isNearOnly == true) return 'Выбери ближайшего игрока';
+            game.opponent = this;
             game.selectedOpponent = this;
             this.isPlayerSelected = true;
 
@@ -1079,19 +1079,32 @@
             let HLOpponent = false;
             let HiLightRLPlayers = false;
             let c = [];
-
+            let card = null;
             switch(this.me.Phase){
                 case Phases.Exchange:
                     HLOpponent = this.nextplayer != null;
                 break;
                 case Phases.Action:
-                    let card = null;
+                    
                     if(this.me.selectedCard != null)card= this.me.selectedCard.card;
-                    if(this.isSecondAction)this.Deck.table.forEach((v)=>card=v);
                     if(card==null)break;
                     if (this.me.isNowMyTurn) {
                     c = card.GetActionArray(this.me);
-                    if(this.isSecondAction)c=card.GetSecondActionArray(this.me);
+                    c.forEach((v) => {
+                        if (v.HiLightText != undefined) this.drawText(ctx, -10, 20, v.HiLightText);
+                        if (v.HiLightRLPlayers == true) HiLightRLPlayers = true;
+                        //if (v.selectNearPlayersCards != undefined) selectNearPlayersCards = v.selectNearPlayersCards;
+                    });
+
+                }
+
+
+                break;
+                case Phases.SecondAction:
+                    this.Deck.table.forEach((v)=>card=v);
+                    if(card==null)break;
+                    if (this.me.isNowMyTurn) {
+                    c=card.GetSecondActionArray(this.me);
                     c.forEach((v) => {
                         if (v.HiLightText != undefined) this.drawText(ctx, -10, 20, v.HiLightText);
                         if (v.HiLightRLPlayers == true) HiLightRLPlayers = true;
@@ -1109,19 +1122,6 @@
 
 
             }
-/*
-            if (this.me.selectedCard != null) {
-                if (this.me.isNowMyTurn) {
-                    c = this.me.selectedCard.card.GetActionArray(this.me);
-
-                    c.forEach((v) => {
-                        if (v.HiLightText != undefined) this.drawText(ctx, -10, 20, v.HiLightText);
-                        if (v.HiLightRLPlayers == true) HiLightRLPlayers = true;
-                        //if (v.selectNearPlayersCards != undefined) selectNearPlayersCards = v.selectNearPlayersCards;
-                    });
-
-                } else { }
-            }*/
 
 
             let central = this.me.place;

@@ -23,6 +23,7 @@ class Room {
         this.currentPlayer = null;
         this.additionalData = undefined;
         this.gamelog = [];
+        //this.opponent = null;
     }
 
     log(v) {

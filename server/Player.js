@@ -26,7 +26,7 @@ class Player {
         if (room != null) this.place = room.players.size;
         this.cardForExchangeOut = null;
         this.isDead = false;
-
+        this.opponent = null;
     }
 
     toString() {
@@ -99,16 +99,21 @@ class Player {
         let mycard = this.cards[cardindex];       
         if (mycard.card != Card.CardsByPlayers.Temptation)throw 'Error is not temptation';
         this.state = Player.States.SelectCardAndPlayerForOutgoingExchange;
+        this.phase = Player.Phases.SecondAction;
         this.tableCard(data.bymycardplace);
+        //this.room.opponent = null;
+        this.opponent = null;
         this.room.log(this + " играет соблазн");
 
 
     } 
 
     actionoutExchangeCard(data) {
-        if (this.phase != Player.Phases.Exchange) throw 'Error is not you Exchange now';
-        if (this.state != Player.States.SelectCard)  throw 'Error is not you state now'; 
+        //if (this.phase != Player.Phases.Exchange) throw 'Error is not you Exchange now';
+        //if (this.state != Player.States.SelectCard)  throw 'Error is not you state now'; 
         let nextplayer = this.room.getPlayerByPlayerName(data.opponent);
+        this.opponent = nextplayer;
+        nextplayer.opponent = this;
         
         let cardindex = this.findcardindex(data.place);
         let mycard = this.cards[cardindex];       
@@ -128,7 +133,7 @@ class Player {
     }
 
     startPlay() {
-
+        this.opponent =this.room.nextplayer;
         this.phase = Player.Phases.Action;
         this.state = Player.States.SelectCard;
         this.getOneCardfromDeckForAction();
@@ -145,7 +150,7 @@ class Player {
     stopPlay() {
         this.phase = Player.Phases.Nothing;
         this.state = Player.States.Nothing;
-
+        this.opponent =null;
     }
 
 
@@ -169,8 +174,7 @@ class Player {
         nextplayer.cards.forEach((v, i) => { v.place = i });
         nextplayer.stopPlay();
         nextplayer.cardForExchangeOut = null;
-        this.room.currentplayer = this;
-        this.startPlay();
+        this.nowNextPlayer();
     }
 
     nowNextPlayer() {
@@ -320,7 +324,9 @@ class Player {
 
     actionDropCard(data) {
         if (this.phase != Player.Phases.Action) throw 'Error is not you action now'; 
-        if (this.state != Player.States.SelectCard) throw 'Error is not you drop now'; 
+        if (this.state != Player.States.SelectCard) throw 'Error is not you state now'; 
+        //if(this)
+
 
         let cardplace = data.place;
         this.dropOneCard(cardplace);
