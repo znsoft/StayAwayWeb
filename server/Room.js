@@ -5,7 +5,7 @@ class Room {
     constructor(clientDB, roomname, password, numofPlayers, playername, isNewDBObject, gamenum) {
         this.gamestarted = false;
         this.players = new Map(); //key == playername ,
-        this.spectators = []; 
+        this.spectators = [];
         this.clientDB = clientDB;
         this.roomname = roomname;
         this.password = password;
@@ -50,13 +50,13 @@ class Room {
     }
 
 
-    killPlayer(player){
-        
+    killPlayer(player) {
+
         this.spectators.push(player);
         this.players.delete(player.playername);
         this.getPlayers((playersArray) => {
             //this.players = new Map();
-            playersArray.filter(pl=>!pl.isDead).sort((a,b)=>a.place-b.place).forEach((player,i)=>{player.place = i});
+            playersArray.filter(pl => !pl.isDead).sort((a, b) => a.place - b.place).forEach((player, i) => { player.place = i });
             this.calcNextPlayer();
         });
 
@@ -150,15 +150,15 @@ class Room {
             playercards.forEach((v, k) => {
                 this.insertShuffle(v, k);//перемешаем карты игрока и отдаем ему в руку
             });
-             /*
-                        m.forEach((v, k) => {//подмешаем карты заражений и паники в оставшуюся колоду 
-                            if (v.firstDeck == true) return;
-                            if (v.playDeck == false) return;
-                            let numofthiscards = v.players[index];
-                            for (; numofthiscards > 0; numofthiscards--)res.push(v.num);
-                        });
-                        */
-            
+
+            m.forEach((v, k) => {//подмешаем карты заражений и паники в оставшуюся колоду 
+                if (v.firstDeck == true) return;
+                if (v.playDeck == false) return;
+                let numofthiscards = v.players[index];
+                for (; numofthiscards > 0; numofthiscards--)res.push(v.num);
+            });
+
+
             this.insertShuffle(res);//оставшиеся карты перетасуем и закинем в деку
             this.currentplayer.startPlay();
 
@@ -204,7 +204,7 @@ class Room {
         let card = undefined;
 
         while (true) {
-            if (this.deckcards.length <1) this.dropToDeckWithShuffle();
+            if (this.deckcards.length < 1) this.dropToDeckWithShuffle();
 
             card = this.deckcards.pop();
             if (!card.card.isPanic) break;
@@ -212,6 +212,26 @@ class Room {
         }
         player.cards.push(card);
         player.cards.forEach((v, i) => { v.place = i });
+
+    }
+
+    givethreePerseverenceCardsfromDeckToPlayer(player) {
+        for (let i = 0; i < 3; i++)this.giveOnePerseverenceCardfromDeckToPlayer(player);
+
+
+    }
+
+    giveOnePerseverenceCardfromDeckToPlayer(player) {
+        let card = undefined;
+
+        while (true) {
+            if (this.deckcards.length < 1) this.dropToDeckWithShuffle();
+
+            card = this.deckcards.pop();
+            if (!card.card.isPanic) break;
+            this.dropcards.push(v);
+        }
+        player.Perseverance.push(card);
 
     }
 
@@ -248,7 +268,7 @@ class Room {
                     v.update(deckData);
                 v.needupdate = false;
             });
-            this.spectators.forEach(v=>v.update(deckData));
+            this.spectators.forEach(v => v.update(deckData));
 
         });
     }
@@ -298,12 +318,12 @@ class Room {
 
 
     addPlayer(socket, playerdata) {
-       
+
         let player = new Player(this.clientDB, socket, this.roomname, playerdata.playername, playerdata.playername, this, this.gamenum, 0);
         this.players.set(playerdata.playername, player);
         player.sendGUIDToPlayer();
         player.insertPlayer();
-        
+
         return player.cookieguid;
     }
 
@@ -352,15 +372,13 @@ class Room {
         let player = this.players.get(data.playername);
         if (player == undefined) { socket.close(1001, 'Player not found'); return; }
         if (data.action == undefined) return;
-        if(player.isDead==true){ socket.close(1001, 'Player is dead'); return; }
+        if (player.isDead == true) { socket.close(1001, 'Player is dead'); return; }
 
         this.additionalData = undefined;
         this.tableToDrop();
 
 
-        console.log("action"+data.action);
-        console.log(player["action"+data.action]);
-        try { player["action"+data.action](data); } catch (e) {
+        try { player["action" + data.action](data); } catch (e) {
 
             socket.close(1001, e);
         };

@@ -27,6 +27,7 @@ class Player {
         this.cardForExchangeOut = null;
         this.isDead = false;
         this.opponent = null;
+        this.Perseverance = [];
     }
 
     toString() {
@@ -92,12 +93,40 @@ class Player {
 
     }
 
+    actionSelectPerseverance(data){
+        if(this.phase != Player.Phases.SecondAction) throw 'Error is not you Action now';
+        if(this.state != Player.States.PerseveranceSelectCard)throw 'Error is not you state now';
+        let card = this.Perseverance[data.place];
+        this.cards.push(card);
+        this.cards.forEach((v, i) => { v.place = i });
+        this.Perseverance.splice(data.place,1);
+        this.Perseverance.forEach(v => this.room.dropcards.push(v));
+        this.Perseverance = [];
+        this.phase = Player.Phases.Action;
+        this.state = Player.States.SelectCard;
+        this.room.log(this + " выбрал карту и продолжает ход");
+    } 
+
+
+    actionStartPerseverance(data){
+        if(this.phase != Player.Phases.Action) throw 'Error is not you Action now';
+        if(this.state != Player.States.SelectCard)throw 'Error is not you state now';
+        let cardindex = this.findcardindex(data.bymycardplace);
+        let mycard = this.cards[cardindex];       
+        if (mycard.card != Card.CardsByPlayers.Perseverance)throw 'Это не карта упорство';
+        this.state = Player.States.PerseveranceSelectCard;
+        this.phase = Player.Phases.SecondAction;
+        this.tableCard(data.bymycardplace);
+        this.room.givethreePerseverenceCardsfromDeckToPlayer(this);
+        this.room.log(this + " играет упорство");
+    } 
+
     actionStartTemptation(data){
         if(this.phase != Player.Phases.Action) throw 'Error is not you Action now';
         if(this.state != Player.States.SelectCard)throw 'Error is not you state now';
         let cardindex = this.findcardindex(data.bymycardplace);
         let mycard = this.cards[cardindex];       
-        if (mycard.card != Card.CardsByPlayers.Temptation)throw 'Error is not temptation';
+        if (mycard.card != Card.CardsByPlayers.Temptation)throw 'Это не карта соблазн';
         this.state = Player.States.SelectCardAndPlayerForOutgoingExchange;
         this.phase = Player.Phases.SecondAction;
         this.tableCard(data.bymycardplace);
@@ -325,8 +354,6 @@ class Player {
     actionDropCard(data) {
         if (this.phase != Player.Phases.Action) throw 'Error is not you action now'; 
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now'; 
-        //if(this)
-
 
         let cardplace = data.place;
         this.dropOneCard(cardplace);
@@ -383,7 +410,13 @@ class Player {
     addCards(v, p) {
         let additionalData = this.room.additionalData;
         let cardsArray = [];
-        
+        let Perseverancecards = [];
+        if(v.playername == this.playername)v.Perseverance.forEach((c, i) => {
+            Perseverancecards.push( { cardnum: c.card.num, cardplace: i });
+        });
+
+
+
         v.cards.forEach((c, i) => {
 
             let cardplace = c.place;
@@ -420,7 +453,10 @@ class Player {
             cardsArray.push(str);
         });
         
-            return { playername: v.playername, cardForExchangeOut: v.cardForExchangeOut, quarantineCount: v.quarantineCount, num: v.place, isDead: v.isDead, Infected: p.Infected, thing: p.thing, state: p.state, phase: p.phase, cards: cardsArray, exchange: null };
+            return { playername: v.playername, cardForExchangeOut: v.cardForExchangeOut, 
+                Perseverance: Perseverancecards.length==0?undefined: Perseverancecards,
+                quarantineCount: v.quarantineCount, num: v.place, isDead: v.isDead, Infected: p.Infected, thing: p.thing, 
+                state: p.state, phase: p.phase, cards: cardsArray, exchange: null };
 
 
     }
