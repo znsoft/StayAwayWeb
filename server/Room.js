@@ -229,7 +229,7 @@ class Room {
 
             card = this.deckcards.pop();
             if (!card.card.isPanic) break;
-            this.dropcards.push(v);
+            this.dropcards.push(card);
         }
         player.Perseverance.push(card);
 
@@ -360,9 +360,11 @@ class Room {
         if (this.deckcards.length == 0) return;
         let card = this.deckcards[this.deckcards.length - 1];
         let lastdrop = this.dropcards[this.dropcards.length - 1];
-        let drop = this.dropcards.map((v) => v.card.num);
+        let drop = this.dropcards.map((v) =>{ return v.card.isPanic?Card.CardsByPlayers.UnknownPanic.num:Card.CardsByPlayers.UnknownAction.num});
         let table = this.tablecards.map((v) => v.card.num);
-        let deck = { table: table, drop: drop, deckCount: this.deckcards.length, dropCount: this.dropcards.length, card: card.card.isPanic ? Card.CardsByPlayers.UnknownPanic.num : Card.CardsByPlayers.UnknownAction.num, isGameStarted: true, direction: this.direction };
+        let deck = { table: table, drop: drop, deckCount: this.deckcards.length, dropCount: this.dropcards.length, 
+            card: card.card.isPanic ? Card.CardsByPlayers.UnknownPanic.num : Card.CardsByPlayers.UnknownAction.num, 
+            isGameStarted: true, direction: this.direction , currentPlayer:this.currentplayer.place};
         callback(deck);
 
 
@@ -379,8 +381,8 @@ class Room {
 
 
         try { player["action" + data.action](data); } catch (e) {
-
-            socket.close(1001, e);
+            console.trace(e);
+            socket.close(1001, e +' phase:'+ player.phase);
         };
 
 

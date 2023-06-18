@@ -3,6 +3,7 @@ const Card = require('./Card')
 class Player {
     constructor(clientDB, socket, roomid, playername, playerCaption, room, gamenum, quarantineCount = 0, Infected = false) {
         this.readyforstart = false;
+        
         this.clientDB = clientDB;
         this.socket = socket;
         this.playerid = playername;
@@ -104,6 +105,7 @@ class Player {
         this.Perseverance = [];
         this.phase = Player.Phases.Action;
         this.state = Player.States.SelectCard;
+        
         this.room.log(this + " выбрал карту и продолжает ход");
     } 
 
@@ -182,6 +184,29 @@ class Player {
         this.opponent =null;
     }
 
+    actionNoThanks(data){
+        if (this.phase != Player.Phases.Answer) throw 'Error is not you answer now';
+        if (this.state != Player.States.IncomeExchange) throw 'Error is not you state now';
+        let nextplayer = this.room.getPlayerByPlayerName(data.opponent);
+        if (nextplayer.cardForExchangeOut == null)  throw  'Error no card for exchange'; 
+
+        let mycardindex = this.findcardindex(data.place);
+        let mycard = this.cards[mycardindex];
+        if (mycard.card != Card.CardsByPlayers.NoThanks) throw  'Error no card for reject exchange'; 
+        //this.cards.splice(mycardindex, 1);
+        this.dropOneCard(data.place);
+ 
+        //nextplayer.cards.push(mycard);
+        nextplayer.cardForExchangeOut == null
+
+        //this.tableCard(bymycardplace);
+        this.room.giveOneActionCardfromDeckToPlayer(this);
+        this.stopPlay();
+        this.room.currentplayer.endTurn();
+
+        this.room.log(this + " отклонил. нет спасибо");
+
+    }
 
     actioninExchangeCard(data) {
         if (this.phase != Player.Phases.Answer) throw 'Error is not you answer now';
@@ -453,9 +478,14 @@ class Player {
             cardsArray.push(str);
         });
         
-            return { playername: v.playername, cardForExchangeOut: v.cardForExchangeOut, 
+            return { playername: v.playername, 
+                cardForExchangeOut: v.cardForExchangeOut, 
                 Perseverance: Perseverancecards.length==0?undefined: Perseverancecards,
-                quarantineCount: v.quarantineCount, num: v.place, isDead: v.isDead, Infected: p.Infected, thing: p.thing, 
+                quarantineCount: v.quarantineCount, 
+                num: v.place, 
+                isDead: v.isDead, 
+                Infected: p.Infected, 
+                thing: p.thing, 
                 state: p.state, phase: p.phase, cards: cardsArray, exchange: null };
 
 

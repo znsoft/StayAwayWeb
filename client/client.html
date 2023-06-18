@@ -410,7 +410,7 @@
         Draw(ctx, e) {
 
             //ctx.beginPath();
-            if (this.isPanic && !this.isUnknown) ctx.scale(2.0, 2.0);
+            //if (this.isPanic && !this.isUnknown) ctx.scale(2.0, 2.0);
             ctx.fillStyle = "#000";
             ctx.font = '16px serif';
             //ctx.fillText(this.name, 10, 20);
@@ -458,22 +458,23 @@
         ShowAllCards: { id: 8, HiLightText: "Показать все карты", Button: { Text: "Использовать", action: showAllCards }, },
         Temptation: { id: 9, HiLightText: "Обмен с любым игроком", Button: { Text: "Использовать", action: useTemptation } },
         Perseverance: { id: 10, HiLightText: "Выбери карту из колоды", Button: { Text: "Использовать", action: usePerseverance } },
+        NoThanks:{ id: 11, HiLightText: "Отклонить обмен", Button: { Text: "Отклонить", action: nothanks }}
 
     };
 
     const Algoritms = {
         MayGiveInfect: function (me, other) {
             if (me.Thing == true) return Actions.outChange;
-            if (me.Infected == true && other.Thing == true && me.InfectCount() > 1) return Actions.outChange;
+            if (me.Infected == true && other.Thing == true && me.InfectCount > 1) return Actions.outChange;
             return Actions.Nothing;
         },
-        MayGiveInfect: function (me, other) {
+        MayGiveInfectIn: function (me, other) {
             if (me.Thing == true) return Actions.inChange;
-            if (me.Infected == true && other.Thing == true && me.InfectCount() > 1) return Actions.inChange;
+            if (me.Infected == true && other.Thing == true && me.InfectCount > 1) return Actions.inChange;
             return Actions.Nothing;
         },
         MayDropInfect: function (me) {
-            if (me.Infected == true && me.InfectCount() == 1) return Actions.Nothing;
+            if (me.Infected == true && me.InfectCount == 1) return Actions.Nothing;
             return Actions.Drop;
         },
         OnlyDropAction: (me) => Actions.Drop,
@@ -497,6 +498,10 @@
         },
         Perseverance: (me) => [Actions.Drop, Actions.Perseverance],
         Perseverance2: (me, card) => [],
+        NoThanks:(me,other)=>{
+            if (me.state == States.IncomeExchange) return [Actions.inChange,Actions.NoThanks];
+            return Actions.Nothing;   
+        }
 
 
     };
@@ -504,8 +509,8 @@
 
 
     const Cards = {
-        UnknownPanic: new Card("Panic", -2, "Паника", "", "/panic.jpg", null, null, null, null, true, true),//неизвестная паника
-        UnknownAction: new Card("Event", -1, "Событие", "", "/event.jpg", null, null, null, null, false, true),//неизвестное событие
+        UnknownPanic: new Card("Panic", -2, "", "", "/panic.jpg", null, null, null, null, true, true),//неизвестная паника
+        UnknownAction: new Card("Event", -1, "", "", "/event.jpg", null, null, null, null, false, true),//неизвестное событие
         Thing: new Card("Thing", 0, "Нечто", "Вы нечто! эту карту нельзя передать", "/thing.jpg", null, null, null, null),//нечто
         Infect: new Card("Infect", 1, "Заражение", "Получив эту карту от другого игрока вы становитесь зараженным и обязаны держать ее на руке до конца игры", "/infect.png", Algoritms.MayGiveInfect, Algoritms.MayGiveInfectIn, Algoritms.MayDropInfect, null),//заражение
         Suspicion: new Card("Suspicion", 2, "Подозрение", "Посмотрите одну карту на руке соседнего игрока", "/suspiction.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionSuspicion, null),//подозрение
@@ -514,29 +519,29 @@
         FireResist: new Card("Defend\nfrom Fire", 5, "Никакого шашлыка", "Отмените эффект карты огнемет, если стали ее целью. возьмите 1 карту событие", "/nofire.jpg", Algoritms.SimpleExchange, Algoritms.FireResistance, Algoritms.OnlyDropAction, Algoritms.FireResistance),//шашлык
         Temptation: new Card("Temptation", 6, "Соблазн", "Поменяйтесь одной картой с любым игроком, если он не на карантине. Ваш ход заканчивается", "/temptation.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionTemptation, Algoritms.ActionTemptation2),//соблазн
         Perseverance: new Card("Perseverance", 7, "Упорство", "Возьмите 3 карты событий, оставтье на руке одну. Затем сыграйте или сбросьте одну карту", "/perseverance.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.Perseverance, Algoritms.Perseverance2),//Упорство
-        GetOff: new Card("Get Off", 8, "Сматывай удочки", "", "/udochki.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        GetOff: new Card("Get Off", 8, "Сматывай удочки", "Поменяйтесь местами с любым игроком по вашему выбору если он не на карантине. Игнорируйте заколоченные двери", "/udochki.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
 
-        ChangeDirection: new Card("Change\nDirection", 9, "Смена\nнаправления", "", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
+        ChangeDirection: new Card("Change\nDirection", 9, "Гляди по сторонам", "Очередность хода передается в другую сторону.Меняется порядок ход и направление обмена картами", "/direction.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
         ChangePlace: new Card("Change place", 10, "Меняемся местами", "Поменяйтесь местами с соседним игроком, если он не на карантие и не за заколоченной дверью", "/changeplace.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
-        Whiski: new Card("Whiski", 11, "Виски", "Покажи все на руке карты всем игрокам", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionWhiski, null),
+        Whiski: new Card("Whiski", 11, "Виски", "Покажи все на руке карты всем игрокам", "/whiski.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionWhiski, null),
         Axe: new Card("Axe", 12, "Топор", "Сбросте сыгранную на вас или на соседнего игрока карту Карантин или выложенную между вами карту Заколоченная дверь", "/axe.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
 
         NoThanks: new Card("No Thanks", 13, "Нет уж, спасибо", "Откажитесь от обмена картами. возьмите 1 карту событие", "/nothanx.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
-        Fear: new Card("Fear", 14, "Страх", "Откажитесь от обмена картами и посмотрите карту, от которой отказались. возьмите 1 карту событие", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
-        Past: new Card("Past", 15, "Мимо", "Откажитесь от обмена картами. Вместо вас картами меняется слкдующий за вами игрок. возьмите 1 карту событие", "/mimo.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
-        StayHere: new Card("i Stay Here", 16, "Мне и здесь неплохо", "Откажитесь от смены мест", "", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        Fear: new Card("Fear", 14, "Страх", "Откажитесь от обмена картами и посмотрите карту, от которой отказались. возьмите 1 карту событие", "/fear.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        Past: new Card("Past", 15, "Мимо", "Откажитесь от обмена картами. Вместо вас картами меняется слкдующий за вами игрок. возьмите 1 карту события", "/mimo.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        StayHere: new Card("i Stay Here", 16, "Мне и здесь неплохо", "Отмените эффект карты меняемся местами или сматывай удочки, если стали ее целью. возьмите 1 карту события", "/stay.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
         Door: new Card("Door", 17, "Заколоченная дверь", "Положите эту карту между собой и соседним игроком. Между вами не может совершаться никаких действий и обменов", "/door.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
-        Quarantine: new Card("Quarantine", 18, "Карантин", "", "/quarantine.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        Quarantine: new Card("Quarantine", 18, "Карантин", "Сыграйте эту карту на соседнего игрока, следующие 3 хода игрок не может играть карты событий", "/quarantine.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
 
         PanicOldRopes: new Card("Old Ropes down", 19, "Старые веревки", "Все сыгранные карты карантин сбрасываются", "/oldropes.jpg", null, null, null, null, true),
         PanicThreeFour: new Card("Panic Three Four", 20, "Три четыре", "Все сыгранные карты закалоченная дверь сбрасываются", "/pthreefour.webp", null, null, null, null, true),
         PanicUPS: new Card("UPS", 21, "Уупс", "Покажите все свои карты на руке остальным игрокам", "/ups.jpg", null, null, null, null),
-        PanicConfessionTime: new Card("PanicConfessionTime", 22, "PanicConfessionTime", "", "", null, null, null, null, true),
+        PanicConfessionTime: new Card("PanicConfessionTime", 22, "Время признаний", "", "", null, null, null, null, true),
         PanicBetweenUs: new Card("PanicBetweenUs", 23, "Только между нами", "Покажите все карты на руке соседнему игроку по вашему выбору", "/betweenus.jpg", null, null, null, null, true),
         PanicForgot: new Card("PanicForgot", 24, "Забывчивость", "Сбросьте три карты с руки и возьмите 3 новые карты из колоды, сбрасывая паники ", "", null, null, null, null, true),
-        PanicFriend: new Card("", 25, "Old Ropes", "", "", null, null, null, true),
-        PanicMeet: new Card("", 26, "Old Ropes", "", "", null, null, null, null, true),
-        PanicChain: new Card("", 27, "Цепная реакция", "", "", null, null, null, null, true),
+        PanicFriend: new Card("", 25, "Давай дружить", "", "", null, null, null, true),
+        PanicMeet: new Card("", 26, "Свидание вслепую", "Поменяйте одну карту с руки на верхнюю карту колоды сбрасывая паники. Ваш ход заканчивается", "/meet.jpg", null, null, null, null, true),
+        PanicChain: new Card("", 27, "Цепная реакция", "", "/chain.png", null, null, null, null, true),
         PanicOneTwo: new Card("One two", 28, "Раз два", "Поменяйтесь местами с третим от вас игроком слева или справа (по вашему выбору). Игнорируйте все заколоченные двери. Если игрок на карантине, смены мес т не происходит", "/onetwo.jpg", null, null, null, null, true),
         PanicGoAway: new Card("Go away", 29, "Убирайся прочь", "Поменяйтесь местами с любым игроком если он не на карантине", "/goaway.jpg", null, null, null, null, true),
         PanicParty: new Card("", 30, "Вечеринка", "Все сыгранные карты карантин и заколоченная дверь сбрасываются. Затем начиная с вас и по часовой стрелке все парами меняются местами. в случае нечетного числа игроков последний игрок остается на месте", "/party.jpg", null, null, null, null, true),
@@ -735,6 +740,8 @@
 
             let lm = (this.cards.length - 1) / 2;
 
+
+
             if (selectPlayer == true || game.me.state == States.SelectCardAndPlayerForOutgoingExchange) {
                 if (e != undefined) {
                     let p = ctx.getWindowToCanvas(e);
@@ -801,6 +808,9 @@
 
                 ctx.restore();
             });
+
+
+            
 
             ctx.strokeStyle = "#005";
             ctx.font = 'bold 48px serif';
@@ -894,7 +904,10 @@
 
         constructor(guid) {
 
+            this.arrow = new Image();
+            this.arrow.src = "/arrow.png";
             this.guid = guid;
+            this.currentPlayer  = null;
             //            this.players =
             this.isStarted = false;
             this.players = [new Player("Игра Нечто", 0, true, [], States.SelectCard, Phases.Action, 0)];
@@ -980,7 +993,7 @@
                 this.Deck = new Deck(findCardByNum(message.deck.card), message.deck.deckCount, message.deck.dropCount, message.deck.drop, message.deck.table);
 
                 this.isStarted = true;
-
+                this.currentPlayer =  message.deck.currentPlayer;
             }
 
 
@@ -1037,7 +1050,7 @@
             }
 
             v.Draw(ctx, e, actions);
-
+            if(this.currentPlayer == v.place )ctx.drawImage(this.arrow,-30,-150,100,100);
 
             this.exchange.filter((a) => {
                 if (a.nextplayer != v.place) return false;
@@ -1282,6 +1295,7 @@
         websocket.senddata = function (data) {
             let message = JSON.stringify(data).toString();
             websocket.mysend(message);
+            console.log(data);
         }
 
 
@@ -1480,6 +1494,18 @@
         p.opponent = game.opponent.playername;
         websocket.senddata(p);
     }
+
+    function nothanks(pl){
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "NoThanks";
+        p.place = place.cardplace;
+        p.opponent = game.opponent.playername;
+        websocket.senddata(p);
+
+
+    }
+
 
     function start() {
         let loginelement = document.getElementById("login");
