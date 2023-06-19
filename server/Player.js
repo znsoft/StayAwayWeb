@@ -104,39 +104,69 @@ class Player {
 
         switch(mycard.card){
             case Card.CardsByPlayers.PanicBetweenUs:
+                //"Покажите все карты на руке соседнему игроку по вашему выбору"
+
+
+
+                break;
+            case Card.CardsByPlayers.PanicChain:
+                //"каждый игрок одновременно с остальными отдает одну карту следующему по порядку хода игроку. игнорируя все сыгранные карты карантин и заколоченная дверь. вы не можете отказаться от обмена. нечто может заразить другого передав заражение. ваш ход заканчивается"
+
+
+                break;
+            case Card.CardsByPlayers.PanicConfessionTime:
+                //"Время признаний", "Начиная с вас и по порядку хода каждый показывает либо не показывает все карты на руке остальным игрокам. Время признаний завершается когда кто то из игроков показывает карту заражения"
+
+
+                break;
+            case Card.CardsByPlayers.PanicForgot:
+                //"Забывчивость", "Сбросьте три карты с руки и возьмите 3 новые карты из колоды, сбрасывая паники ", "/forgot.jpg", null, null, Algoritms.Panic, null, true),
+
+
+                break;
+            case Card.CardsByPlayers.PanicFriend:
+                //"Давай дружить", "поменяйтесь одной картой с любым игроком если он не на карантине", "/friend.jpeg", null, null, Algoritms.Panic, null, true),
+
 
             break;
-            case Card.CardsByPlayers.ChangeDirection:
+            case Card.CardsByPlayers.PanicGoAway:
+                //"Убирайся прочь", "Поменяйтесь местами с любым игроком если он не на карантине", "/goaway.jpg", null, null, Algoritms.Panic, null, true),
+
 
             break;
-            case Card.CardsByPlayers.ChangeDirection:
+            case Card.CardsByPlayers.PanicMeet:
+                //"Свидание вслепую", "Поменяйте одну карту с руки на верхнюю карту колоды сбрасывая паники. Ваш ход заканчивается", "/meet.jpg", null, null, Algoritms.Panic, null, true),
+
 
             break;
-            case Card.CardsByPlayers.ChangeDirection:
+            case Card.CardsByPlayers.PanicOldRopes:
+                //"Старые веревки", "Все сыгранные карты карантин сбрасываются", "/oldropes.jpg", null, null, Algoritms.Panic, null, true),
 
-            break;
-            case Card.CardsByPlayers.ChangeDirection:
+                break;
+            case Card.CardsByPlayers.PanicOneTwo:
+                //"Раз два", "Поменяйтесь местами с третим от вас игроком слева или справа (по вашему выбору). Игнорируйте все заколоченные двери. Если игрок на карантине, смены мес т не происходит", "/onetwo.jpg", null, null, Algoritms.Panic, null, true),
 
-            break;
-            case Card.CardsByPlayers.ChangeDirection:
+                break;
+            case Card.CardsByPlayers.PanicParty:
+                //"Вечеринка", "Все сыгранные карты карантин и заколоченная дверь сбрасываются. Затем начиная с вас и по часовой стрелке все парами меняются местами. в случае нечетного числа игроков последний игрок остается на месте", "/party.jpeg", null, null, Algoritms.Panic, null, true),
 
-            break;
-            case Card.CardsByPlayers.ChangeDirection:
+                break;
+            case Card.CardsByPlayers.PanicThreeFour:
+                //"Три четыре", "Все сыгранные карты закалоченная дверь сбрасываются", "/pthreefour.webp", null, null, Algoritms.Panic, null, true),
 
-            break;
-            case Card.CardsByPlayers.ChangeDirection:
+                break;
+            case Card.CardsByPlayers.PanicUPS:
+                //"Уупс", "Покажите все свои карты на руке остальным игрокам", "/ups.jpg", null, null, Algoritms.Panic, null, true),
 
-            break;
-            case Card.CardsByPlayers.ChangeDirection:
 
-            break;
+                break;
 
 
 
         }
 
         
-        if (mycard.card != Card.CardsByPlayers.ChangeDirection) throw 'Это не карта гляди по сторонам';
+        
 
         
 
