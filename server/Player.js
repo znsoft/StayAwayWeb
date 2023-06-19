@@ -53,7 +53,13 @@ class Player {
         SelectPlayer: 6,
         DefendFireSelectCard: 7,
         Panic: 8,
-        SelectCardAndPlayerForOutgoingExchange: 9
+        SelectCardAndPlayerForOutgoingExchange: 9,
+        SelectCardForChain: 10,
+        PanicConfessionTime: 11,
+        PanicForgot: 12,
+        PanicMeet: 13,
+        PanicOneTwo: 14,
+
 
 
     }
@@ -106,7 +112,7 @@ class Player {
         switch(mycard.card){
             case Card.CardsByPlayers.PanicBetweenUs:
                 //"Покажите все карты на руке соседнему игроку по вашему выбору"
-                this.state = Player.States.SelectPlayerForShowCards;
+                this.state = Player.States.SelectPlayer;
 
 
                 break;
@@ -127,38 +133,39 @@ class Player {
                 break;
             case Card.CardsByPlayers.PanicFriend:
                 //"Давай дружить", "поменяйтесь одной картой с любым игроком если он не на карантине", "/friend.jpeg", null, null, Algoritms.Panic, null, true),
-                this.state = Player.States.PanicFriend;
+                this.state = Player.States.SelectCardAndPlayerForOutgoingExchange;
 
             break;
             case Card.CardsByPlayers.PanicGoAway:
                 //"Убирайся прочь", "Поменяйтесь местами с любым игроком если он не на карантине", "/goaway.jpg", null, null, Algoritms.Panic, null, true),
-
+                this.state = Player.States.SelectPlayer;
 
             break;
             case Card.CardsByPlayers.PanicMeet:
                 //"Свидание вслепую", "Поменяйте одну карту с руки на верхнюю карту колоды сбрасывая паники. Ваш ход заканчивается", "/meet.jpg", null, null, Algoritms.Panic, null, true),
-
+                this.state = Player.States.PanicMeet;
 
             break;
             case Card.CardsByPlayers.PanicOldRopes:
                 //"Старые веревки", "Все сыгранные карты карантин сбрасываются", "/oldropes.jpg", null, null, Algoritms.Panic, null, true),
-
+                this.endTurn();
                 break;
             case Card.CardsByPlayers.PanicOneTwo:
                 //"Раз два", "Поменяйтесь местами с третим от вас игроком слева или справа (по вашему выбору). Игнорируйте все заколоченные двери. Если игрок на карантине, смены мес т не происходит", "/onetwo.jpg", null, null, Algoritms.Panic, null, true),
-
+                this.state = Player.States.PanicOneTwo;
                 break;
             case Card.CardsByPlayers.PanicParty:
                 //"Вечеринка", "Все сыгранные карты карантин и заколоченная дверь сбрасываются. Затем начиная с вас и по часовой стрелке все парами меняются местами. в случае нечетного числа игроков последний игрок остается на месте", "/party.jpeg", null, null, Algoritms.Panic, null, true),
-
+                this.endTurn();
                 break;
             case Card.CardsByPlayers.PanicThreeFour:
                 //"Три четыре", "Все сыгранные карты закалоченная дверь сбрасываются", "/pthreefour.webp", null, null, Algoritms.Panic, null, true),
-
+                this.endTurn();
                 break;
             case Card.CardsByPlayers.PanicUPS:
                 //"Уупс", "Покажите все свои карты на руке остальным игрокам", "/ups.jpg", null, null, Algoritms.Panic, null, true),
-
+                this.endTurn();
+                this.room.ShowMyCardsToAll(this);
 
                 break;
 
