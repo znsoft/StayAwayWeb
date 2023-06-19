@@ -91,7 +91,7 @@
     <textarea id="gamelog" style="opacity: 0.4; position: absolute; transition: opacity 1s;" cols="40" rows="20"
         onclick="console.log('click')" readonly="true"></textarea>
 
-        
+
     <canvas id="canvas" width="2000" height="2000">Please update your browser<br> in order to view this page.</canvas>
     <pre id="chat"></pre>
 
@@ -415,15 +415,15 @@
             ctx.font = '16px serif';
             //ctx.fillText(this.name, 10, 20);
             ctx.font = '16px serif';
-            let y = Card.height+3;//16;
+            let y = Card.height + 3;//16;
             for (var s of this.CardCaption.split("\n")) ctx.fillText(s, 1, y += 12);
 
             ctx.roundRect(0, 0, Card.width, Card.height, 10);
 
-            
+
             ctx.clip();
-            ctx.drawImage(this.img,0,0,Card.width, Card.height);
- 
+            ctx.drawImage(this.img, 0, 0, Card.width, Card.height);
+
 
 
             ctx.fillStyle = this.isUnknown ? "#b92" : "#f5fb";
@@ -458,8 +458,9 @@
         ShowAllCards: { id: 8, HiLightText: "Показать все карты", Button: { Text: "Использовать", action: showAllCards }, },
         Temptation: { id: 9, HiLightText: "Обмен с любым игроком", Button: { Text: "Использовать", action: useTemptation } },
         Perseverance: { id: 10, HiLightText: "Выбери карту из колоды", Button: { Text: "Использовать", action: usePerseverance } },
-        NoThanks:{ id: 11, HiLightText: "Отклонить обмен", Button: { Text: "Отклонить", action: nothanks }}
-
+        NoThanks: { id: 11, HiLightText: "Отклонить обмен", Button: { Text: "Отклонить", action: nothanks } },
+        ChangeDirection: { id: 12, HiLightText: "Сменить направление хода", Button: { Text: "Использовать", action: ChangeDirection }, },
+        Panic: { id: 13, HiLightText: "Паника", Button: { Text: "Паника", action: Panic }, },
     };
 
     const Algoritms = {
@@ -498,10 +499,14 @@
         },
         Perseverance: (me) => [Actions.Drop, Actions.Perseverance],
         Perseverance2: (me, card) => [],
-        NoThanks:(me,other)=>{
-            if (me.state == States.IncomeExchange) return [Actions.inChange,Actions.NoThanks];
-            return Actions.Nothing;   
-        }
+        NoThanks: (me, other) => {
+            if (me.state == States.IncomeExchange) return [Actions.inChange, Actions.NoThanks];
+            return Actions.Nothing;
+        },
+        ChangeDirection: (me) => [Actions.Drop, Actions.ChangeDirection],
+
+
+        Panic: (me) => [Actions.Panic],
 
 
     };
@@ -521,7 +526,7 @@
         Perseverance: new Card("Perseverance", 7, "Упорство", "Возьмите 3 карты событий, оставтье на руке одну. Затем сыграйте или сбросьте одну карту", "/perseverance.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.Perseverance, Algoritms.Perseverance2),//Упорство
         GetOff: new Card("Get Off", 8, "Сматывай удочки", "Поменяйтесь местами с любым игроком по вашему выбору если он не на карантине. Игнорируйте заколоченные двери", "/udochki.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
 
-        ChangeDirection: new Card("Change\nDirection", 9, "Гляди по сторонам", "Очередность хода передается в другую сторону.Меняется порядок ход и направление обмена картами", "/direction.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
+        ChangeDirection: new Card("Change\nDirection", 9, "Гляди по сторонам", "Очередность хода передается в другую сторону.Меняется порядок ход и направление обмена картами", "/direction.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ChangeDirection, null),
         ChangePlace: new Card("Change place", 10, "Меняемся местами", "Поменяйтесь местами с соседним игроком, если он не на карантие и не за заколоченной дверью", "/changeplace.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
         Whiski: new Card("Whiski", 11, "Виски", "Покажи все на руке карты всем игрокам", "/whiski.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionWhiski, null),
         Axe: new Card("Axe", 12, "Топор", "Сбросте сыгранную на вас или на соседнего игрока карту Карантин или выложенную между вами карту Заколоченная дверь", "/axe.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
@@ -534,12 +539,12 @@
         Quarantine: new Card("Quarantine", 18, "Карантин", "Сыграйте эту карту на соседнего игрока, следующие 3 хода игрок не может играть карты событий", "/quarantine.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
 
         PanicOldRopes: new Card("Old Ropes down", 19, "Старые веревки", "Все сыгранные карты карантин сбрасываются", "/oldropes.jpg", null, null, null, null, true),
-        PanicThreeFour: new Card("Panic Three Four", 20, "Три четыре", "Все сыгранные карты закалоченная дверь сбрасываются", "/pthreefour.webp", null, null, null, null, true),
-        PanicUPS: new Card("UPS", 21, "Уупс", "Покажите все свои карты на руке остальным игрокам", "/ups.jpg", null, null, null, null),
+        PanicThreeFour: new Card("Panic Three Four", 20, "Три четыре", "Все сыгранные карты закалоченная дверь сбрасываются", "/pthreefour.webp", null, null, Algoritms.Panic, null, true),
+        PanicUPS: new Card("UPS", 21, "Уупс", "Покажите все свои карты на руке остальным игрокам", "/ups.jpg", null, null, null, null, true),
         PanicConfessionTime: new Card("PanicConfessionTime", 22, "Время признаний", "Начиная с вас и по порядку хода каждый показывает либо не показывает все карты на руке остальным игрокам. Время признаний завершается когда кто то из игроков показывает карту заражения", "/priznania.jpg", null, null, null, null, true),
         PanicBetweenUs: new Card("PanicBetweenUs", 23, "Только между нами", "Покажите все карты на руке соседнему игроку по вашему выбору", "/betweenus.jpg", null, null, null, null, true),
         PanicForgot: new Card("PanicForgot", 24, "Забывчивость", "Сбросьте три карты с руки и возьмите 3 новые карты из колоды, сбрасывая паники ", "/forgot.jpg", null, null, null, null, true),
-        PanicFriend: new Card("", 25, "Давай дружить", "поменяйтесь одной картой с любым игроком если он не на карантине", "/friend.jpeg", null, null, null, true),
+        PanicFriend: new Card("", 25, "Давай дружить", "поменяйтесь одной картой с любым игроком если он не на карантине", "/friend.jpeg", null, null, null, null, true),
         PanicMeet: new Card("", 26, "Свидание вслепую", "Поменяйте одну карту с руки на верхнюю карту колоды сбрасывая паники. Ваш ход заканчивается", "/meet.jpg", null, null, null, null, true),
         PanicChain: new Card("", 27, "Цепная реакция", "каждый игрок одновременно с остальными отдает одну карту следующему по порядку хода игроку. игнорируя все сыгранные карты карантин и заколоченная дверь. вы не можете отказаться от обмена. нечто может заразить другого передав заражение. ваш ход заканчивается", "/chain.jpeg", null, null, null, null, true),
         PanicOneTwo: new Card("One two", 28, "Раз два", "Поменяйтесь местами с третим от вас игроком слева или справа (по вашему выбору). Игнорируйте все заколоченные двери. Если игрок на карантине, смены мес т не происходит", "/onetwo.jpg", null, null, null, null, true),
@@ -810,7 +815,7 @@
             });
 
 
-            
+
 
             ctx.strokeStyle = "#005";
             ctx.font = 'bold 48px serif';
@@ -907,7 +912,7 @@
             this.arrow = new Image();
             this.arrow.src = "/arrow.png";
             this.guid = guid;
-            this.currentPlayer  = null;
+            this.currentPlayer = null;
             //            this.players =
             this.isStarted = false;
             this.players = [new Player("Игра Нечто", 0, true, [], States.SelectCard, Phases.Action, 0)];
@@ -993,7 +998,7 @@
                 this.Deck = new Deck(findCardByNum(message.deck.card), message.deck.deckCount, message.deck.dropCount, message.deck.drop, message.deck.table);
 
                 this.isStarted = true;
-                this.currentPlayer =  message.deck.currentPlayer;
+                this.currentPlayer = message.deck.currentPlayer;
             }
 
 
@@ -1050,7 +1055,7 @@
             }
 
             v.Draw(ctx, e, actions);
-            if(this.currentPlayer == v.place )ctx.drawImage(this.arrow,-30,-150,100,100);
+            if (this.currentPlayer == v.place) ctx.drawImage(this.arrow, -30, -150, 100, 100);
 
             this.exchange.filter((a) => {
                 if (a.nextplayer != v.place) return false;
@@ -1435,6 +1440,27 @@
 
     }
 
+    function Panic(pl) {
+
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "Panic";
+        p.place = place.cardplace;//
+        //console.log(place);
+        websocket.senddata(p);
+
+    }
+
+    function ChangeDirection(pl) {
+
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "ChangeDirection";
+        p.place = place.cardplace;//
+        //console.log(place);
+        websocket.senddata(p);
+    }
+
     function showAllCards(place) {
 
         let p = JSON.parse(document.cookie);
@@ -1495,7 +1521,7 @@
         websocket.senddata(p);
     }
 
-    function nothanks(pl){
+    function nothanks(pl) {
         let p = JSON.parse(document.cookie);
         p.messagetype = 'playeraction';
         p.action = "NoThanks";
