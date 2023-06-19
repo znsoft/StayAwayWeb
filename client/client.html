@@ -1445,7 +1445,7 @@
         let p = JSON.parse(document.cookie);
         p.messagetype = 'playeraction';
         p.action = "Panic";
-        p.place = place.cardplace;//
+        p.place = pl.cardplace;//
         //console.log(place);
         websocket.senddata(p);
 

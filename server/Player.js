@@ -101,32 +101,33 @@ class Player {
         let mycard = this.cards[cardindex];
         if(!mycard.card.isPanic)throw 'Вы выбрали не панику';
         this.tableCard(data.place);
+        this.phase = Player.Phases.SecondAction;
 
         switch(mycard.card){
             case Card.CardsByPlayers.PanicBetweenUs:
                 //"Покажите все карты на руке соседнему игроку по вашему выбору"
-
+                this.state = Player.States.SelectPlayerForShowCards;
 
 
                 break;
             case Card.CardsByPlayers.PanicChain:
                 //"каждый игрок одновременно с остальными отдает одну карту следующему по порядку хода игроку. игнорируя все сыгранные карты карантин и заколоченная дверь. вы не можете отказаться от обмена. нечто может заразить другого передав заражение. ваш ход заканчивается"
-
+                this.state = Player.States.SelectCardForChain;
 
                 break;
             case Card.CardsByPlayers.PanicConfessionTime:
                 //"Время признаний", "Начиная с вас и по порядку хода каждый показывает либо не показывает все карты на руке остальным игрокам. Время признаний завершается когда кто то из игроков показывает карту заражения"
-
+                this.state = Player.States.PanicConfessionTime;
 
                 break;
             case Card.CardsByPlayers.PanicForgot:
                 //"Забывчивость", "Сбросьте три карты с руки и возьмите 3 новые карты из колоды, сбрасывая паники ", "/forgot.jpg", null, null, Algoritms.Panic, null, true),
-
+                this.state = Player.States.PanicForgot;
 
                 break;
             case Card.CardsByPlayers.PanicFriend:
                 //"Давай дружить", "поменяйтесь одной картой с любым игроком если он не на карантине", "/friend.jpeg", null, null, Algoritms.Panic, null, true),
-
+                this.state = Player.States.PanicFriend;
 
             break;
             case Card.CardsByPlayers.PanicGoAway:
@@ -170,9 +171,9 @@ class Player {
 
         
 
-        this.endTurn();
+        //this.endTurn();
 
-        this.room.log(this + " развернул ход игры");
+        this.room.log(this + " паникует ");
 
 
     }
