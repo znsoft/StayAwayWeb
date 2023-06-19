@@ -29,6 +29,7 @@ class Player {
         this.isDead = false;
         this.opponent = null;
         this.Perseverance = [];
+
     }
 
     toString() {
@@ -100,16 +101,16 @@ class Player {
 
     }
 
-    actionPanic(data){
+    actionPanic(data) {
         if (this.phase != Player.Phases.Action) throw 'Error is not you Action now';
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
         let cardindex = this.findcardindex(data.place);
         let mycard = this.cards[cardindex];
-        if(!mycard.card.isPanic)throw 'Вы выбрали не панику';
+        if (!mycard.card.isPanic) throw 'Вы выбрали не панику';
         this.tableCard(data.place);
         this.phase = Player.Phases.SecondAction;
 
-        switch(mycard.card){
+        switch (mycard.card) {
             case Card.CardsByPlayers.PanicBetweenUs:
                 //"Покажите все карты на руке соседнему игроку по вашему выбору"
                 this.state = Player.States.SelectPlayer;
@@ -118,8 +119,11 @@ class Player {
                 break;
             case Card.CardsByPlayers.PanicChain:
                 //"каждый игрок одновременно с остальными отдает одну карту следующему по порядку хода игроку. игнорируя все сыгранные карты карантин и заколоченная дверь. вы не можете отказаться от обмена. нечто может заразить другого передав заражение. ваш ход заканчивается"
-                this.state = Player.States.SelectCardForChain;
-
+                this.room.isPanicChain = true;
+                this.room.players.forEach((v, k) => {
+                    v.state = Player.States.SelectCardForChain;
+                    v.phase = Player.Phases.SecondAction;
+                });
                 break;
             case Card.CardsByPlayers.PanicConfessionTime:
                 //"Время признаний", "Начиная с вас и по порядку хода каждый показывает либо не показывает все карты на руке остальным игрокам. Время признаний завершается когда кто то из игроков показывает карту заражения"
@@ -135,17 +139,17 @@ class Player {
                 //"Давай дружить", "поменяйтесь одной картой с любым игроком если он не на карантине", "/friend.jpeg", null, null, Algoritms.Panic, null, true),
                 this.state = Player.States.SelectCardAndPlayerForOutgoingExchange;
 
-            break;
+                break;
             case Card.CardsByPlayers.PanicGoAway:
                 //"Убирайся прочь", "Поменяйтесь местами с любым игроком если он не на карантине", "/goaway.jpg", null, null, Algoritms.Panic, null, true),
                 this.state = Player.States.SelectPlayer;
 
-            break;
+                break;
             case Card.CardsByPlayers.PanicMeet:
                 //"Свидание вслепую", "Поменяйте одну карту с руки на верхнюю карту колоды сбрасывая паники. Ваш ход заканчивается", "/meet.jpg", null, null, Algoritms.Panic, null, true),
                 this.state = Player.States.PanicMeet;
 
-            break;
+                break;
             case Card.CardsByPlayers.PanicOldRopes:
                 //"Старые веревки", "Все сыгранные карты карантин сбрасываются", "/oldropes.jpg", null, null, Algoritms.Panic, null, true),
                 this.endTurn();
@@ -173,18 +177,47 @@ class Player {
 
         }
 
-        
-        
-
-        
-
-        //this.endTurn();
 
         this.room.log(this + " паникует ");
 
 
     }
 
+
+    actionPanicForgot(data){
+        let cardindex = this.findcardindex(data.place);
+        let mycard = this.cards[cardindex];
+        //if (mycard.card == Card.CardsByPlayers.Thing) throw 'Эту карту нельзя скинуть';
+        this.cards.splice(cardindex, 1);
+        this.cards.forEach(v=>this.room.dropcards.push(v));
+        this.cards = [];
+        this.cards.push(mycard);
+        for(let i=3;i>0;i--)        this.room.giveOneActionCardfromDeckToPlayer(this);
+        this.cards.forEach((v, i) => { v.place = i });
+
+        this.endTurn();
+        //this.room.nowNextPlayer();
+        this.room.log(this + " разменял 3 карты из колоды");
+
+
+    }
+
+    actionPanicMeet(data){
+        let cardindex = this.findcardindex(data.place);
+        let mycard = this.cards[cardindex];
+        if (mycard.card == Card.CardsByPlayers.Thing) throw 'Эту карту нельзя скинуть';
+        this.cards.splice(cardindex, 1);
+        this.room.giveOneActionCardfromDeckToPlayer(this);
+        this.cards.forEach((v, i) => { v.place = i });
+        this.room.deckcards.push(mycard);
+        this.stopPlay();
+        this.room.nowNextPlayer();
+        this.room.log(this + " подложил карту в колоду");
+
+
+    }
+    
+    
     actionChangeDirection(data) {
         if (this.phase != Player.Phases.Action) throw 'Error is not you Action now';
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
@@ -192,8 +225,8 @@ class Player {
         let mycard = this.cards[cardindex];
         if (mycard.card != Card.CardsByPlayers.ChangeDirection) throw 'Это не карта гляди по сторонам';
         this.tableCard(data.place);
-        this.room.direction = this.room.direction ==0?1:0;
-        this.room.calcNextPlayer(); 
+        this.room.direction = this.room.direction == 0 ? 1 : 0;
+        this.room.calcNextPlayer();
         this.endTurn();
         this.room.log(this + " развернул ход игры");
     }
@@ -259,10 +292,17 @@ class Player {
 
         this.cardForExchangeOut = data.place;
         this.state = Player.States.OutgoingExchange;
-        nextplayer.phase = Player.Phases.Answer;
-        nextplayer.state = Player.States.IncomeExchange;
+        if (this.room.isPanicChain) {
 
-        this.room.log(this + " обменивается картами с " + nextplayer);
+            this.room.ChainPanicEnd();
+
+
+        } else {
+            nextplayer.phase = Player.Phases.Answer;
+            nextplayer.state = Player.States.IncomeExchange;
+
+            this.room.log(this + " обменивается картами с " + nextplayer);
+        }
 
 
     }
@@ -288,6 +328,57 @@ class Player {
         this.opponent = null;
     }
 
+
+    actionMist(data) {
+        if (this.phase != Player.Phases.Answer) throw 'Error is not you answer now';
+        if (this.state != Player.States.IncomeExchange) throw 'Error is not you state now';
+        let nextplayer = this.room.getPlayerByPlayerName(data.opponent);
+        if (nextplayer.cardForExchangeOut == null) throw 'Error no card for exchange';
+
+        let mycardindex = this.findcardindex(data.place);
+        let mycard = this.cards[mycardindex];
+        if (mycard.card != Card.CardsByPlayers.Past) throw 'Error no card for reject exchange';
+        //this.cards.splice(mycardindex, 1);
+        this.dropOneCard(data.place);
+        
+        this.room.giveOneActionCardfromDeckToPlayer(this);
+        this.stopPlay();
+
+        let exchange2 = this.room.getNextPlayerFor(this);
+        exchange2.phase = Player.Phases.Answer;
+        exchange2.state = Player.States.IncomeExchange;
+        this.room.log(this + " сыграл мимо");
+
+    }
+
+    actionFear(data) {
+        if (this.phase != Player.Phases.Answer) throw 'Error is not you answer now';
+        if (this.state != Player.States.IncomeExchange) throw 'Error is not you state now';
+        let nextplayer = this.room.getPlayerByPlayerName(data.opponent);
+        if (nextplayer.cardForExchangeOut == null) throw 'Error no card for exchange';
+
+        let mycardindex = this.findcardindex(data.place);
+        let mycard = this.cards[mycardindex];
+        if (mycard.card != Card.CardsByPlayers.Fear) throw 'Error no card for reject exchange';
+        //this.cards.splice(mycardindex, 1);
+        this.dropOneCard(data.place);
+
+        nextplayer.ShowYourCardToPlayer(this, nextplayer.cardForExchangeOut);
+        //this.room.ShowOneOtherCardToPlayer(this, nextplayer.playername, nextplayer.cardForExchangeOut);
+        //nextplayer.cards.push(mycard);
+        nextplayer.cardForExchangeOut = null;
+
+        //this.tableCard(bymycardplace);
+        this.room.giveOneActionCardfromDeckToPlayer(this);
+        this.stopPlay();
+        this.room.nowNextPlayer();
+        //this.room.currentplayer.endTurn();
+
+        this.room.log(this + " отклонил и посмотрел");
+
+    }
+
+
     actionNoThanks(data) {
         if (this.phase != Player.Phases.Answer) throw 'Error is not you answer now';
         if (this.state != Player.States.IncomeExchange) throw 'Error is not you state now';
@@ -301,12 +392,13 @@ class Player {
         this.dropOneCard(data.place);
 
         //nextplayer.cards.push(mycard);
-        nextplayer.cardForExchangeOut == null
+        nextplayer.cardForExchangeOut = null;
 
         //this.tableCard(bymycardplace);
         this.room.giveOneActionCardfromDeckToPlayer(this);
         this.stopPlay();
-        this.room.currentplayer.endTurn();
+        //this.room.currentplayer.endTurn();
+        this.room.nowNextPlayer();
 
         this.room.log(this + " отклонил. нет спасибо");
 
@@ -322,17 +414,35 @@ class Player {
         let othercard = nextplayer.cards[othercardindex];
         if (othercard.card == Card.CardsByPlayers.Infect) this.Infected = true;
         nextplayer.cards.splice(othercardindex, 1);
+
         let mycardindex = this.findcardindex(data.place);
         let mycard = this.cards[mycardindex];
         if (mycard.card == Card.CardsByPlayers.Infect) nextplayer.Infected = true;
         this.cards.splice(mycardindex, 1);
+
         nextplayer.cards.push(mycard);
+
         this.cards.push(othercard);
         this.cards.forEach((v, i) => { v.place = i });
+
         nextplayer.cards.forEach((v, i) => { v.place = i });
+
         nextplayer.stopPlay();
         nextplayer.cardForExchangeOut = null;
         this.nowNextPlayer();
+    }
+
+    IncomeExchange(nextplayer) {
+        if (nextplayer.cardForExchangeOut == null) throw 'Error no card for exchange';
+
+        let othercardindex = nextplayer.findcardindex(nextplayer.cardForExchangeOut);
+        let othercard = nextplayer.cards[othercardindex];
+        if (othercard.card == Card.CardsByPlayers.Infect) this.Infected = true;
+        nextplayer.cards.splice(othercardindex, 1);
+        nextplayer.cardForExchangeOut = null;
+        this.cards.push(othercard);
+        this.cards.forEach((v, i) => { v.place = i });
+
     }
 
     nowNextPlayer() {
@@ -505,6 +615,9 @@ class Player {
         let currentplayer = this.room.currentplayer.place;
         let opponent = this.room.nextplayer.place;
         if (this.place != currentplayer) opponent = currentplayer;
+        if (this.room.isPanicChain == true){
+         opponent = this.room.getNextPlayerFor(this).place;
+        }
         let exchange = [];
 
         exchange.push(this.addCards(this, this));
@@ -591,7 +704,9 @@ class Player {
             isDead: v.isDead,
             Infected: p.Infected,
             thing: p.thing,
-            state: p.state, phase: p.phase, cards: cardsArray, exchange: null
+            state: p.state,
+            phase: p.phase,
+            cards: cardsArray, exchange: null
         };
 
 

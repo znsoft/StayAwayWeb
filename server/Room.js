@@ -23,7 +23,14 @@ class Room {
         this.currentPlayer = null;
         this.additionalData = undefined;
         this.gamelog = [];
+        this.isPanicChain = false;
         //this.opponent = null;
+    }
+
+    get playersArray(){
+
+        return Array.from(this.players, ([name, value]) => (value));
+
     }
 
     log(v) {
@@ -63,17 +70,23 @@ class Room {
     }
 
 
-    calcNextPlayer() {
+    getNextPlayerFor(player){
         let l = this.players.size;
-        let place = this.currentplayer.place;
+        let place = player.place;
         let nextplace = (place + 1) % l;
         if (this.direction != 0) nextplace = place < 1 ? (l - 1) : (place - 1);
+        let nextplayer = null;
         this.getPlayers((a) => {
             a.forEach((v, i) => {
-                if (v.place == nextplace) this.nextplayer = v;
+                if (v.place == nextplace) nextplayer = v;
             });
         });
+        return nextplayer;
 
+    }
+
+    calcNextPlayer() {
+        this.nextplayer = this.getNextPlayerFor(this.currentplayer);
     }
 
     dropToDeckWithShuffle() {
@@ -94,6 +107,27 @@ class Room {
 
     }
 
+
+    isNotAllSelectCardForExchangeOut(){
+        return this.playersArray.filter((v)=>v.cardForExchangeOut==null).length>0;
+    }
+
+    ChainPanicEnd(){
+        if(this.isNotAllSelectCardForExchangeOut())return;
+        this.playersArray.forEach(v=>{
+
+            let nextplayer = this.getNextPlayerFor(v);
+            nextplayer.IncomeExchange(v);
+            //v.IncomeExchange(nextplayer);
+            v.stopPlay();
+
+        }
+        );
+        this.isPanicChain = false;
+        this.tableToDrop();
+        this.nowNextPlayer();
+
+    }
 
     startgame(player) {
         if (this.gamestarted == true) return;
@@ -193,9 +227,9 @@ class Room {
 
 
     nowNextPlayer() {
-        this.stopPlay();
-        let nextplayer = this.room.nextplayer;
-        this.room.currentplayer = nextplayer;
+        this.currentplayer.stopPlay();
+        let nextplayer = this.nextplayer;
+        this.currentplayer = nextplayer;
         nextplayer.startPlay();
 
     }
@@ -208,7 +242,7 @@ class Room {
 
             card = this.deckcards.pop();
             if (!card.card.isPanic) break;
-            this.dropcards.push(v);
+            this.dropcards.push(card);
         }
         player.cards.push(card);
         player.cards.forEach((v, i) => { v.place = i });
@@ -260,6 +294,8 @@ class Room {
         callback(Array.from(this.players, ([name, value]) => (value)));
 
     }
+
+
 
     updatePlayers() {
         this.getDeckAndDrop((deckData) => {
@@ -345,7 +381,7 @@ class Room {
     }
 
     tableToDrop() {
-
+        if(this.isPanicChain==true)return;
         this.tablecards.forEach(v => this.dropcards.push(v));
         this.tablecards = [];
     }
