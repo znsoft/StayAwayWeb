@@ -1386,22 +1386,20 @@
             console.log(evt.data);
             document.getElementById("startgamebutton").hidden = false;
             let message = JSON.parse(evt.data);
-            if (message.messagetype == 'playerguid') {
-                game = new Game(message.guid);
-                document.cookie = evt.data;
-                //document.getElementById("loginbutton").hidden = true;
-                //document.getElementById("login").setAttribute("readonly", true);//hidden = true;
-                return;
-            }
+            switch (message.messagetype) {
+                case 'playerguid':
+                    game = new Game(message.guid);
+                    document.cookie = evt.data;
 
+                    break;
+                case 'playerlist':
+                    game.parsePlayerList(message);
 
-            if (message.messagetype == 'playerlist') {
-                game.parsePlayerList(message);
-                return;
-            }
-            if (message.messagetype == 'gamelog') {
-                game.parseGamelog(message);
-                return;
+                    break;
+                case 'gamelog':
+                    game.parseGamelog(message);
+                    break;
+
             }
 
         };

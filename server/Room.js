@@ -153,7 +153,7 @@ class Room {
 
     startgame(player) {
         if (this.gamestarted == true) return;
-        this.numofplayers = this.players.size;//.length;       // this.clientDB.query(`update rooms set numofplayers = (select count(*) from players as p inner join rooms as r on r.roomid=p.roomid and r.gamenum=p.gamenum  where p.roomid = $1) where roomid = $1`, [this.roomname,], (err, data) => { });
+        this.numofplayers = this.players.size;//.length;  
         player.readyforstart = true;
         if (this.numofplayers < 4) return;
 
@@ -333,7 +333,7 @@ class Room {
         });
 
         this.players.forEach((v, k) => {
-            v.send({ messagetype: 'gamelog', gamelog: this.gamelog });
+            v.send({ messagetype: 'gamelog', gamelog: this.gamelog});
         });
     }
 
