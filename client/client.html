@@ -76,24 +76,42 @@
     #toolbar {
         transition: opacity 1s;
     }
+    
+    .tooltip{
+        position: relative;
+  cursor: pointer;
+  display: inline-block;
+    }
+    .tooltip[data-title]:hover:after {
+  content: attr(data-title);
+  padding: 4px 8px;
+  color: #fff;
+  position: absolute;
+  left: 0;
+  top: 110%;
+  white-space: nowrap;  
+  border-radius: 5px;  
+  background:#000;
+}
 </style>
 
 <body>
 
     <div id="logindiv">
-        Room:<input id="room" value="1" hidden="true"></input>
-        Player:<input id="login"></input>
-        <button id="loginbutton" onclick="sendLogin()">Login</button>
-        <button id="startgamebutton" hidden="true" onclick="startGame()">Startgame</button>
+        Комната:<input id="room" value="1" hidden="true"></input>
+        Ваше имя:<input id="login"></input>
+        <button id="loginbutton" onclick="sendLogin()">Войти</button>
+        <button id="startgamebutton" hidden="true" onclick="startGame()">Начать игру</button>
 
     </div>
 
     <textarea id="gamelog" style="opacity: 0.4; position: absolute; transition: opacity 1s;" cols="40" rows="20"
         onclick="console.log('click')" readonly="true"></textarea>
 
-
-    <canvas id="canvas" width="2000" height="2000" onresize="resizeCanvas()">Please update your browser<br> in order to
+        <div data-title="My tooltip " class="tooltip">
+    <canvas id="canvas" width="2000" height="2000" onresize="resizeCanvas()" >Please update your browser<br> in order to
         view this page.</canvas>
+        </div>
     <pre id="chat"></pre>
 
 
@@ -1012,6 +1030,7 @@
             this.gamelog = [];
             this.width = 0;
             this.height = 0;
+            this.doors = new Map();
             //events
 
 
@@ -1082,6 +1101,9 @@
 
                 this.isStarted = true;
                 this.currentPlayer = message.deck.currentPlayer;
+                this.doors = new Map();
+                if(message.deck.doors != undefined)    message.deck.doors.forEach(v=>{this.doors.set(v,true)});
+
             }
 
 
@@ -1107,7 +1129,7 @@
             return pldist == 1 || pldist == this.players.length - 1;
         }
 
-        DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, i, actions, HLAllNonQuarantine) {
+        DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, i, actions, HLAllNonQuarantine,isDoorbefore=false) {
             let sy = game.width * 0.25;//.height / 4;//260;
             let sx = game.height * 0.25;//260;
             if (v == this.me) v.moveOneCard = this.moveOneCard;
@@ -1129,6 +1151,8 @@
 
             ctx.rotate(ang);
 
+
+
             if (this.selectedOpponent == v) {
                 ctx.scale(1.2, 1.2);
                 ctx.fillStyle = "#503";
@@ -1145,17 +1169,15 @@
             v.Draw(ctx, e, actions);
             if (this.currentPlayer == v.place) ctx.drawImage(this.arrow, -30, -150, 100, 100);
 
-            this.exchange.filter((a) => {
-                if (a.nextplayer != v.place) return false;
 
-                ctx.save();
-                ctx.translate(-10, -200);
-                a.card.Draw(ctx);
-                ctx.restore();
+            ctx.save();
+            ctx.translate(-200, -100);
+            ctx.rotate(1);
+            ctx.scale(0.5, 0.5);
 
-
-            });
-
+            if(isDoorbefore==true)
+            Cards.Door.Draw(ctx);
+            ctx.restore();
 
             ctx.restore();
 
@@ -1282,9 +1304,14 @@
             let central = this.me.place;
 
             this.players.sort((a, b) => a.place - b.place).forEach((v, i) => {
+                let k = v.place ;
+                if(k==this.players.length)k=0;
+                let door = this.doors.get(k)
+                //if(k==true)this.Draw
+
                 let newplace = v.place - central;
                 if (newplace < 0) newplace = newplace + this.players.length;
-                this.DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, newplace, c, HLAllNonQuarantine);
+                this.DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, newplace, c, HLAllNonQuarantine,door);
             });
 
 
@@ -1418,17 +1445,20 @@
 
         websocket.onmessage = function (evt) {
             console.log(evt.data);
-            document.getElementById("startgamebutton").hidden = false;
+            
             let message = JSON.parse(evt.data);
             switch (message.messagetype) {
                 case 'playerguid':
                     game = new Game(message.guid);
                     document.cookie = evt.data;
-
+                    document.getElementById("loginbutton").hidden = true;
+                    document.getElementById("login").hidden = true;
+                    document.getElementById("startgamebutton").hidden = false;
+                    
                     break;
                 case 'playerlist':
                     game.parsePlayerList(message);
-
+                    document.getElementById("logindiv").hidden = game.isStarted;
                     break;
                 case 'gamelog':
                     game.parseGamelog(message);

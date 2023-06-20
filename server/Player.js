@@ -282,6 +282,45 @@ class Player {
 
     }
 
+    actionDoor(data){
+        if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
+        if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
+        let otherPlayerName = data.otherPlayerName;
+        let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
+        let bymycardplace = data.bymycardplace;
+
+        let cardindex = this.findcardindex(bymycardplace);
+        let mycard = this.cards[cardindex]; //
+        if (mycard.card != Card.CardsByPlayers.Door) throw 'Error is not Door card';
+        this.cards.splice(cardindex, 1);
+        this.room.Door(this,nextplayer,mycard);
+
+        this.room.log(this + " поставил дверь между  " + nextplayer);
+        this.endTurn();
+    
+
+
+    }
+
+    
+    actionQuarantine(data) {
+        if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
+        if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
+        let otherPlayerName = data.otherPlayerName;
+        let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
+        let bymycardplace = data.bymycardplace;
+
+        let cardindex = this.findcardindex(bymycardplace);
+        let mycard = this.cards[cardindex]; //
+        if (mycard.card != Card.CardsByPlayers.Quarantine) throw 'Error is not Quarantine card';
+        this.cards.splice(cardindex, 1);
+        nextplayer.Quarantine = mycard;
+        nextplayer.quarantineCount = 3;
+
+        this.room.log(this + " посадил на карантин " + nextplayer);
+        this.endTurn();
+    }
+
     actionPanicGoAway(data) {
 
         if (this.phase != Player.Phases.SecondAction) throw 'Error is not you action now';
@@ -573,23 +612,6 @@ class Player {
     }
 
 
-    actionQuarantine(data) {
-        if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
-        if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
-        let otherPlayerName = data.otherPlayerName;
-        let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
-        let bymycardplace = data.bymycardplace;
-
-        let cardindex = this.findcardindex(bymycardplace);
-        let mycard = this.cards[cardindex]; //
-        if (mycard.card != Card.CardsByPlayers.Quarantine) throw 'Error is not Quarantine card';
-        this.cards.splice(cardindex, 1);
-        nextplayer.Quarantine = mycard;
-        nextplayer.quarantineCount = 3;
-
-        this.room.log(this + " посадил на карантин " + nextplayer);
-        this.endTurn();
-    }
 
     actionChangePlace(data) {
         if (this.phase != Player.Phases.Action) throw 'Error is not you action now';

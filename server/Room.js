@@ -34,22 +34,25 @@ class Room {
 
     }
 
-    addDoor(p1,p2,card){
-        let k = (p1.place+1) *(1+p2.place);
+    Door(p1,p2,card){
+        let k = Math.max(p1.place , p2.place);
+        if(k==this.players.size)k=0;
         this.doors.set(k,card);
     }
 
     removeDoor(p1,p2){
         let card = getDoor(p1,p2);
         if(card==undefined)return;
-        let k = (p1.place+1) *(1+p2.place);
+        let k = Math.max(p1.place , p2.place);
+        if(k==this.players.size)k=0;
         this.dropcards.push(card);
         this.doors.delete(k);
     }
 
     getDoor(p1,p2){
 
-        let k = (p1.place+1) *(1+p2.place);
+        let k = Math.max(p1.place , p2.place);
+        if(k==this.players.size)k=0;
         return this.doors.get(k);
 
     }
