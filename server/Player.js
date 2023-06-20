@@ -124,7 +124,7 @@ class Player {
     endTurn() {
         this.phase = Player.Phases.Exchange;
         this.state = Player.States.SelectCard;
-        if (this.room.nextplayer.quarantineCount == 0) return;
+        if (this.room.nextplayer.quarantineCount == 0 && this.quarantineCount == 0) return;
         this.stopPlay();
         this.nowNextPlayer();
 
@@ -165,8 +165,6 @@ class Player {
         this.place = null;
         this.stopPlay();
         this.room.killPlayer(this);
-        //
-        //.delete()
     }
 
     tableCard(place) {
@@ -184,7 +182,6 @@ class Player {
 
         this.cards.splice(index, 1);
         this.cards.forEach((v, i) => { v.place = i });
- 
     }
 
     ShowYourCardToPlayer(player, place) {
@@ -254,14 +251,17 @@ class Player {
                 break;
             case Card.CardsByPlayers.PanicOldRopes:
                 //"Старые веревки", "Все сыгранные карты карантин сбрасываются", "/oldropes.jpg", null, null, Algoritms.Panic, null, true),
+                this.room.dropAllQuarantine();
                 this.endTurn();
                 break;
             case Card.CardsByPlayers.PanicOneTwo:
                 //"Раз два", "Поменяйтесь местами с третим от вас игроком слева или справа (по вашему выбору). Игнорируйте все заколоченные двери. Если игрок на карантине, смены мес т не происходит", "/onetwo.jpg", null, null, Algoritms.Panic, null, true),
                 this.state = Player.States.PanicOneTwo;
+                this.endTurn();
                 break;
             case Card.CardsByPlayers.PanicParty:
                 //"Вечеринка", "Все сыгранные карты карантин и заколоченная дверь сбрасываются. Затем начиная с вас и по часовой стрелке все парами меняются местами. в случае нечетного числа игроков последний игрок остается на месте", "/party.jpeg", null, null, Algoritms.Panic, null, true),
+                this.room.dropAllQuarantine();
                 this.endTurn();
                 break;
             case Card.CardsByPlayers.PanicThreeFour:
@@ -278,8 +278,23 @@ class Player {
         this.room.log(this + " паникует ");
     }
 
+    actionAxe(data) {
 
+    }
 
+    actionPanicGoAway(data) {
+
+        if (this.phase != Player.Phases.SecondAction) throw 'Error is not you action now';
+        if (this.state != Player.States.SelectPlayer) throw 'Error is not you state now';
+        let otherPlayerName = data.opponent;
+        let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
+
+        this.room.log(this + " меняется местами по панике с " + nextplayer);
+        nextplayer.stopPlay();
+        this.ExchangePlace(nextplayer);
+        this.endTurn();
+
+    }
 
     actionPanicForgot(data) {
         let cardindex = this.findcardindex(data.place);
@@ -532,7 +547,7 @@ class Player {
         this.tableCard(bymycardplace);
         this.endTurn();
         this.room.ShowMyCardsToAll(nextplayer);
-        this.room.log(this + " анализирует карты "+nextplayer);
+        this.room.log(this + " анализирует карты " + nextplayer);
 
 
 

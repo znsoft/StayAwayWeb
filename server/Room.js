@@ -16,6 +16,7 @@ class Room {
         this.deckcards = [];
         this.dropcards = [];
         this.tablecards = [];
+        this.doors = new Map();
         this.cardscount = 0;
         this.gamenum = gamenum;
         this.direction = 0;
@@ -30,6 +31,34 @@ class Room {
     get playersArray(){
 
         return Array.from(this.players, ([name, value]) => (value));
+
+    }
+
+    addDoor(p1,p2,card){
+        let k = (p1.place+1) *(1+p2.place);
+        this.doors.set(k,card);
+    }
+
+    removeDoor(p1,p2){
+        let card = getDoor(p1,p2);
+        if(card==undefined)return;
+        let k = (p1.place+1) *(1+p2.place);
+        this.dropcards.push(card);
+        this.doors.delete(k);
+    }
+
+    getDoor(p1,p2){
+
+        let k = (p1.place+1) *(1+p2.place);
+        return this.doors.get(k);
+
+    }
+     
+    dropAllDoors(){
+
+        this.doors.forEach((v,k)=>this.dropcards.push(v));
+
+        this.doors = new Map();
 
     }
 
@@ -81,6 +110,7 @@ class Room {
                 if (v.place == nextplace) nextplayer = v;
             });
         });
+        if(nextplayer==null)console.log('how can it be , nextplayer is null');
         return nextplayer;
 
     }
@@ -132,6 +162,18 @@ class Room {
         if (win) this.log("Нечто победил");
         if (loose) this.log("Нечто проиграл");
         this.playersArray.forEach(v => v.stopPlay());
+
+
+    }
+
+    dropAllQuarantine(){
+        this.playersArray.forEach(v=>{
+
+            if(v.quarantineCount>0)            this.dropcards.push(v.Quarantine);
+            v.quarantineCount = 0;
+            v.Quarantine = null;
+
+        });
 
 
     }
