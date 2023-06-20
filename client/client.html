@@ -471,6 +471,7 @@
         ChangePlaceNear: { id: 19, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: ChangePlaceNear },
         inChangePlace: { id: 20, Button: { Text: "Пересесть", action: AcceptChangePlace }, isInExchangePlace: true },// OnSelectAction: exchangecard },
         StayHere: { id: 20, Button: { Text: "Остаться", action: DefendFromChangePlace }, isInExchangePlace: true },// OnSelectAction: exchangecard },
+        ChangePlace: { id: 19, HiLightText: "Выбери игрока", MayMove: true, HLAllNonQuarantine: true, selectPlayer: true, OnSelectPlayer: ChangePlace },
 
     };
 
@@ -544,6 +545,10 @@
             if (me.QuarantineCount > 0) return Actions.Drop;
             return [Actions.Drop, Actions.ChangePlaceNear];
         },
+        ChangePlace: (me) => {
+            if (me.QuarantineCount > 0) return Actions.Drop;
+            return [Actions.Drop, Actions.ChangePlace];
+        },
         StayHere: (me, other) => {
             if (me.state == States.DefendFromChangePlace) return [Actions.inChangePlace, Actions.StayHere];
             return Actions.inChange;
@@ -566,10 +571,10 @@
         Suspicion: new Card("Suspicion", 2, "Подозрение", "Посмотрите одну карту на руке соседнего игрока", "/suspiction.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionSuspicion, null),//подозрение
         Analysis: new Card("Analysis", 3, "Анализ", "Посмотрите все карты на руке соседнего игрока", "/analysis.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionAnalysis, null),//анализ
         BurnFire: new Card("Burn", 4, "Огнемет", "Соседний игрок выбывает из игры", "/fire.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionBurnFire, null),//огнемет
-        FireResist: new Card("Defend\nfrom Fire", 5, "Никакого шашлыка", "Отмените эффект карты огнемет, если стали ее целью. возьмите 1 карту событие", "/nofire.jpg", Algoritms.SimpleExchange, Algoritms.FireResistance, Algoritms.OnlyDropAction, Algoritms.FireResistance),//шашлык
+        FireResist: new Card("Defend\nfrom Fire", 5, "Никакого шашлыка", "Отмените эффект карты огнемет, если стали ее целью. возьмите 1 карту событие", "/nofire.jpg", Algoritms.SimpleExchange, Algoritms.FireResistance, Algoritms.OnlyDropAction, null),//шашлык
         Temptation: new Card("Temptation", 6, "Соблазн", "Поменяйтесь одной картой с любым игроком, если он не на карантине. Ваш ход заканчивается", "/temptation.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionTemptation, Algoritms.ActionTemptation2),//соблазн
         Perseverance: new Card("Perseverance", 7, "Упорство", "Возьмите 3 карты событий, оставтье на руке одну. Затем сыграйте или сбросьте одну карту", "/perseverance.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.Perseverance, Algoritms.Perseverance2),//Упорство
-        GetOff: new Card("Get Off", 8, "Сматывай удочки", "Поменяйтесь местами с любым игроком по вашему выбору если он не на карантине. Игнорируйте заколоченные двери", "/udochki.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
+        GetOff: new Card("Get Off", 8, "Сматывай удочки", "Поменяйтесь местами с любым игроком по вашему выбору если он не на карантине. Игнорируйте заколоченные двери", "/udochki.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ChangePlace, null),
 
         ChangeDirection: new Card("Change\nDirection", 9, "Гляди по сторонам", "Очередность хода передается в другую сторону.Меняется порядок ход и направление обмена картами", "/direction.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ChangeDirection, null),
         ChangePlace: new Card("Change place", 10, "Меняемся местами", "Поменяйтесь местами с соседним игроком, если он не на карантие и не за заколоченной дверью", "/changeplace.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ChangePlaceNear, null),
@@ -722,7 +727,7 @@
         }
 
         toString() {
-            return this.playername + ((this.Infected == true && this.Thing == false)?" (заражен)":"");
+            return this.playername + ((this.Infected == true && this.Thing == false) ? " (заражен)" : (this.Thing == true?" (нечто)":""));
         }
 
 
@@ -1071,7 +1076,7 @@
             return pldist == 1 || pldist == this.players.length - 1;
         }
 
-        DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, i, actions) {
+        DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, i, actions, HLAllNonQuarantine) {
             let sy = game.width *0.25;//.height / 4;//260;
             let sx = game.height *0.25;//260;
             if (v == this.me) v.moveOneCard = this.moveOneCard;
@@ -1100,7 +1105,7 @@
                 ctx.roundRect(Player.x1 - 10, Player.y1 - 10, Player.x2 + 20, Player.y2 + 20, 20).stroke();
             }
 
-            if (this.isNearOpponent(v) && HiLightRLPlayers == true && v != this.me || (HLOpponent && v.place == this.nextplayer)) {
+            if (this.isNearOpponent(v) && HiLightRLPlayers == true && v != this.me || (HLOpponent && v.place == this.nextplayer) || (HLAllNonQuarantine == true && v.QuarantineCount == 0 && v != this.me )) {
                 ctx.fillStyle = "#003";
                 ctx.strokeStyle = "#a02";
                 ctx.roundRect(Player.x1, Player.y1, Player.x2, Player.y2, 20).stroke();
@@ -1184,13 +1189,7 @@
             ctx.save();
             ctx.translate(w / 2, h / 2); //центр экрана это (0,0)
 
-            if (this.me.selectedCard == null
-                || this.me.Phase == Phases.Nothing
-                // || !(this.me.state == States.SelectCard 
-                //|| this.me.state == States.IncomeExchange 
-                //|| this.me.state == States.DefendFireSelectCard
-                //|| this.me.state == States.SelectCardAndPlayerForOutgoingExchange)
-            ) Button.DeleteAll();
+            if (this.me.selectedCard == null                || this.me.Phase == Phases.Nothing            ) Button.DeleteAll();
 
             if (this.me.selectedCard != null) if (this.me.selectedCard.card.Description != undefined)
                 this.drawText(ctx, -this.width / 2, this.height / 2 - 100, this.me.selectedCard.card.Description);
@@ -1199,6 +1198,7 @@
 
             let HLOpponent = false;
             let HiLightRLPlayers = false;
+            let HLAllNonQuarantine = false;
             let c = [];
             let card = null;
             switch (this.me.Phase) {
@@ -1214,7 +1214,7 @@
                         c.forEach((v) => {
                             if (v.HiLightText != undefined) this.drawText(ctx, -10, 20, v.HiLightText);
                             if (v.HiLightRLPlayers == true) HiLightRLPlayers = true;
-                            //if (v.selectNearPlayersCards != undefined) selectNearPlayersCards = v.selectNearPlayersCards;
+                            if (v.HLAllNonQuarantine == true) HLAllNonQuarantine = true;
                         });
 
                     }
@@ -1229,7 +1229,7 @@
                         c.forEach((v) => {
                             if (v.HiLightText != undefined) this.drawText(ctx, -10, 20, v.HiLightText);
                             if (v.HiLightRLPlayers == true) HiLightRLPlayers = true;
-                            //if (v.selectNearPlayersCards != undefined) selectNearPlayersCards = v.selectNearPlayersCards;
+                            if (v.HLAllNonQuarantine == true) HLAllNonQuarantine = true;
                         });
 
                     }
@@ -1250,7 +1250,7 @@
             this.players.sort((a, b) => a.place - b.place).forEach((v, i) => {
                 let newplace = v.place - central;
                 if (newplace < 0) newplace = newplace + this.players.length;
-                this.DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, newplace, c);
+                this.DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, newplace, c, HLAllNonQuarantine);
             });
 
 
@@ -1452,6 +1452,18 @@
         let p = JSON.parse(document.cookie);
         p.messagetype = 'playeraction';
         p.action = "ChangePlaceNear";
+        p.bymycardplace = game.me.selectedCard.cardplace;
+        p.otherPlayerName = player.name;
+        websocket.senddata(p);
+
+    }
+
+
+    function ChangePlace(player){
+
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "ChangePlace";
         p.bymycardplace = game.me.selectedCard.cardplace;
         p.otherPlayerName = player.name;
         websocket.senddata(p);

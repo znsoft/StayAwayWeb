@@ -112,6 +112,28 @@ class Room {
         return this.playersArray.filter((v)=>v.cardForExchangeOut==null).length>0;
     }
 
+    IsThingWin() {
+        return this.playersArray.filter(v => (v.isDead == false && (v.Infected || v.thing))).length == this.playersArray.filter(v => (v.isDead == false)).length;
+    }
+
+    IsThingLoose() {
+        return this.playersArray.filter(v => (v.isDead == false && v.thing)).length == 0;
+    }
+
+    checkEndGame() {
+        if (this.gamestarted == false) return;
+        let win = this.IsThingWin();
+        let loose = this.IsThingLoose();
+        if (!win && !loose) return;
+        this.gamestarted == false;
+        this.log("Игра окончена");
+        if (win) this.log("Нечто победил");
+        if (loose) this.log("Нечто проиграл");
+        this.playersArray.forEach(v => v.stopPlay());
+
+
+    }
+
     ChainPanicEnd(){
         if(this.isNotAllSelectCardForExchangeOut())return;
         this.playersArray.forEach(v=>{
@@ -298,6 +320,7 @@ class Room {
 
 
     updatePlayers() {
+        this.checkEndGame();
         this.getDeckAndDrop((deckData) => {
             this.players.forEach((v, k) => {
                 if (v.needupdate == true)
