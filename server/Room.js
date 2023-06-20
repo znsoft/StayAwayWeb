@@ -303,9 +303,14 @@ class Room {
                 if (v.needupdate == true)
                     v.update(deckData);
                 v.needupdate = false;
+                //v.send({ messagetype: 'gamelog', gamelog: this.gamelog });
             });
             this.spectators.forEach(v => v.update(deckData));
 
+        });
+
+        this.players.forEach((v, k) => {
+            v.send({ messagetype: 'gamelog', gamelog: this.gamelog });
         });
     }
 

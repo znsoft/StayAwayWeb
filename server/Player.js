@@ -60,6 +60,7 @@ class Player {
         PanicForgot: 12,
         PanicMeet: 13,
         PanicOneTwo: 14,
+        DefendPlaceChange: 15,
 
 
 
@@ -80,7 +81,7 @@ class Player {
     }
 
     insertPlayer() {
-        this.room.log(this + " входит в игру");
+        this.room.log(this + " присоединился");
     }
 
     generateGUID() {
@@ -488,6 +489,102 @@ class Player {
         //return this.cards[cardindex];
     }
 
+
+    actionChangePlace(data) {
+        if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
+        if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
+        let otherPlayerName = data.otherPlayerName;
+        let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
+        // let otherCardPlace = data.place;
+        let bymycardplace = data.bymycardplace;
+
+        let cardindex = this.findcardindex(bymycardplace);
+        let mycard = this.cards[cardindex]; //
+        if (mycard.card != Card.CardsByPlayers.GetOff) throw 'Error is not ChangePlace card';
+
+        //console.log(this.playername + " try Burn " + otherPlayerName);
+        this.tableCard(bymycardplace);
+
+        this.state = Player.States.Nothing;
+        nextplayer.phase = Player.Phases.Answer;
+        nextplayer.state = Player.States.DefendPlaceChange;
+        this.room.log(this + " меняется местами с " + nextplayer);
+        let defend = nextplayer.cards.filter((v) =>
+            v.card.num == Card.CardsByPlayers.StayHere.num);
+        //console.log(defend);
+        if (defend.length > 0) return;
+        nextplayer.stopPlay();
+        this.ExchangePlace(nextplayer);
+        this.endTurn();
+
+    }
+
+    actionChangePlaceNear(data) {
+        if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
+        if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
+        let otherPlayerName = data.otherPlayerName;
+        let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
+        // let otherCardPlace = data.place;
+        let bymycardplace = data.bymycardplace;
+
+        let cardindex = this.findcardindex(bymycardplace);
+        let mycard = this.cards[cardindex]; //
+        if (mycard.card != Card.CardsByPlayers.ChangePlace) throw 'Error is not ChangePlace card';
+
+        //console.log(this.playername + " try Burn " + otherPlayerName);
+        this.tableCard(bymycardplace);
+
+        this.state = Player.States.Nothing;
+        nextplayer.phase = Player.Phases.Answer;
+        nextplayer.state = Player.States.DefendPlaceChange;
+        this.room.log(this + " меняется местами с " + nextplayer);
+        let defend = nextplayer.cards.filter((v) =>
+            v.card.num == Card.CardsByPlayers.StayHere.num);
+        //console.log(defend);
+        if (defend.length > 0) return;
+        nextplayer.stopPlay();
+        this.ExchangePlace(nextplayer);
+
+        this.endTurn();
+
+    }
+
+    actionAcceptChangePlace(data) {
+        if (this.phase != Player.Phases.Answer) throw 'Error is not you answer now';
+        if (this.state != Player.States.DefendPlaceChange) throw 'Error is not you defend now';
+        this.room.currentplayer.ExchangePlace(this);
+        this.stopPlay();
+        this.room.currentplayer.endTurn();
+    }
+
+    actionDefendFromChangePlace(data) {
+        if (this.phase != Player.Phases.Answer) throw 'Error is not you answer now';
+        if (this.state != Player.States.DefendPlaceChange) throw 'Error is not you defend now';
+        let bymycardplace = data.bymycardplace;
+
+        let cardindex = this.findcardindex(bymycardplace);
+        let mycard = this.cards[cardindex]; //
+        if (mycard.card != Card.CardsByPlayers.StayHere) throw 'Error is not defend card';
+
+        //console.log(this.playername + " defend from fire ");
+        this.tableCard(bymycardplace);
+        this.room.giveOneActionCardfromDeckToPlayer(this);
+        this.stopPlay();
+        this.room.currentplayer.endTurn();
+
+        this.room.log(this + " не хочет меняться местами");
+
+    }
+
+    ExchangePlace(nextplayer) {
+        let place = nextplayer.place;
+        nextplayer.place = this.place;
+        this.place = place;
+        this.room.calcNextPlayer();
+        this.room.log(nextplayer + " пересаживается");
+
+    }
+
     actionBurnPlayer(data) {
         if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
@@ -518,6 +615,7 @@ class Player {
 
 
     }
+
 
 
 
@@ -648,7 +746,7 @@ class Player {
         this.needupdate = false;
 
         this.send({ messagetype: 'playerlist', playerlist: exchange, deck: deckData, nextplayer: nextplayer, currentplayer: currentplayer, opponent: opponent });
-        this.send({ messagetype: 'gamelog', gamelog: this.room.gamelog });
+        //this.send({ messagetype: 'gamelog', gamelog: this.room.gamelog });
     }
 
     addCards(v, p) {

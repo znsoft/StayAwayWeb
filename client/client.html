@@ -467,7 +467,10 @@
         SelectCardForDeck: { id: 15, Button: { Text: "Подложить в колоду", action: PanicMeet }, },
         PanicOnlyOneCardStayInHand: { id: 16, Button: { Text: "Оставить эту карту", action: PanicForgot }, },
         Mist: { id: 17, HiLightText: "Отклонить обмен", Button: { Text: "Отклонить", action: mist } },
-        Fear: { id: 17, HiLightText: "Отклонить обмен", Button: { Text: "Отклонить и посмотреть", action: fear } },
+        Fear: { id: 18, HiLightText: "Отклонить обмен", Button: { Text: "Отклонить и посмотреть", action: fear } },
+        ChangePlaceNear: { id: 19, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: ChangePlaceNear },
+        inChangePlace: { id: 20, Button: { Text: "Пересесть", action: AcceptChangePlace }, isInExchangePlace: true },// OnSelectAction: exchangecard },
+        StayHere: { id: 20, Button: { Text: "Остаться", action: DefendFromChangePlace }, isInExchangePlace: true },// OnSelectAction: exchangecard },
 
     };
 
@@ -537,6 +540,19 @@
             if (me.state == States.IncomeExchange) return [Actions.inChange, Actions.Fear];
             return Actions.Nothing;
         },
+        ChangePlaceNear: (me) => {
+            if (me.QuarantineCount > 0) return Actions.Drop;
+            return [Actions.Drop, Actions.ChangePlaceNear];
+        },
+        StayHere: (me, other) => {
+            if (me.state == States.DefendFromChangePlace) return [Actions.inChangePlace, Actions.StayHere];
+            return Actions.inChange;
+        },
+
+            
+            
+        
+
 
     };
 
@@ -556,14 +572,14 @@
         GetOff: new Card("Get Off", 8, "Сматывай удочки", "Поменяйтесь местами с любым игроком по вашему выбору если он не на карантине. Игнорируйте заколоченные двери", "/udochki.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, Algoritms.FireResistance),
 
         ChangeDirection: new Card("Change\nDirection", 9, "Гляди по сторонам", "Очередность хода передается в другую сторону.Меняется порядок ход и направление обмена картами", "/direction.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ChangeDirection, null),
-        ChangePlace: new Card("Change place", 10, "Меняемся местами", "Поменяйтесь местами с соседним игроком, если он не на карантие и не за заколоченной дверью", "/changeplace.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
+        ChangePlace: new Card("Change place", 10, "Меняемся местами", "Поменяйтесь местами с соседним игроком, если он не на карантие и не за заколоченной дверью", "/changeplace.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ChangePlaceNear, null),
         Whiski: new Card("Whiski", 11, "Виски", "Покажи все на руке карты всем игрокам", "/whiski.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionWhiski, null),
         Axe: new Card("Axe", 12, "Топор", "Сбросте сыгранную на вас или на соседнего игрока карту Карантин или выложенную между вами карту Заколоченная дверь", "/axe.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
 
         NoThanks: new Card("No Thanks", 13, "Нет уж, спасибо", "Откажитесь от обмена картами. возьмите 1 карту событие", "/nothanx.jpg", Algoritms.SimpleExchange, Algoritms.NoThanks, Algoritms.OnlyDropAction, null),
         Fear: new Card("Fear", 14, "Страх", "Откажитесь от обмена картами и посмотрите карту, от которой отказались. возьмите 1 карту событие", "/fear.png", Algoritms.SimpleExchange, Algoritms.Fear, Algoritms.OnlyDropAction, null),
         Past: new Card("Past", 15, "Мимо", "Откажитесь от обмена картами. Вместо вас картами меняется следующий за вами игрок. возьмите 1 карту события", "/mimo.jpg", Algoritms.SimpleExchange, Algoritms.Mist, Algoritms.OnlyDropAction, null),
-        StayHere: new Card("i Stay Here", 16, "Мне и здесь неплохо", "Отмените эффект карты меняемся местами или сматывай удочки, если стали ее целью. возьмите 1 карту события", "/stay.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
+        StayHere: new Card("i Stay Here", 16, "Мне и здесь неплохо", "Отмените эффект карты меняемся местами или сматывай удочки, если стали ее целью. возьмите 1 карту события", "/stay.png", Algoritms.SimpleExchange, Algoritms.StayHere, Algoritms.OnlyDropAction, null),
         Door: new Card("Door", 17, "Заколоченная дверь", "Положите эту карту между собой и соседним игроком. Между вами не может совершаться никаких действий и обменов", "/door.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
         Quarantine: new Card("Quarantine", 18, "Карантин", "Сыграйте эту карту на соседнего игрока, следующие 3 хода игрок не может играть карты событий", "/quarantine.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
 
@@ -706,7 +722,7 @@
         }
 
         toString() {
-            return this.playername;
+            return this.playername + ((this.Infected == true && this.Thing == false)?" (заражен)":"");
         }
 
 
@@ -848,8 +864,8 @@
 
             ctx.strokeStyle = "#005";
             ctx.font = 'bold 48px serif';
-            ctx.fillText(this.name, 20, 20);
-            ctx.strokeText(this.name, 20, 20);
+            ctx.fillText(this, 20, 20);
+            ctx.strokeText(this, 20, 20);
             ctx.stroke();
 
             if (errortext != '') TextLabels.ErrorLabelText(errortext);
@@ -1324,6 +1340,7 @@
         PanicForgot: 12,
         PanicMeet: 13,
         PanicOneTwo: 14,
+        DefendPlaceChange: 15,
     };
 
 
@@ -1430,6 +1447,16 @@
         game.moveOneCard = false;
     });
 
+    function ChangePlaceNear(player) {
+
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "ChangePlaceNear";
+        p.bymycardplace = game.me.selectedCard.cardplace;
+        p.otherPlayerName = player.name;
+        websocket.senddata(p);
+
+    }
 
     function BurnPlayer(player) {
 
@@ -1471,6 +1498,30 @@
         let p = JSON.parse(document.cookie);
         p.messagetype = 'playeraction';
         p.action = "StartTemptation";
+
+        p.bymycardplace = pl.cardplace;
+
+        websocket.senddata(p);
+
+    }
+
+    function AcceptChangePlace(pl) {
+
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "AcceptChangePlace";
+
+        //p.bymycardplace = pl.cardplace;
+
+        websocket.senddata(p);
+
+    }
+
+    function DefendFromChangePlace(pl) {
+
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "DefendFromChangePlace";
 
         p.bymycardplace = pl.cardplace;
 
