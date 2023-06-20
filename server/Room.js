@@ -125,7 +125,9 @@ class Room {
         let win = this.IsThingWin();
         let loose = this.IsThingLoose();
         if (!win && !loose) return;
-        this.gamestarted == false;
+        this.gamestarted = false;
+        this.playersArray.forEach(v => {if(v.thing)this.log(v+" нечто");});
+        
         this.log("Игра окончена");
         if (win) this.log("Нечто победил");
         if (loose) this.log("Нечто проиграл");
@@ -333,6 +335,9 @@ class Room {
         });
 
         this.players.forEach((v, k) => {
+            v.send({ messagetype: 'gamelog', gamelog: this.gamelog});
+        });
+        this.spectators.forEach((v) => {
             v.send({ messagetype: 'gamelog', gamelog: this.gamelog});
         });
     }

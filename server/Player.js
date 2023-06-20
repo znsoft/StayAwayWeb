@@ -29,6 +29,7 @@ class Player {
         this.isDead = false;
         this.opponent = null;
         this.Perseverance = [];
+        this.Quarantine = null;
 
     }
 
@@ -99,6 +100,106 @@ class Player {
         this.sendplayers(deckData);
         this.lastseen = Date.now();
         this.needupdate = false;
+
+    }
+
+    startPlay() {
+        this.opponent = this.room.nextplayer;
+        this.phase = Player.Phases.Action;
+        this.state = Player.States.SelectCard;
+        this.getOneCardfromDeckForAction();
+        this.room.log(this + " начинает ход");
+        if (this.quarantineCount > 0) {
+            this.quarantineCount--;
+            if (this.quarantineCount == 0) {
+
+                this.room.dropcards.push(this.Quarantine);
+                this.Quarantine = null;
+            }
+        }
+
+
+    }
+
+    endTurn() {
+        this.phase = Player.Phases.Exchange;
+        this.state = Player.States.SelectCard;
+        if (this.room.nextplayer.quarantineCount == 0) return;
+        this.stopPlay();
+        this.nowNextPlayer();
+
+    }
+
+    stopPlay() {
+        this.phase = Player.Phases.Nothing;
+        this.state = Player.States.Nothing;
+        this.opponent = null;
+    }
+
+
+    findcardindex(place) {
+        return this.cards.findIndex((v, i) => { return v.place == place });
+        //return this.cards[cardindex];
+    }
+
+    nowNextPlayer() {
+        this.stopPlay();
+        let nextplayer = this.room.nextplayer;
+
+        this.room.currentplayer = nextplayer;
+        //this.room.calcNextPlayer();
+        nextplayer.startPlay();
+
+    }
+
+
+    getOneCardfromDeckForAction() {
+        this.room.giveOneCardfromDeckToPlayer(this);
+        //this.cards.forEach((v, i) => { v.place = i });
+    }
+
+    dead() {
+        this.isDead = true;
+        this.cards.forEach(v => this.room.dropcards.push(v));
+        this.cards = [];
+        this.place = null;
+        this.stopPlay();
+        this.room.killPlayer(this);
+        //
+        //.delete()
+    }
+
+    tableCard(place) {
+        let index = this.findcardindex(place);
+        this.room.tablecards.push(this.cards[index]);
+        //console.log(place + ' ' + this.cards.length)
+        this.cards.splice(index, 1);
+        this.cards.forEach((v, i) => { v.place = i });
+        //console.log('cards ' + this.cards.length)
+    }
+
+    dropOneCard(place) {
+        let index = this.findcardindex(place);
+        this.room.dropcards.push(this.cards[index]);
+
+        this.cards.splice(index, 1);
+        this.cards.forEach((v, i) => { v.place = i });
+ 
+    }
+
+    ShowYourCardToPlayer(player, place) {
+        let cardindex = this.findcardindex(place);
+        let card = this.cards[cardindex];
+        this.room.ShowMyCardToPlayer(player, this, card);
+
+    }
+
+    ExchangePlace(nextplayer) {
+        let place = nextplayer.place;
+        nextplayer.place = this.place;
+        this.place = place;
+        this.room.calcNextPlayer();
+        this.room.log(nextplayer + " пересаживается");
 
     }
 
@@ -173,29 +274,22 @@ class Player {
                 this.room.ShowMyCardsToAll(this);
 
                 break;
-
-
-
         }
-
-
         this.room.log(this + " паникует ");
-
-
     }
 
 
-    
 
-    actionPanicForgot(data){
+
+    actionPanicForgot(data) {
         let cardindex = this.findcardindex(data.place);
         let mycard = this.cards[cardindex];
         //if (mycard.card == Card.CardsByPlayers.Thing) throw 'Эту карту нельзя скинуть';
         this.cards.splice(cardindex, 1);
-        this.cards.forEach(v=>this.room.dropcards.push(v));
+        this.cards.forEach(v => this.room.dropcards.push(v));
         this.cards = [];
         this.cards.push(mycard);
-        for(let i=3;i>0;i--)        this.room.giveOneActionCardfromDeckToPlayer(this);
+        for (let i = 3; i > 0; i--)        this.room.giveOneActionCardfromDeckToPlayer(this);
         this.cards.forEach((v, i) => { v.place = i });
 
         this.endTurn();
@@ -205,7 +299,7 @@ class Player {
 
     }
 
-    actionPanicMeet(data){
+    actionPanicMeet(data) {
         let cardindex = this.findcardindex(data.place);
         let mycard = this.cards[cardindex];
         if (mycard.card == Card.CardsByPlayers.Thing) throw 'Эту карту нельзя скинуть';
@@ -213,14 +307,12 @@ class Player {
         this.room.giveOneActionCardfromDeckToPlayer(this);
         this.cards.forEach((v, i) => { v.place = i });
         this.room.deckcards.push(mycard);
+        this.room.log(this + " подложил карту в колоду");
         this.stopPlay();
         this.room.nowNextPlayer();
-        this.room.log(this + " подложил карту в колоду");
-
-
     }
-    
-    
+
+
     actionChangeDirection(data) {
         if (this.phase != Player.Phases.Action) throw 'Error is not you Action now';
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
@@ -245,7 +337,6 @@ class Player {
         this.Perseverance = [];
         this.phase = Player.Phases.Action;
         this.state = Player.States.SelectCard;
-
         this.room.log(this + " выбрал карту и продолжает ход");
     }
 
@@ -275,8 +366,6 @@ class Player {
         //this.room.opponent = null;
         this.opponent = null;
         this.room.log(this + " играет соблазн");
-
-
     }
 
     actionoutExchangeCard(data) {
@@ -310,26 +399,7 @@ class Player {
 
     }
 
-    startPlay() {
-        this.opponent = this.room.nextplayer;
-        this.phase = Player.Phases.Action;
-        this.state = Player.States.SelectCard;
-        this.getOneCardfromDeckForAction();
-        this.room.log(this + " начинает ход");
 
-    }
-
-    endTurn() {
-        this.phase = Player.Phases.Exchange;
-        this.state = Player.States.SelectCard;
-
-    }
-
-    stopPlay() {
-        this.phase = Player.Phases.Nothing;
-        this.state = Player.States.Nothing;
-        this.opponent = null;
-    }
 
 
     actionMist(data) {
@@ -343,7 +413,7 @@ class Player {
         if (mycard.card != Card.CardsByPlayers.Past) throw 'Error no card for reject exchange';
         //this.cards.splice(mycardindex, 1);
         this.dropOneCard(data.place);
-        
+
         this.room.giveOneActionCardfromDeckToPlayer(this);
         this.stopPlay();
 
@@ -448,13 +518,23 @@ class Player {
 
     }
 
-    nowNextPlayer() {
-        this.stopPlay();
-        let nextplayer = this.room.nextplayer;
+    actionAnalysis(data) {
+        if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
+        if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
+        let nextplayer = this.room.getPlayerByPlayerName(data.otherPlayerName);
 
-        this.room.currentplayer = nextplayer;
-        //this.room.calcNextPlayer();
-        nextplayer.startPlay();
+        let bymycardplace = data.place;
+
+
+        let cardindex = this.findcardindex(bymycardplace);
+        let mycard = this.cards[cardindex]; //
+        if (mycard.card != Card.CardsByPlayers.Analysis) throw 'Error is not Analysis card';
+        this.tableCard(bymycardplace);
+        this.endTurn();
+        this.room.ShowMyCardsToAll(nextplayer);
+        this.room.log(this + " анализирует карты "+nextplayer);
+
+
 
     }
 
@@ -477,18 +557,24 @@ class Player {
 
     }
 
-    ShowYourCardToPlayer(player, place) {
-        let cardindex = this.findcardindex(place);
-        let card = this.cards[cardindex];
-        this.room.ShowMyCardToPlayer(player, this, card);
 
+    actionQuarantine(data) {
+        if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
+        if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
+        let otherPlayerName = data.otherPlayerName;
+        let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
+        let bymycardplace = data.bymycardplace;
+
+        let cardindex = this.findcardindex(bymycardplace);
+        let mycard = this.cards[cardindex]; //
+        if (mycard.card != Card.CardsByPlayers.Quarantine) throw 'Error is not Quarantine card';
+        this.cards.splice(cardindex, 1);
+        nextplayer.Quarantine = mycard;
+        nextplayer.quarantineCount = 3;
+
+        this.room.log(this + " посадил на карантин " + nextplayer);
+        this.endTurn();
     }
-
-    findcardindex(place) {
-        return this.cards.findIndex((v, i) => { return v.place == place });
-        //return this.cards[cardindex];
-    }
-
 
     actionChangePlace(data) {
         if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
@@ -576,14 +662,6 @@ class Player {
 
     }
 
-    ExchangePlace(nextplayer) {
-        let place = nextplayer.place;
-        nextplayer.place = this.place;
-        this.place = place;
-        this.room.calcNextPlayer();
-        this.room.log(nextplayer + " пересаживается");
-
-    }
 
     actionBurnPlayer(data) {
         if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
@@ -611,13 +689,7 @@ class Player {
         this.room.log(nextplayer + " выбывает");
         nextplayer.dead();
         this.endTurn();
-        //nextplayer.cards.fil
-
-
     }
-
-
-
 
     actionDefendFromFire(data) {
         if (this.phase != Player.Phases.Answer) throw 'Error is not you answer now';
@@ -661,35 +733,6 @@ class Player {
     }
 
 
-    dead() {
-        this.isDead = true;
-        this.cards.forEach(v => this.room.dropcards.push(v));
-        this.cards = [];
-        this.place = null;
-        this.stopPlay();
-        this.room.killPlayer(this);
-        //
-        //.delete()
-    }
-
-    tableCard(place) {
-        let index = this.findcardindex(place);
-        this.room.tablecards.push(this.cards[index]);
-        //console.log(place + ' ' + this.cards.length)
-        this.cards.splice(index, 1);
-        this.cards.forEach((v, i) => { v.place = i });
-        //console.log('cards ' + this.cards.length)
-    }
-
-    dropOneCard(place) {
-        let index = this.findcardindex(place);
-        this.room.dropcards.push(this.cards[index]);
-        //console.log(place + ' ' + this.cards.length)
-        this.cards.splice(index, 1);
-        this.cards.forEach((v, i) => { v.place = i });
-        //console.log('cards ' + this.cards.length)
-    }
-
     actionDropCard(data) {
         if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
@@ -700,23 +743,14 @@ class Player {
         this.room.log(this + " сбрасывает карту");
     }
 
-    getOneCardfromDeckForAction() {
-        this.room.giveOneCardfromDeckToPlayer(this);
-        //this.cards.forEach((v, i) => { v.place = i });
-    }
-
-
-
     sendplayers(deckData) {
-
-
         if (this.room.nextplayer == null) return;
         let nextplayer = this.room.nextplayer.place;
         let currentplayer = this.room.currentplayer.place;
         let opponent = this.room.nextplayer.place;
         if (this.place != currentplayer) opponent = currentplayer;
-        if (this.room.isPanicChain == true){
-         opponent = this.room.getNextPlayerFor(this).place;
+        if (this.room.isPanicChain == true) {
+            opponent = this.room.getNextPlayerFor(this).place;
         }
         let exchange = [];
 
@@ -732,13 +766,10 @@ class Player {
             p.phase = v.phase;
 
 
-            if (this.thing == true) p.Infected = v.Infected;//покажем нечте зараженных
-            if (this.Infected == true) p.thing = v.thing;//покажем зараженным нечту
+            if (this.thing == true || this.room.gamestarted == false) p.Infected = v.Infected;//покажем нечте зараженных
+            if (this.Infected == true || this.room.gamestarted == false) p.thing = v.thing;//покажем зараженным нечту
 
             exchange.push(this.addCards(v, p));
-
-
-
         });
 
 
