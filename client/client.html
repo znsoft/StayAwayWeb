@@ -310,10 +310,10 @@
             this.Description = Description;
             this.img = new Image();
             this.img.src = img;
-            this.Exchange = Exchange;
-            this.Answer = Answer;
-            this.Action = Action;
-            this.SecondAction = SecondAction;
+            this.Exchange = Exchange;//алгоритм который возвращает допустимые кнопки в фазе начала обмена относительно выбранной карты на своей руке
+            this.Answer = Answer; //алгоритм который возвращает допустимые кнопки в фазе ответа относительно выбранной карты на своей руке
+            this.Action = Action;//алгоритм который возвращает допустимые кнопки в фазе действия  относительно выбранной карты на своей руке
+            this.SecondAction = SecondAction; //алгоритм который возвращает допустимые кнопки в фазе продолжения действия относительно карты на столе 
             Card.splace++;
             this.place = Card.splace;
             //this.opponent = null;//?????  opponent in card ???
@@ -1056,20 +1056,25 @@
         }
 
         DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, i, actions) {
-
-            let s = 260;
+            let sy = game.width *0.25;//.height / 4;//260;
+            let sx = game.height *0.25;//260;
             if (v == this.me) v.moveOneCard = this.moveOneCard;
-            if (v != this.me) s = 750;
+            if (v != this.me) {
+                sx = game.height * 0.7 ;//750;
+                sy = game.width * 0.5 ;
+            }
             let ang = 2 * Math.PI * (i / (this.players.length + this.players.length / 5));// + 2.5));
             if (v != this.me) ang += 0.5;
-            let x = Math.cos(ang) * s;
-            let y = - Math.sin(ang) * s;
+            let x = Math.cos(ang) * sx;
+            let y = - Math.sin(ang) * sy;
             //v.x = x;
             //v.y = y;
             ctx.save();
 
-            if (v != this.me) ctx.scale(0.5, 0.5);
+            if (v != this.me) ctx.scale(0.5, 0.5); // else x = this.height - Card.height;
+
             ctx.translate(y, x);
+
             ctx.rotate(ang);
 
             if (this.selectedOpponent == v) {

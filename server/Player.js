@@ -184,6 +184,8 @@ class Player {
     }
 
 
+    
+
     actionPanicForgot(data){
         let cardindex = this.findcardindex(data.place);
         let mycard = this.cards[cardindex];
