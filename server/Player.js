@@ -267,7 +267,7 @@ class Player {
                 //"Раз два", "Поменяйтесь местами с третим от вас игроком слева или справа (по вашему выбору). 
                 //Игнорируйте все заколоченные двери. Если игрок на карантине, смены мес т не происходит", "/onetwo.jpg", null, null, Algoritms.Panic, null, true),
                 this.state = Player.States.PanicOneTwo;
-                this.endTurn();
+                //this.endTurn();
                 break;
             case Card.CardsByPlayers.PanicParty:
                 //"Вечеринка", "Все сыгранные карты карантин и заколоченная дверь сбрасываются. 
@@ -392,6 +392,18 @@ class Player {
         this.room.log(this + " разменял 3 карты из колоды");
 
 
+    }
+
+    actionPanicOneTwo(data){
+
+        if (this.phase != Player.Phases.SecondAction) throw 'Error is not you action now';
+        if (this.state != Player.States.PanicOneTwo) throw 'Error is not you state now';
+        let otherPlayerName = data.otherPlayerName;
+        let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
+        this.room.log(this + " меняется местами с " + nextplayer);
+        nextplayer.stopPlay();
+        this.ExchangePlace(nextplayer);
+        this.endTurn();
     }
 
     actionPanicMeet(data) {

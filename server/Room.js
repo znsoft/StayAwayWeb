@@ -256,9 +256,8 @@ class Room {
 
             this.insertShuffle(res);//оставшиеся карты перетасуем и закинем в деку
 
-            this.deckcards.push(new Card(this.clientDB, Card.CardsByPlayers.PanicParty.num, this, this.deckcards.length));
+//            this.deckcards.push(new Card(this.clientDB, Card.CardsByPlayers.PanicOneTwo.num, this, this.deckcards.length));
 
-//this.deckcards.push(Card.CardsByPlayers.PanicParty);
 
             this.currentplayer.startPlay();
 
@@ -479,9 +478,10 @@ class Room {
         let lastdrop = this.dropcards[this.dropcards.length - 1];
         let drop = this.dropcards.map((v) =>{ return v.card.isPanic?Card.CardsByPlayers.UnknownPanic.num:Card.CardsByPlayers.UnknownAction.num});
         let table = this.tablecards.map((v) => v.card.num);
+        let doors = Array.from(this.doors, ([name, value]) => (name));
         let deck = { table: table, drop: drop, deckCount: this.deckcards.length, dropCount: this.dropcards.length, 
             card: card.card.isPanic ? Card.CardsByPlayers.UnknownPanic.num : Card.CardsByPlayers.UnknownAction.num, 
-            isGameStarted: true, direction: this.direction , currentPlayer:this.currentplayer.place};
+            isGameStarted: true, direction: this.direction , currentPlayer:this.currentplayer.place, doors:doors};
         callback(deck);
 
 

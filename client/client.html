@@ -76,23 +76,24 @@
     #toolbar {
         transition: opacity 1s;
     }
-    
-    .tooltip{
+
+    .tooltip {
         position: relative;
-  cursor: pointer;
-  display: inline-block;
+        cursor: pointer;
+        display: inline-block;
     }
+
     .tooltip[data-title]:hover:after {
-  content: attr(data-title);
-  padding: 4px 8px;
-  color: #fff;
-  position: absolute;
-  left: 0;
-  top: 110%;
-  white-space: nowrap;  
-  border-radius: 5px;  
-  background:#000;
-}
+        content: attr(data-title);
+        padding: 4px 8px;
+        color: #fff;
+        position: absolute;
+        left: 0;
+        top: 110%;
+        white-space: nowrap;
+        border-radius: 5px;
+        background: #000;
+    }
 </style>
 
 <body>
@@ -108,10 +109,11 @@
     <textarea id="gamelog" style="opacity: 0.4; position: absolute; transition: opacity 1s;" cols="40" rows="20"
         onclick="console.log('click')" readonly="true"></textarea>
 
-        <div data-title="My tooltip " class="tooltip">
-    <canvas id="canvas" width="2000" height="2000" onresize="resizeCanvas()" >Please update your browser<br> in order to
-        view this page.</canvas>
-        </div>
+    <div data-title="My tooltip " class="tooltip">
+        <canvas id="canvas" width="2000" height="2000" onresize="resizeCanvas()">Please update your browser<br> in order
+            to
+            view this page.</canvas>
+    </div>
     <pre id="chat"></pre>
 
 
@@ -493,7 +495,8 @@
         Quarantine: { id: 23, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: SetQuarantine },
         PanicGoAway: { id: 24, HiLightText: "Выбери игрока", MayMove: true, HLAllNonQuarantine: true, selectPlayer: true, OnSelectPlayer: PanicGoAway },
         Axe: { id: 25, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: Axe },
-        Door:{ id: 26, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: SetDoor },
+        Door: { id: 26, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: SetDoor },
+        PanicOneTwo: { id: 27, HiLightText: "Выбери игрока", MayMove: true, HLThridPlayers: true, selectPlayer: true, OnSelectPlayer: PanicOneTwo },
     };
 
     const Algoritms = {
@@ -557,15 +560,16 @@
         ChangeDirection: (me) => {
             if (me.QuarantineCount > 0) return Actions.Drop;
             return [Actions.Drop, Actions.ChangeDirection]
-        }, 
+        },
         Panic: (me) => [Actions.Panic],
         ChainPanic: (me, card) => {
             return card.GetExchangeArray(me, game.opponent);
         },
         PanicBetweenUs: (me, card) => [Actions.ShowAllCardsTo],
-        PanicGoAway:(me, card) =>{
+        PanicGoAway: (me, card) => {
             //if(game.opponent.quarantineCount>0)return Actions.Nothing;
-            return Actions.PanicGoAway},
+            return Actions.PanicGoAway
+        },
         PanicMeet: (me, card) => {
             if (card == Cards.Thing) return Actions.Nothing;
             if (me.Infected == true && me.InfectCount == 1 && card == Cards.Infect) return Actions.Nothing;
@@ -600,14 +604,22 @@
             if (me.QuarantineCount > 0) return Actions.Drop;
             return [Actions.Drop, Actions.Quarantine];
         },
-        Axe:(me) => {
-            return [Actions.Drop, Actions.Axe];},
-        Door:(me)=>{
-            return [Actions.Drop, Actions.Door];},
+        Axe: (me) => {
+            return [Actions.Drop, Actions.Axe];
+        },
+        Door: (me) => {
+            return [Actions.Drop, Actions.Door];
+        },
 
-            
+        Friends: (me, card) => {
+            return card.GetExchangeArray(me, game.opponent);
+        },
 
+        PanicOneTwo: (me, card) => {
+            return Actions.PanicOneTwo;
 
+        }
+        ,
 
 
 
@@ -646,10 +658,10 @@
         PanicConfessionTime: new Card("PanicConfessionTime", 22, "Время признаний", "Начиная с вас и по порядку хода каждый показывает либо не показывает все карты на руке остальным игрокам.\n Время признаний завершается когда кто то из игроков показывает карту заражения", "/priznania.jpg", null, null, Algoritms.Panic, null, true),
         PanicBetweenUs: new Card("PanicBetweenUs", 23, "Только между нами", "Покажите все карты на руке соседнему игроку по вашему выбору", "/betweenus.jpg", null, null, Algoritms.Panic, null, true),
         PanicForgot: new Card("PanicForgot", 24, "Забывчивость", "Сбросьте три карты с руки и возьмите 3 новые карты из колоды, сбрасывая паники ", "/forgot.jpg", null, null, Algoritms.Panic, Algoritms.PanicOnlyOneCardStayInHand, true),
-        PanicFriend: new Card("", 25, "Давай дружить", "поменяйтесь одной картой с любым игроком если он не на карантине", "/friend.jpeg", null, null, Algoritms.Panic, null, true),
+        PanicFriend: new Card("", 25, "Давай дружить", "поменяйтесь одной картой с любым игроком если он не на карантине", "/friend.jpeg", null, null, Algoritms.Panic, Algoritms.Friends, true),
         PanicMeet: new Card("", 26, "Свидание вслепую", "Поменяйте одну карту с руки на верхнюю карту колоды сбрасывая паники.\n Ваш ход заканчивается", "/meet.jpg", null, null, Algoritms.Panic, Algoritms.PanicMeet, true),
         PanicChain: new Card("", 27, "Цепная реакция", "каждый игрок одновременно с остальными отдает одну карту следующему по порядку хода игроку\n игнорируя все сыгранные карты карантин и заколоченная дверь. вы не можете отказаться от обмена. нечто может заразить другого передав заражение. ваш ход заканчивается", "/chain.jpeg", null, null, Algoritms.Panic, Algoritms.ChainPanic, true),
-        PanicOneTwo: new Card("One two", 28, "Раз два", "Поменяйтесь местами с третим от вас игроком слева или справа (по вашему выбору). Игнорируйте все заколоченные двери.\n Если игрок на карантине, смены мес т не происходит", "/onetwo.jpg", null, null, Algoritms.Panic, null, true),
+        PanicOneTwo: new Card("One two", 28, "Раз два", "Поменяйтесь местами с третим от вас игроком слева или справа (по вашему выбору). Игнорируйте все заколоченные двери.\n Если игрок на карантине, смены мес т не происходит", "/onetwo.jpg", null, null, Algoritms.Panic, Algoritms.PanicOneTwo, true),
         PanicGoAway: new Card("Go away", 29, "Убирайся прочь", "Поменяйтесь местами с любым игроком если он не на карантине", "/goaway.jpg", null, null, Algoritms.Panic, Algoritms.PanicGoAway, true),
         PanicParty: new Card("", 30, "Вечеринка", "Все сыгранные карты карантин и заколоченная дверь сбрасываются. Затем начиная с вас и по часовой стрелке все парами меняются местами.\n в случае нечетного числа игроков последний игрок остается на месте", "/party.jpeg", null, null, Algoritms.Panic, null, true),
 
@@ -819,7 +831,7 @@
         }
 
         get isNowMyTurn() {
-            return this.Phase == Phases.Action||this.Phase == Phases.SecondAction;
+            return this.Phase == Phases.Action || this.Phase == Phases.SecondAction;
         }
 
         get isINeedGetCard() {
@@ -1107,7 +1119,7 @@
                 this.isStarted = true;
                 this.currentPlayer = message.deck.currentPlayer;
                 this.doors = new Map();
-                if(message.deck.doors != undefined)    message.deck.doors.forEach(v=>{this.doors.set(v,true)});
+                if (message.deck.doors != undefined) message.deck.doors.forEach(v => { this.doors.set(v, true) });
 
             }
 
@@ -1134,7 +1146,7 @@
             return pldist == 1 || pldist == this.players.length - 1;
         }
 
-        DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, i, actions, HLAllNonQuarantine,isDoorbefore=false) {
+        DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, i, actions, HLAllNonQuarantine, isDoorbefore = false, HLThridPlayers) {
             let sy = game.width * 0.25;//.height / 4;//260;
             let sx = game.height * 0.25;//260;
             if (v == this.me) v.moveOneCard = this.moveOneCard;
@@ -1165,7 +1177,10 @@
                 ctx.roundRect(Player.x1 - 10, Player.y1 - 10, Player.x2 + 20, Player.y2 + 20, 20).stroke();
             }
 
-            if (this.isNearOpponent(v) && HiLightRLPlayers == true && v != this.me || (HLOpponent && v.place == this.nextplayer) || (HLAllNonQuarantine == true && v.QuarantineCount == 0 && v != this.me)) {
+            if (this.isNearOpponent(v) && HiLightRLPlayers == true && v != this.me
+                || (HLOpponent && v.place == this.nextplayer)
+                || (HLAllNonQuarantine == true && v.QuarantineCount == 0 && v != this.me)
+                || (HLThridPlayers == true && v.QuarantineCount == 0 && v != this.me && Math.abs(this.me.place - v.place) == 3)) {
                 ctx.fillStyle = "#003";
                 ctx.strokeStyle = "#a02";
                 ctx.roundRect(Player.x1, Player.y1, Player.x2, Player.y2, 20).stroke();
@@ -1180,8 +1195,8 @@
             ctx.rotate(1);
             ctx.scale(0.5, 0.5);
 
-            if(isDoorbefore==true)
-            Cards.Door.Draw(ctx);
+            if (isDoorbefore == true)
+                Cards.Door.Draw(ctx);
             ctx.restore();
 
             ctx.restore();
@@ -1257,6 +1272,7 @@
             let HLOpponent = false;
             let HiLightRLPlayers = false;
             let HLAllNonQuarantine = false;
+            let HLThridPlayers = false;
             let c = [];
             let card = null;
             switch (this.me.Phase) {
@@ -1284,15 +1300,16 @@
                     if (card == null) break;
 
 
-                    if (this.me.isNowMyTurn&& this.me.selectedCard == null)//&&this.me.state==States.SelectPlayer) 
+                    if (this.me.isNowMyTurn && this.me.selectedCard == null) 
                     {
-                        c = card.GetSecondActionArray(this.me,card);
+                        c = card.GetSecondActionArray(this.me, card);
                         c.forEach((v) => {
                             if (v.HiLightText != undefined) this.drawText(ctx, -10, 20, v.HiLightText);
                             if (v.HiLightRLPlayers == true) HiLightRLPlayers = true;
                             if (v.HLAllNonQuarantine == true) HLAllNonQuarantine = true;
+                            if (v.HLThridPlayers == true) HLThridPlayers = true;
                         });
-                       
+
                     }
 
 
@@ -1309,14 +1326,14 @@
             let central = this.me.place;
 
             this.players.sort((a, b) => a.place - b.place).forEach((v, i) => {
-                let k = v.place ;
-                if(k==this.players.length)k=0;
+                let k = v.place;
+                if (k == this.players.length) k = 0;
                 let door = this.doors.get(k)
                 //if(k==true)this.Draw
 
                 let newplace = v.place - central;
                 if (newplace < 0) newplace = newplace + this.players.length;
-                this.DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, newplace, c, HLAllNonQuarantine,door);
+                this.DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, newplace, c, HLAllNonQuarantine, door, HLThridPlayers);
             });
 
 
@@ -1451,7 +1468,7 @@
 
         websocket.onmessage = function (evt) {
             console.log(evt.data);
-            
+
             let message = JSON.parse(evt.data);
             switch (message.messagetype) {
                 case 'playerguid':
@@ -1460,7 +1477,7 @@
                     document.getElementById("loginbutton").hidden = true;
                     document.getElementById("login").hidden = true;
                     document.getElementById("startgamebutton").hidden = false;
-                    
+
                     break;
                 case 'playerlist':
                     game.parsePlayerList(message);
@@ -1526,7 +1543,7 @@
 
     }
 
- 
+
 
     function ChangePlace(player) {
 
@@ -1779,7 +1796,18 @@
         websocket.senddata(p);
     }
 
-    function PanicGoAway(pl){
+    function PanicOneTwo(player) {
+
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "PanicOneTwo";
+        //p.bymycardplace = game.me.selectedCard.cardplace;
+        p.otherPlayerName = player.name;
+        websocket.senddata(p);
+
+    }
+
+    function PanicGoAway(pl) {
         let p = JSON.parse(document.cookie);
         p.messagetype = 'playeraction';
         p.action = "PanicGoAway";
