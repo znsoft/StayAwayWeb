@@ -170,15 +170,7 @@ class Room {
     }
 
     dropAllQuarantine(){
-        this.playersArray.forEach(v=>{
-
-            if(v.quarantineCount>0)            this.dropcards.push(v.Quarantine);
-            v.quarantineCount = 0;
-            v.Quarantine = null;
-
-        });
-
-
+        this.playersArray.forEach(v=>v.dropQuarantine());
     }
 
     ChainPanicEnd(){
@@ -263,11 +255,18 @@ class Room {
 
 
             this.insertShuffle(res);//оставшиеся карты перетасуем и закинем в деку
+
+            this.deckcards.push(new Card(this.clientDB, Card.CardsByPlayers.PanicParty.num, this, this.deckcards.length));
+
+//this.deckcards.push(Card.CardsByPlayers.PanicParty);
+
             this.currentplayer.startPlay();
 
             this.gamestarted = true;           // this.clientDB.query('update rooms set gamestarted = true where roomid = $1; ', [this.roomname], (err, data) => { if (err) console.trace(err); });
             this.needUpdateForAll();
             this.log("игра началась");
+
+
 
         });
 
@@ -358,6 +357,10 @@ class Room {
     }
 
     getPlayerByPlayerName(playername) { return this.players.get(playername); }
+
+    getPlayerByPlace(place){
+        return this.playersArray.filter(v=>v.place == place)[0];
+    }
 
     getPlayers(callback) {
         callback(Array.from(this.players, ([name, value]) => (value)));

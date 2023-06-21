@@ -493,6 +493,7 @@
         Quarantine: { id: 23, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: SetQuarantine },
         PanicGoAway: { id: 24, HiLightText: "Выбери игрока", MayMove: true, HLAllNonQuarantine: true, selectPlayer: true, OnSelectPlayer: PanicGoAway },
         Axe: { id: 25, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: Axe },
+        Door:{ id: 26, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: SetDoor },
     };
 
     const Algoritms = {
@@ -601,6 +602,10 @@
         },
         Axe:(me) => {
             return [Actions.Drop, Actions.Axe];},
+        Door:(me)=>{
+            return [Actions.Drop, Actions.Door];},
+
+            
 
 
 
@@ -632,7 +637,7 @@
         Fear: new Card("Fear", 14, "Страх", "Откажитесь от обмена картами и посмотрите карту, от которой отказались.\n возьмите 1 карту событие", "/fear.png", Algoritms.SimpleExchange, Algoritms.Fear, Algoritms.OnlyDropAction, null),
         Past: new Card("Past", 15, "Мимо", "Откажитесь от обмена картами. Вместо вас картами меняется следующий за вами игрок.\n возьмите 1 карту события", "/mimo.jpg", Algoritms.SimpleExchange, Algoritms.Mist, Algoritms.OnlyDropAction, null),
         StayHere: new Card("i Stay Here", 16, "Мне и здесь неплохо", "Отмените эффект карты меняемся местами или сматывай удочки,\n если стали ее целью. возьмите 1 карту события", "/stay.png", Algoritms.SimpleExchange, Algoritms.StayHere, Algoritms.OnlyDropAction, null),
-        Door: new Card("Door", 17, "Заколоченная дверь", "Положите эту карту между собой и соседним игроком. Между вами не может совершаться никаких действий и обменов", "/door.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
+        Door: new Card("Door", 17, "Заколоченная дверь", "Положите эту карту между собой и соседним игроком. Между вами не может совершаться никаких действий и обменов", "/door.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.Door, null),
         Quarantine: new Card("Quarantine", 18, "Карантин", "Сыграйте эту карту на соседнего игрока, следующие 3 хода игрок не может играть карты событий", "/quarantine.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.Quarantine, null),
 
         PanicOldRopes: new Card("Old Ropes down", 19, "Старые веревки", "Все сыгранные карты карантин сбрасываются", "/oldropes.jpg", null, null, Algoritms.Panic, null, true),
@@ -1437,7 +1442,8 @@
         websocket.onclose = function (evt) {
             console.log(evt);
             if (evt.code == '1006') { startWS(); start(); return };
-            alert(evt.reason);
+            console.error(evt.reason);
+            window.update();
             startWS();
             //game = null;
         };
@@ -1520,16 +1526,7 @@
 
     }
 
-    function Axe(player){
-
-        let p = JSON.parse(document.cookie);
-        p.messagetype = 'playeraction';
-        p.action = "Axe";
-        p.bymycardplace = game.me.selectedCard.cardplace;
-        p.otherPlayerName = player.name;
-        websocket.senddata(p);
-
-    }
+ 
 
     function ChangePlace(player) {
 
