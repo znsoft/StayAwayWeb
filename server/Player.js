@@ -124,7 +124,7 @@ class Player {
     endTurn() {
         this.phase = Player.Phases.Exchange;
         this.state = Player.States.SelectCard;
-        if (this.room.nextplayer.quarantineCount == 0 && this.quarantineCount == 0) return;
+        if (this.room.nextplayer.quarantineCount == 0 && this.quarantineCount == 0&&this.room.getDoor(this,this.room.nextplayer)==undefined) return;
         this.stopPlay();
         this.nowNextPlayer();
 
@@ -485,6 +485,7 @@ class Player {
         //if (this.phase != Player.Phases.Exchange) throw 'Error is not you Exchange now';
         //if (this.state != Player.States.SelectCard)  throw 'Error is not you state now'; 
         let nextplayer = this.room.getPlayerByPlayerName(data.opponent);
+
         this.opponent = nextplayer;
         nextplayer.opponent = this;
 
@@ -503,6 +504,9 @@ class Player {
 
 
         } else {
+            if(this.room.getDoor(this,nextplayer)!=undefined)throw 'Door is set between you';
+            if(nextplayer.quarantineCount>0)throw 'player on quarantine';
+
             nextplayer.phase = Player.Phases.Answer;
             nextplayer.state = Player.States.IncomeExchange;
 
@@ -635,7 +639,8 @@ class Player {
         if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
         let nextplayer = this.room.getPlayerByPlayerName(data.otherPlayerName);
-
+        if(this.room.getDoor(this,nextplayer)!=undefined)throw 'Door is set between you';
+        if(nextplayer.quarantineCount>0)throw 'player on quarantine';
         let bymycardplace = data.place;
 
 
@@ -677,6 +682,7 @@ class Player {
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
+
         // let otherCardPlace = data.place;
         let bymycardplace = data.bymycardplace;
 
@@ -706,7 +712,8 @@ class Player {
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
-        // let otherCardPlace = data.place;
+        if(this.room.getDoor(this,nextplayer)!=undefined)throw 'Door is set between you';
+        if(nextplayer.quarantineCount>0)throw 'player on quarantine';
         let bymycardplace = data.bymycardplace;
 
         let cardindex = this.findcardindex(bymycardplace);
@@ -764,6 +771,8 @@ class Player {
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
+        if(this.room.getDoor(this,nextplayer)!=undefined)throw 'Door is set between you';
+        if(nextplayer.quarantineCount>0)throw 'player on quarantine';
         // let otherCardPlace = data.place;
         let bymycardplace = data.bymycardplace;
 
@@ -811,6 +820,9 @@ class Player {
         if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
         let otherPlayerName = data.otherPlayerName;
+        let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
+        if(this.room.getDoor(this,nextplayer)!=undefined)throw 'Door is set between you';
+        if(nextplayer.quarantineCount>0)throw 'player on quarantine';
         let otherCardPlace = data.place;
         let bymycardplace = data.bymycardplace;
 
