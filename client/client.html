@@ -85,9 +85,9 @@
         content: attr(data-tooltip);
 
         position: absolute;
-        top: -20px;
-        right: -20px;
-        width: 150px;
+        top: +20px;
+        right: -100px;
+        width: 250px;
 
         pointer-events: none;
         opacity: 0;
@@ -114,10 +114,10 @@
 <body>
 
  <div id="logindiv">
-        Комната:<input id="room" value="1" hidden="true"></input>
+        <input id="room" value="1" hidden="true"></input>
         Ваше имя:<input id="login"></input>
         <button id="loginbutton" onclick="sendLogin()">Войти</button>
-        <button id="startgamebutton" hidden="true" onclick="startGame()">Начать игру</button>
+        <button id="startgamebutton" hidden="true" onclick="startGame()" data-tooltip="Подождите пока подключатся все игроки" >Начать игру</button>
 
     </div>
 

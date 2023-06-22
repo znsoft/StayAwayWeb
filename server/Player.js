@@ -653,7 +653,8 @@ class Player {
         if (mycard.card != Card.CardsByPlayers.Analysis) throw 'Error is not Analysis card';
         this.tableCard(bymycardplace);
         this.endTurn();
-        this.room.ShowMyCardsToAll(nextplayer);
+        this.room.ShowMyCardsTo(this,nextplayer);
+
         this.room.log(this + " анализирует карты " + nextplayer);
 
 
@@ -927,6 +928,16 @@ class Player {
                         str.ShowTo = true;
                         str.cardnum = c.card.num;
                         break;
+                    case "ShowAllCardsTo":
+                        //PlayerTo: playerTo, PlayerFrom: playerFrom 
+                        console.log(additionalData.PlayerFrom.playername);
+                            if (v != additionalData.PlayerFrom ) break;
+                            console.log(additionalData.PlayerTo.playername);
+                            str.ShowTo = true;
+                            if (this == additionalData.PlayerTo)str.cardnum = c.card.num;
+                            break;
+                            
+
 
                 }
 

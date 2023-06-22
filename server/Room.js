@@ -407,6 +407,19 @@ class Room {
 
     }
 
+    ShowMyCardsTo(playerTo,playerFrom) {
+
+        this.getDeckAndDrop((deckData) => {
+            this.players.forEach((v, k) => {
+                this.additionalData = { action: "ShowAllCardsTo", PlayerTo: playerTo, PlayerFrom: playerFrom };
+                v.update(deckData);
+                v.needupdate = false;
+            });
+        });
+
+
+    }
+
     ShowMyCardsToAll(player) {
 
         this.getDeckAndDrop((deckData) => {
@@ -453,7 +466,7 @@ class Room {
     restorePlayer(socket, playerdata) {
         let ip = socket._socket.remoteAddress;
 
-        
+
         let player = this.players.get(playerdata.playername);//new Player(this.clientDB, socket, this.roomname, playerdata.playername, playerdata.playername, this, this.gamenum, playerdata.quarantineCount, playerdata.Infected);
         if(this.gamestarted==false&&playerdata.thing==true)player.thing = true;
         player.socket = socket;
