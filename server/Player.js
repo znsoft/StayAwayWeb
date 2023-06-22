@@ -671,8 +671,7 @@ class Player {
         let cardindex = this.findcardindex(bymycardplace);
         let mycard = this.cards[cardindex]; //
         if (mycard.card != Card.CardsByPlayers.Whiski) throw 'Error is not Whiski card';
-        //this.ShowAllCards = true;
-        //check and validate card here
+
         this.tableCard(bymycardplace);
         this.endTurn();
         this.room.ShowMyCardsToAll(this);
@@ -702,10 +701,12 @@ class Player {
         nextplayer.phase = Player.Phases.Answer;
         nextplayer.state = Player.States.DefendPlaceChange;
         this.room.log(this + " меняется местами с " + nextplayer);
+        
         let defend = nextplayer.cards.filter((v) =>
             v.card.num == Card.CardsByPlayers.StayHere.num);
         //console.log(defend);
-        if (defend.length > 0) return;
+        if (defend.length > 0){ this.room.log( nextplayer+" есть чем отказать " );   return;}
+
         nextplayer.stopPlay();
         this.ExchangePlace(nextplayer);
         this.endTurn();
@@ -747,6 +748,7 @@ class Player {
         if (this.phase != Player.Phases.Answer) throw 'Error is not you answer now';
         if (this.state != Player.States.DefendPlaceChange) throw 'Error is not you defend now';
         this.room.currentplayer.ExchangePlace(this);
+        this.room.tableToDrop();
         this.stopPlay();
         this.room.currentplayer.endTurn();
     }
@@ -759,9 +761,10 @@ class Player {
         let cardindex = this.findcardindex(bymycardplace);
         let mycard = this.cards[cardindex]; //
         if (mycard.card != Card.CardsByPlayers.StayHere) throw 'Error is not defend card';
-
+        this.room.tableToDrop();
         //console.log(this.playername + " defend from fire ");
-        this.tableCard(bymycardplace);
+        //this.tableCard(bymycardplace);
+        this.dropOneCard(bymycardplace);
         this.room.giveOneActionCardfromDeckToPlayer(this);
         this.stopPlay();
         this.room.currentplayer.endTurn();

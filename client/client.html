@@ -124,7 +124,8 @@
     <textarea id="gamelog" style="opacity: 0.4; position: absolute; transition: opacity 1s;" cols="40" rows="20"
         onclick="console.log('click')" readonly="true"></textarea>
 
-    <canvas id="canvas" width="2000" height="2000" onresize="resizeCanvas()">Please update your browser<br> in order
+    <canvas id="canvas" width="2000" height="2000" onresize="resizeCanvas()">
+        Please update your browser<br> in order
         to
         view this page.</canvas>
 
@@ -205,7 +206,7 @@
     * @param {*} label 
     * @param {*} alignY 
     */
-    CanvasRenderingContext2D.prototype.drawTooltip = function (x, y, label, alignY = 32) {
+    CanvasRenderingContext2D.prototype.drawTooltip = function (x, y, label, alignY = 25) {
         
         const { width, height } = this.measureText(label, '20px Arial, Helvetica, sans-serif');
 
@@ -214,22 +215,22 @@
         const reactX = x + 12;
         const reactY = y - alignY;
         const labelX = reactX + ((reactWidth - width) / 2);
-        const labelY = reactY + 12;
+        const labelY = reactY + 22;
 
         this.beginPath();
 
         this.font = '20px Arial, Helvetica, sans-serif';
         let y1 = labelY;
-        this.strokeStyle = 'white';
-        
+        this.strokeStyle = 'red';
+        this.fillStyle = "white";
         let labels = label.split("\n").forEach(s=>{
 
-            this.strokeText(s, labelX, y1);
+            this.fillText(s, labelX, y1);
             y1+=alignY;
         });
        // this.strokeText(label, labelX, labelY);
-        this.fillStyle = "black";
-        this.strokeStyle = 'black';
+        this.fillStyle = "green";
+        this.strokeStyle = 'green';
         this.roundRect(reactX, reactY, reactWidth, reactHeight, 10).fill();
 
 
@@ -330,6 +331,8 @@
             ctx.font = '16px serif';
             ctx.fillText(this.text, 3, 16);
             ctx.roundRect(0, 0, this.w, this.h, 5).stroke();
+            ctx.fillStyle = "green";
+            ctx.roundRect(0, 0, this.w, this.h, 5).fill();//stroke();
            // if (e != undefined) {
             if (e != undefined&&e.type!='mousemove') {
                 let c = ctx.getWindowToCanvas(e);
@@ -366,7 +369,7 @@
             // ctx.globalCompositeOperation = 'destination-over';
             ctx.translate(this.cardsLeft * 2, this.cardsLeft * 2);
             ctx.rotate(Math.PI / 2);
-            this.upCard.Draw(ctx);
+            this.upCard.Draw(ctx,e);
             ctx.restore();
 
             for (let i = this.cardsLeft; i > 1; i--) {
@@ -389,7 +392,7 @@
                 ctx.save();
                 ctx.translate(i * 102, i * 2);
                 //ctx.rotate(Math.PI / 2);
-                v.Draw(ctx);
+                v.Draw(ctx,e);
                 ctx.restore();
 
             });
@@ -807,7 +810,7 @@
             return [Actions.Drop, Actions.ChangePlace];
         },
         StayHere: (me, other) => {
-            if (me.state == States.DefendFromChangePlace) return [Actions.inChangePlace, Actions.StayHere];
+            if (me.state == States.DefendPlaceChange) return [Actions.inChangePlace, Actions.StayHere];
             return Actions.inChange;
         },
         Quarantine: (me) => {
@@ -1313,7 +1316,11 @@
             if (this.isNearOpponent(v) && HiLightRLPlayers == true && v != this.me
                 || (HLOpponent && v.place == this.nextplayer)
                 || (HLAllNonQuarantine == true && v.QuarantineCount == 0 && v != this.me)
-                || (HLThridPlayers == true && v.QuarantineCount == 0 && v != this.me && Math.abs(this.me.place - v.place) == 3)) {
+                || (HLThridPlayers == true && v.QuarantineCount == 0 && v != this.me && Math.abs(this.me.place - v.place) == 3)
+                || (v.state == States.IncomeExchange)
+                
+                
+                ) {
                 ctx.fillStyle = "#003";
                 ctx.strokeStyle = "#a02";
                 ctx.roundRect(Player.x1, Player.y1, Player.x2, Player.y2, 20).stroke();
@@ -1321,7 +1328,7 @@
 
             v.Draw(ctx, e, actions);
             if (this.currentPlayer == v.place) ctx.drawImage(this.arrow, -30, -150, 100, 100);
-
+            //if (this.currentPlayer == v.place) ctx.drawImage(this.arrow, -30, -150, 100, 100);
 
             ctx.save();
             ctx.translate(Card.width*3, -100);
@@ -1360,7 +1367,7 @@
 
 
                 case States.IncomeExchange:
-                    stateText = "Выбери свою карту";
+                    stateText = "Выбери свою карту \nдля обмена или отказа";
 
                     break;
                 case States.SelectCard:
@@ -1470,7 +1477,12 @@
                     break;
 
                 case Phases.Answer:
+                if(this.me.state == States.DefendPlaceChange){
 
+
+
+
+                }
                     break;
 
 

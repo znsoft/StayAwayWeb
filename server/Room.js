@@ -160,12 +160,35 @@ class Room {
         if (!win && !loose) return;
         this.gamestarted = false;
         this.playersArray.forEach(v => {if(v.thing)this.log(v+" нечто");});
+        let endText = "Игра окончена";
+        this.log(endText);
+        if (win) endText =  "Нечто победил";
+        if (loose) endText =  "Нечто проиграл";
+        this.players.forEach((v, k) => {
+            v.send({ messagetype: 'gamelog', gamelog: this.gamelog});
+        });
+        this.spectators.forEach((v) => {
+            v.send({ messagetype: 'gamelog', gamelog: this.gamelog});
+        });
+        this.playersArray.forEach(v => {v.stopPlay();v.socket.close(1001, endText);});
         
-        this.log("Игра окончена");
-        if (win) this.log("Нечто победил");
-        if (loose) this.log("Нечто проиграл");
-        this.playersArray.forEach(v => v.stopPlay());
+        
+        this.gamestarted = false;
+        this.players = new Map(); //key == playername ,
+        this.spectators = [];
 
+        this.deckcards = [];
+        this.dropcards = [];
+        this.tablecards = [];
+        this.doors = new Map();
+        this.cardscount = 0;
+
+        this.direction = 0;
+        this.nextplayer = null;
+        this.currentPlayer = null;
+        this.additionalData = undefined;
+        this.gamelog = [];
+        this.isPanicChain = false;     
 
     }
 
@@ -260,7 +283,7 @@ class Room {
 
             this.insertShuffle(res);//оставшиеся карты перетасуем и закинем в деку
 
-//            this.deckcards.push(new Card(this.clientDB, Card.CardsByPlayers.PanicOneTwo.num, this, this.deckcards.length));
+            //this.deckcards.push(new Card(this.clientDB, Card.CardsByPlayers.PanicThreeFour.num, this, this.deckcards.length));
 
             this.currentplayer.startPlay();
 
@@ -373,7 +396,7 @@ class Room {
 
 
     updatePlayers() {
-        this.checkEndGame();
+        
         this.getDeckAndDrop((deckData) => {
             this.players.forEach((v, k) => {
                 if (v.needupdate == true)
@@ -391,6 +414,7 @@ class Room {
         this.spectators.forEach((v) => {
             v.send({ messagetype: 'gamelog', gamelog: this.gamelog});
         });
+        this.checkEndGame();
     }
 
 
