@@ -132,6 +132,9 @@ class Game {
     }
 
     newPlayerCommand(data, socket, room) {
+        //console.log(socket._socket.remoteAddress);
+        //console.log(socket._socket.address());
+
         if (room == undefined) this.findRoom(data.roomname, (sqldata) => {
             if (sqldata.length == 0) {
                 room = new Room(this.clientDB, data.roomname, data.password, 1, data.playername, true,0);

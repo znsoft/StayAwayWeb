@@ -102,7 +102,7 @@
         line-height: 16px;
         background: #fefdcd;
         padding: 2px 2px;
-        border: 1px solid #c0c0c0;
+        border: 1px solid #eb9c09;
         box-shadow: 2px 4px 5px rgba(0, 0, 0, 0.4);
     }
 
@@ -113,7 +113,7 @@
 
 <body>
 
-    <div id="logindiv">
+ <div id="logindiv">
         Комната:<input id="room" value="1" hidden="true"></input>
         Ваше имя:<input id="login"></input>
         <button id="loginbutton" onclick="sendLogin()">Войти</button>
@@ -127,9 +127,6 @@
     <canvas id="canvas" width="2000" height="2000" onresize="resizeCanvas()">Please update your browser<br> in order
         to
         view this page.</canvas>
-
-    <pre id="chat"></pre>
-
 
 
 </body>
@@ -161,8 +158,9 @@
             font: font,
             margin: '0',
             padding: '0',
-            border: '0',
-            whiteSpace: 'nowrap'
+            border: '0'
+            ,whiteSpace: 'pre-line'
+            
         });
         document.body.appendChild(span);
         const { width, height } = span.getBoundingClientRect();
@@ -180,12 +178,13 @@
      * @param {*} fillStyle 
      * @param {*} labels 
      */
-    CanvasRenderingContext2D.prototype.drawPoint = function (x, y, circleRadius, fillStyle, labels = null) {
-
+    CanvasRenderingContext2D.prototype.drawPoint = function (x, y, circleRadius, fillStyle, labels ) {
+        if(labels == "" ||labels == undefined || labels==null)return;
+        if(typeof(labels)!="string")return;
         this.beginPath();
-        if (labels) {
-            this.drawTooltips(x, y, labels);
-        }
+        
+            this.drawTooltip(x, y, labels);
+        
         this.fillStyle = fillStyle;
 
         var point = new Path2D();
@@ -206,9 +205,9 @@
     * @param {*} label 
     * @param {*} alignY 
     */
-    CanvasRenderingContext2D.prototype.drawTooltip = function (x, y, label, alignY = 10) {
-
-        const { width, height } = this.measureText(label, '8px Arial, Helvetica, sans-serif');
+    CanvasRenderingContext2D.prototype.drawTooltip = function (x, y, label, alignY = 32) {
+        
+        const { width, height } = this.measureText(label, '20px Arial, Helvetica, sans-serif');
 
         const reactWidth = width + 10;
         const reactHeight = height + 10;
@@ -219,37 +218,26 @@
 
         this.beginPath();
 
-        this.font = '8px Arial, Helvetica, sans-serif';
-
+        this.font = '20px Arial, Helvetica, sans-serif';
+        let y1 = labelY;
         this.strokeStyle = 'white';
-        let yy = labelY;
-        //for (var s of label.split("\n")) //ctx.fillText(s, labelX, labelY += 17);
-            this.strokeText(label, labelX, labelY);
+        
+        let labels = label.split("\n").forEach(s=>{
 
+            this.strokeText(s, labelX, y1);
+            y1+=alignY;
+        });
+       // this.strokeText(label, labelX, labelY);
         this.fillStyle = "black";
+        this.strokeStyle = 'black';
+        this.roundRect(reactX, reactY, reactWidth, reactHeight, 10).fill();
 
-        this.fillRect(reactX, reactY, reactWidth, reactHeight);
+
+        //this.fillRect(reactX, reactY, reactWidth, reactHeight);
 
 
         this.closePath();
     }
-
-    /**
-    * Desenha todos os tooltips na tela
-    * @param {*} context 
-    * @param {*} x 
-    * @param {*} y 
-    * @param {*} labels 
-    */
-    CanvasRenderingContext2D.prototype.drawTooltips = function (x, y, labels) {
-        for (const key in labels) {
-            if (Object.hasOwnProperty.call(labels, key)) {
-                const label = labels[key];
-                this.drawTooltip(x, y + (key * 20), label, labels.length * 10);
-            }
-        }
-    }
-
 
 
     CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
@@ -342,11 +330,15 @@
             ctx.font = '16px serif';
             ctx.fillText(this.text, 3, 16);
             ctx.roundRect(0, 0, this.w, this.h, 5).stroke();
-            if (e != undefined) {
+           // if (e != undefined) {
+            if (e != undefined&&e.type!='mousemove') {
                 let c = ctx.getWindowToCanvas(e);
 
                 if (c != undefined)
-                    if (c.x > 0 && c.x < this.w && c.y > 0 && c.y < this.h && this.callback != undefined) { this.callback(this.p); game.me.selected = null; game.moveOneCard = false; }
+                    if (c.x > 0 && c.x < this.w && c.y > 0 && c.y < this.h && this.callback != undefined) { 
+
+                        this.callback(this.p); game.me.selected = null; game.moveOneCard = false; 
+                    }
             }
             ctx.restore();
 
@@ -426,7 +418,7 @@
             ctx.rotate(Math.PI / 2.5);
             ctx.fillStyle = "#000";
             ctx.font = '16px serif';
-            ctx.fillText("Drop", 10, 20);
+            ctx.fillText("Сброс", 10, 20);
             ctx.roundRect(0, 0, 95, 150, 10).stroke();
             //if (this.Drop == 0)Cards.UnknownAction.Draw(ctx);
 
@@ -504,14 +496,6 @@
             let l = 0;
             if (this.y == undefined) y = TextLabels.lastY;
             y += offset;
-            /*
-            if (this.e != undefined) {
-                let p = ctx.getWindowToCanvas(this.e);
-                if (p != undefined) {
-                    this.x = p.x;
-                    y = p.y;
-                }
-            }*/
 
             ctx.save();
             ctx.translate(this.x, y);
@@ -521,7 +505,8 @@
 
             if (this.text != undefined)
                 if (this.isHint) {
-                    ctx.drawPoint(this.x, this.y, 5, this.c, [this.text]);
+                    ctx.drawPoint(this.x, this.y, 5, this.c, this.text);
+                    //ctx.drawPoint(this.x, this.y, 5, this.c, [this.text.replace("\n","<br>")]);
                 } else
                     for (var s of this.text.split("\n")) ctx.fillText(s, 0, l += 17);
             //TextLabels.lastY = y;
@@ -677,7 +662,10 @@
                 let c = ctx.getWindowToCanvas(e);
                 if (c != undefined)
                     if (c.x > 0 && c.x < Card.width && c.y > 0 && c.y < Card.height) {
-                        TextLabels.hint(e.clientX/2, e.clientY/2, this.Description, 'black');
+                        let scr = ctx.getCanvasToWindow(c.x,c.y);
+//                        TextLabels.hint(e.clientX/2, e.clientY/2, this.Description, 'black');
+                        TextLabels.hint(scr.x/2, scr.y/2-30, this.Description, 'black');
+                        if(e.type!='mousemove')
                         return true;
                     }
             }
@@ -862,10 +850,10 @@
         Perseverance: new Card("Perseverance", 7, "Упорство", "Возьмите 3 карты событий, оставтье на руке одну.\n Затем сыграйте или сбросьте одну карту", "/perseverance.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.Perseverance, Algoritms.Perseverance2),//Упорство
         GetOff: new Card("Get Off", 8, "Сматывай удочки", "Поменяйтесь местами с любым игроком по вашему выбору если он не на карантине.\n Игнорируйте заколоченные двери", "/udochki.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ChangePlace, null),
 
-        ChangeDirection: new Card("Change\nDirection", 9, "Гляди по сторонам", "Очередность хода передается в другую сторону.Меняется порядок ход и направление обмена картами", "/direction.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ChangeDirection, null),
+        ChangeDirection: new Card("Change\nDirection", 9, "Гляди по сторонам", "Очередность хода передается в другую сторону. \nМеняется порядок ход и направление обмена картами", "/direction.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ChangeDirection, null),
         ChangePlace: new Card("Change place", 10, "Меняемся местами", "Поменяйтесь местами с соседним игроком,\n если он не на карантие и не за заколоченной дверью", "/changeplace.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ChangePlaceNear, null),
         Whiski: new Card("Whiski", 11, "Виски", "Покажи все на руке карты всем игрокам", "/whiski.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionWhiski, null),
-        Axe: new Card("Axe", 12, "Топор", "Сбросте сыгранную на вас или на соседнего игрока карту Карантин или выложенную между вами карту Заколоченная дверь", "/axe.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
+        Axe: new Card("Axe", 12, "Топор", "Сбросте сыгранную на вас или на соседнего игрока карту Карантин \nили выложенную между вами карту Заколоченная дверь", "/axe.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
 
         NoThanks: new Card("No Thanks", 13, "Нет уж, спасибо", "Откажитесь от обмена картами.\n возьмите 1 карту событие", "/nothanx.jpg", Algoritms.SimpleExchange, Algoritms.NoThanks, Algoritms.OnlyDropAction, null),
         Fear: new Card("Fear", 14, "Страх", "Откажитесь от обмена картами и посмотрите карту, от которой отказались.\n возьмите 1 карту событие", "/fear.png", Algoritms.SimpleExchange, Algoritms.Fear, Algoritms.OnlyDropAction, null),
@@ -1015,14 +1003,15 @@
 
 
             if (selectPlayer == true || game.me.state == States.SelectCardAndPlayerForOutgoingExchange) {
-                if (e != undefined) {
+                if (e != undefined&&e.type!='mousemove') {
+                    
                     let p = ctx.getWindowToCanvas(e);
                     if (p != undefined)
                         if (p.x > Player.x1 && p.x < Player.x2 && p.y > Player.y1 && p.y < Player.y2) errortext = this.OnPlayerSelect(OnSelectPlayer, HiLightRLPlayers);
                 }
             }
 
-            if (e != undefined && !this.moveOneCard && !selectNearPlayersCards && !selectPlayer) {
+            if (e != undefined && !this.moveOneCard && !selectNearPlayersCards && !selectPlayer&&e.type!='mousemove') {
 
                 //if (this.isMe)
                 this.selected = null; this.selectedCard = null; this.move = null;//reset old selection
@@ -1117,7 +1106,7 @@
         }
 
         OnCardSelect(v, z, actionOnSelectSecondCard, selectNearPlayersCards) {
-
+            
 
             if (game.me.isMyTurnToDefend && !this.isMe) return 'Выбери никакого шашлыка';
             if (game.me.isMyTurnToDefend && this.isMe) {
@@ -1281,13 +1270,6 @@
 
 
 
-        drawText(ctx, x, y, text) {
-
-            ctx.fillStyle = "#003";
-            ctx.font = '16px serif';
-            for (var s of text.split("\n")) ctx.fillText(s, x, y += 17);
-
-        }
 
 
 
@@ -1300,7 +1282,7 @@
         DrawPlayersCards(ctx, e, v, HiLightRLPlayers, HLOpponent, i, actions, HLAllNonQuarantine, isDoorbefore = false, HLThridPlayers) {
             let sy = game.width * 0.25;//.height / 4;//260;
             let sx = game.height * 0.25;//260;
-            if (v == this.me) v.moveOneCard = this.moveOneCard;
+            //if (v == this.me) v.moveOneCard = this.moveOneCard;//отключил перемещение карт мышкой
             if (v != this.me) {
                 sx = game.height * 0.7;//750;
                 sy = game.width * 0.5;
@@ -1342,12 +1324,12 @@
 
 
             ctx.save();
-            ctx.translate(-200, -100);
-            ctx.rotate(1);
+            ctx.translate(Card.width*3, -100);
+            ctx.rotate(-1);
             ctx.scale(0.5, 0.5);
 
             if (isDoorbefore == true)
-                Cards.Door.Draw(ctx);
+                Cards.Door.Draw(ctx, e);
             ctx.restore();
 
             ctx.restore();
@@ -1400,13 +1382,14 @@
                     break;
 
             }
-            new TextLabels("state", stateText, -210, 220, "#000", 2, 0);
-            new TextLabels("phase", phaseText, -210, 250, "#000", 2, 0);
+            new TextLabels("state", stateText+'\n'+phaseText, game.width/2-200, game.height/2+55, "#000", 2, 0);
+            //new TextLabels("phase", phaseText, game.width/2-150, game.height/2+44, "#000", 2, 0);
 
 
         }
 
         Draw(ctx, e, w, h) {
+
             this.width = w;
             this.height = h;
             ctx.clearRect(0, 0, w, h);
@@ -1415,6 +1398,8 @@
             ctx.save();
             //ctx.translate(-10, -200);
             TextLabels.DrawAll(ctx, e);
+            if (e != undefined)TextLabels.Delete("Hint");
+
             ctx.restore();
 
 
@@ -1425,7 +1410,8 @@
 
             if (this.me.selectedCard != null) if (this.me.selectedCard.card.Description != undefined) {
                 //.getAttribute('data-tooltip');
-                this.drawText(ctx, -this.width / 2, this.height / 2 - 100, this.me.selectedCard.card.Description);
+                new TextLabels("description", this.me.selectedCard.card.Description, 0, game.height-122, "#000", 1.8, 0);
+                //this.drawText(ctx, -this.width / 2, this.height / 2 - 100, this.me.selectedCard.card.Description);
                 //canvas.setAttribute('data-tooltip',this.me.selectedCard.card.Description);
                 if (e != undefined)
                     //x = event.x - this.offsetLeft;
@@ -1439,6 +1425,7 @@
             let HiLightRLPlayers = false;
             let HLAllNonQuarantine = false;
             let HLThridPlayers = false;
+            let HiLightText = "";
             let c = [];
             let card = null;
             switch (this.me.Phase) {
@@ -1452,7 +1439,9 @@
                     if (this.me.isNowMyTurn) {
                         c = card.GetActionArray(this.me);
                         c.forEach((v) => {
-                            if (v.HiLightText != undefined) this.drawText(ctx, -10, 20, v.HiLightText);
+                            if (v.HiLightText != undefined)  HiLightText = v.HiLightText;
+                             
+                            // this.drawText(ctx, -10, 20, v.HiLightText);
                             if (v.HiLightRLPlayers == true) HiLightRLPlayers = true;
                             if (v.HLAllNonQuarantine == true) HLAllNonQuarantine = true;
                         });
@@ -1469,7 +1458,7 @@
                     if (this.me.isNowMyTurn && this.me.selectedCard == null) {
                         c = card.GetSecondActionArray(this.me, card);
                         c.forEach((v) => {
-                            if (v.HiLightText != undefined) this.drawText(ctx, -10, 20, v.HiLightText);
+                            if (v.HiLightText != undefined) HiLightText = v.HiLightText;//this.drawText(ctx, -10, 20, v.HiLightText);
                             if (v.HiLightRLPlayers == true) HiLightRLPlayers = true;
                             if (v.HLAllNonQuarantine == true) HLAllNonQuarantine = true;
                             if (v.HLThridPlayers == true) HLThridPlayers = true;
@@ -1486,7 +1475,7 @@
 
 
             }
-
+            new TextLabels("HiLightText", HiLightText, game.width/2+200, game.height/2+33, "#000", 1.5, 0);
 
             let central = this.me.place;
 
@@ -1623,7 +1612,7 @@
         websocket.onopen = (evt) => { console.log(evt) };
         websocket.onclose = function (evt) {
             console.log(evt);
-            if (evt.code == '1006') { startWS(); start(); return };
+            if (evt.code == '1006') { startWS(); start();sendLogin(); return };
             console.error(evt.reason);
             TextLabels.ErrorLabelText(evt.reason);
             window.update();
@@ -1674,14 +1663,14 @@
 
     window.addEventListener("mousemove", function (event) {
         if (game == null) return;
-        if (game.moveOneCard)
+       // if (game.moveOneCard)
             render(event);
     });
 
     window.addEventListener("mousedown", function (event) {
         if (game == null) return;
         render(event);
-        if (game.me.selected != null) game.moveOneCard = game.me.isCardMovableNow;
+       // if (game.me.selected != null) game.moveOneCard = game.me.isCardMovableNow;
 
     });
 
@@ -2004,8 +1993,8 @@
                 loginelement.value = p.playername;
                 roomElement.value = p.roomname;
 
-                game = new Game(p.guid);
-                websocket.senddata(p);
+                //game = new Game(p.guid);
+                //websocket.senddata(p);
                 return;
             } catch { }
         }
@@ -2099,6 +2088,8 @@
 
     }*/
 
+    window.addEventListener("resize",resizeCanvas);
+
     function resizeCanvas() {
         canvas = document.getElementById("canvas");
         canvas.height = window.innerHeight;
@@ -2114,7 +2105,7 @@
     function autoping() {
         window.setTimeout(() => {
 
-            gameLoop();
+            //gameLoop();
             let ping = JSON.stringify({ messagetype: 'ping' }).toString();
             //console.log(ping);
             if (websocket.OPEN == websocket.readyState)

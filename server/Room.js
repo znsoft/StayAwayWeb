@@ -35,24 +35,24 @@ class Room {
     }
 
     Door(p1,p2,card){
-        let k = Math.max(p1.place , p2.place);
-        if(k==this.players.size)k=0;
+        let k = Math.max(p1.place , p2.place)%(this.players.size-1);
+        //if(k==this.players.size)k=0;
         this.doors.set(k,card);
     }
 
     removeDoor(p1,p2){
         let card = getDoor(p1,p2);
         if(card==undefined)return;
-        let k = Math.max(p1.place , p2.place);
-        if(k==this.players.size)k=0;
+        let k = Math.max(p1.place , p2.place)%(this.players.size-1);
+        //if(k==this.players.size)k=0;
         this.dropcards.push(card);
         this.doors.delete(k);
     }
 
     getDoor(p1,p2){
 
-        let k = Math.max(p1.place , p2.place);
-        if(k==this.players.size)k=0;
+        let k = Math.max(p1.place , p2.place)%(this.players.size-1);
+        //if(k==this.players.size)k=0;
         return this.doors.get(k);
 
     }
@@ -196,6 +196,7 @@ class Room {
         player.readyforstart = true;
         if (this.numofplayers < 4) return;
 
+
         let last_thing = null;
 
         let playercards = new Map();
@@ -203,6 +204,8 @@ class Room {
         let m = (new Card()).getCardTypes();
         this.getPlayers((a) => {
             let l = a.length;
+            let lastThings =  a.filter(v=>v.thing == true);
+            last_thing = lastThings[Math.round(Math.random() * (lastThings.length - 1))];
 
             this.gamestarted = true;
 
@@ -211,6 +214,7 @@ class Room {
                 let ppp = this.players.get(v.playerid);
                 ppp.cards = [];
                 ppp.place = i;
+                ppp.thing = false;
                 this.players.set(v.playerid, ppp);
             });
 
@@ -219,9 +223,9 @@ class Room {
             playercards.set(thing.playerid, [0]);
 
             let currentPlayer = last_thing;
-            if (last_thing == null) {
+            if (last_thing == null||last_thing==undefined) {
                 currentPlayer = a[Math.round(Math.random() * (l - 1))].playerid;
-            }
+            }else currentPlayer = last_thing.playerid;
             let curplayer = this.players.get(currentPlayer);
             this.currentplayer = curplayer;
             this.players.set(currentPlayer, curplayer);
@@ -258,10 +262,10 @@ class Room {
 
 //            this.deckcards.push(new Card(this.clientDB, Card.CardsByPlayers.PanicOneTwo.num, this, this.deckcards.length));
 
-
             this.currentplayer.startPlay();
 
             this.gamestarted = true;           // this.clientDB.query('update rooms set gamestarted = true where roomid = $1; ', [this.roomname], (err, data) => { if (err) console.trace(err); });
+            this.players.forEach(v=>v.sendGUIDToPlayer());
             this.needUpdateForAll();
             this.log("игра началась");
 
@@ -434,24 +438,30 @@ class Room {
 
 
     addPlayer(socket, playerdata) {
+        let ip = socket._socket.remoteAddress;
 
+        let wasThing = playerdata.thing;
         let player = new Player(this.clientDB, socket, this.roomname, playerdata.playername, playerdata.playername, this, this.gamenum, 0);
+        if(this.gamestarted==false&&playerdata.thing==true)player.thing = true;
         this.players.set(playerdata.playername, player);
         player.sendGUIDToPlayer();
         player.insertPlayer();
-
+        player.ip = ip;
         return player.cookieguid;
     }
 
     restorePlayer(socket, playerdata) {
+        let ip = socket._socket.remoteAddress;
 
+        
         let player = this.players.get(playerdata.playername);//new Player(this.clientDB, socket, this.roomname, playerdata.playername, playerdata.playername, this, this.gamenum, playerdata.quarantineCount, playerdata.Infected);
+        if(this.gamestarted==false&&playerdata.thing==true)player.thing = true;
         player.socket = socket;
         player.room = this;
         player.cookieguid = playerdata.guid;
         this.players.set(playerdata.playername, player);
         player.sendGUIDToPlayer();
-
+        player.ip = ip;
         return player.cookieguid;
     }
 
@@ -494,12 +504,12 @@ class Room {
         if (player.isDead == true) { socket.close(1001, 'Player is dead'); return; }
 
         this.additionalData = undefined;
-        this.tableToDrop();
+        //this.tableToDrop();
 
 
         try { player["action" + data.action](data); } catch (e) {
             console.trace(e);
-            socket.close(1001, e +' phase:'+ player.phase);
+            socket.close(1001, e );
         };
 
 
