@@ -320,7 +320,7 @@ class Player {
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
-        if(this.room.getDoor(this,nextplayer)==undefined&&nextplayer.quarantineCount==0)throw 'No Door or qurantine is set between you';
+        if(this.room.getDoor(this,nextplayer)==undefined&&nextplayer.quarantineCount==0)throw 'игрок не на карантине и между вами нет двери';
 
         let bymycardplace = data.bymycardplace;
         let cardindex = this.findcardindex(bymycardplace);

@@ -856,7 +856,7 @@
         ChangeDirection: new Card("Change\nDirection", 9, "Гляди по сторонам", "Очередность хода передается в другую сторону. \nМеняется порядок ход и направление обмена картами", "/direction.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ChangeDirection, null),
         ChangePlace: new Card("Change place", 10, "Меняемся местами", "Поменяйтесь местами с соседним игроком,\n если он не на карантие и не за заколоченной дверью", "/changeplace.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ChangePlaceNear, null),
         Whiski: new Card("Whiski", 11, "Виски", "Покажи все на руке карты всем игрокам", "/whiski.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionWhiski, null),
-        Axe: new Card("Axe", 12, "Топор", "Сбросте сыгранную на вас или на соседнего игрока карту Карантин \nили выложенную между вами карту Заколоченная дверь", "/axe.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.OnlyDropAction, null),
+        Axe: new Card("Axe", 12, "Топор", "Сбросте сыгранную на вас или на соседнего игрока карту Карантин \nили выложенную между вами карту Заколоченная дверь", "/axe.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.Axe, null),
 
         NoThanks: new Card("No Thanks", 13, "Нет уж, спасибо", "Откажитесь от обмена картами.\n возьмите 1 карту событие", "/nothanx.jpg", Algoritms.SimpleExchange, Algoritms.NoThanks, Algoritms.OnlyDropAction, null),
         Fear: new Card("Fear", 14, "Страх", "Откажитесь от обмена картами и посмотрите карту, от которой отказались.\n возьмите 1 карту событие", "/fear.png", Algoritms.SimpleExchange, Algoritms.Fear, Algoritms.OnlyDropAction, null),
