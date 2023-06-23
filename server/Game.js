@@ -96,7 +96,8 @@ class Game {
 
 
             if (data.messagetype == 'chatmessage') {
-
+                //room.addChatMessage(sqlplayer,data.message);
+                room.doChat(socket,  data);
                 return;
             }
 

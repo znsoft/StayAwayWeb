@@ -16,7 +16,7 @@ class Room {
         this.deckcards = [];
         this.dropcards = [];
         this.tablecards = [];
-        this.doors = new Map();
+        this.doors = [];//new Map();
         this.cardscount = 0;
         this.gamenum = gamenum;
         this.direction = 0;
@@ -25,43 +25,57 @@ class Room {
         this.additionalData = undefined;
         this.gamelog = [];
         this.isPanicChain = false;
+        this.chat = [];
+        this.chatCount = 0;
+        this.PanicConfessionTime = null;
         //this.opponent = null;
     }
 
-    get playersArray(){
+
+    addChatMessage(player, message) {
+        this.chatCount++;
+        this.chat.push({ id: this.chatCount, player: player.playername, message: message });
+    }
+
+
+
+    get playersArray() {
 
         return Array.from(this.players, ([name, value]) => (value));
 
     }
 
-    Door(p1,p2,card){
-        let k = Math.max(p1.place , p2.place)%(this.players.size-1);
+    Door(p1, p2, card) {
+        let k = Math.max(p1.place, p2.place);// % (this.players.size - 1);
+        if (Math.abs(p1.place - p2.place) == (this.players.size - 1)) k = 0;
         //if(k==this.players.size)k=0;
-        this.doors.set(k,card);
+        this.doors[k] = card;
     }
 
-    removeDoor(p1,p2){
-        let card = getDoor(p1,p2);
-        if(card==undefined)return;
-        let k = Math.max(p1.place , p2.place)%(this.players.size-1);
+    removeDoor(p1, p2) {
+        let card = this.getDoor(p1, p2);
+        if (card == undefined) return;
+        let k = Math.max(p1.place, p2.place);
+        if (Math.abs(p1.place - p2.place) == (this.players.size - 1)) k = 0;
         //if(k==this.players.size)k=0;
         this.dropcards.push(card);
-        this.doors.delete(k);
+        this.doors[k]=undefined;//.delete(k);
     }
 
-    getDoor(p1,p2){
+    getDoor(p1, p2) {
 
-        let k = Math.max(p1.place , p2.place)%(this.players.size-1);
+        let k = Math.max(p1.place, p2.place);
+        if (Math.abs(p1.place - p2.place) == (this.players.size - 1)) k = 0;
         //if(k==this.players.size)k=0;
-        return this.doors.get(k);
+        return this.doors[k];//[.get(]k);
 
     }
-     
-    dropAllDoors(){
 
-        this.doors.forEach((v,k)=>this.dropcards.push(v));
+    dropAllDoors() {
+//[].forEach()
+        this.doors.forEach((v, k) => this.dropcards.push(v));
 
-        this.doors = new Map();
+        this.doors = [];//new Map();
 
     }
 
@@ -91,7 +105,17 @@ class Room {
 
     killPlayer(player) {
 
+
+        this.doors.forEach((v, k) => {
+            if (k >= player.place) return; //если игрок умирает то места смещаются , и если стояли двери то и двери нужно сместить
+            let newk = k - 1;
+            let d = this.doors[newk];//.get(]newk);//проверяем свободно ли новое место для передвигаемой двери, и если не свободно и там уже есть дверь , 
+            if (d != undefined) this.dropcards.push(v); else this.doors[k]=v;//.set(k, v);// 
+            this.doors[k]=undefined;//.delete(k);
+        });
+
         this.spectators.push(player);
+        player.place = null;
         this.players.delete(player.playername);
         this.getPlayers((playersArray) => {
             //this.players = new Map();
@@ -99,10 +123,11 @@ class Room {
             this.calcNextPlayer();
         });
 
+
     }
 
 
-    getNextPlayerFor(player){
+    getNextPlayerFor(player) {
         let l = this.players.size;
         let place = player.place;
         let nextplace = (place + 1) % l;
@@ -113,7 +138,7 @@ class Room {
                 if (v.place == nextplace) nextplayer = v;
             });
         });
-        if(nextplayer==null)console.log('how can it be , nextplayer is null');
+        if (nextplayer == null) console.log('how can it be , nextplayer is null');
         return nextplayer;
 
     }
@@ -141,8 +166,8 @@ class Room {
     }
 
 
-    isNotAllSelectCardForExchangeOut(){
-        return this.playersArray.filter((v)=>v.cardForExchangeOut==null).length>0;
+    isNotAllSelectCardForExchangeOut() {
+        return this.playersArray.filter((v) => v.cardForExchangeOut == null).length > 0;
     }
 
     IsThingWin() {
@@ -159,20 +184,20 @@ class Room {
         let loose = this.IsThingLoose();
         if (!win && !loose) return;
         this.gamestarted = false;
-        this.playersArray.forEach(v => {if(v.thing)this.log(v+" нечто");});
+        this.playersArray.forEach(v => { if (v.thing) this.log(v + " нечто"); });
         let endText = "Игра окончена";
         this.log(endText);
-        if (win) endText =  "Нечто победил";
-        if (loose) endText =  "Нечто проиграл";
+        if (win) endText = "Нечто победил";
+        if (loose) endText = "Нечто проиграл";
         this.players.forEach((v, k) => {
-            v.send({ messagetype: 'gamelog', gamelog: this.gamelog});
+            v.send({ messagetype: 'gamelog', gamelog: this.gamelog });
         });
         this.spectators.forEach((v) => {
-            v.send({ messagetype: 'gamelog', gamelog: this.gamelog});
+            v.send({ messagetype: 'gamelog', gamelog: this.gamelog });
         });
-        this.playersArray.forEach(v => {v.stopPlay();v.socket.close(1001, endText);});
-        
-        
+        this.playersArray.forEach(v => { v.stopPlay(); v.socket.close(1001, endText); });
+
+
         this.gamestarted = false;
         this.players = new Map(); //key == playername ,
         this.spectators = [];
@@ -180,7 +205,7 @@ class Room {
         this.deckcards = [];
         this.dropcards = [];
         this.tablecards = [];
-        this.doors = new Map();
+        this.doors = [];//new Map();
         this.cardscount = 0;
 
         this.direction = 0;
@@ -188,17 +213,17 @@ class Room {
         this.currentPlayer = null;
         this.additionalData = undefined;
         this.gamelog = [];
-        this.isPanicChain = false;     
+        this.isPanicChain = false;
 
     }
 
-    dropAllQuarantine(){
-        this.playersArray.forEach(v=>v.dropQuarantine());
+    dropAllQuarantine() {
+        this.playersArray.forEach(v => v.dropQuarantine());
     }
 
-    ChainPanicEnd(){
-        if(this.isNotAllSelectCardForExchangeOut())return;
-        this.playersArray.forEach(v=>{
+    ChainPanicEnd() {
+        if (this.isNotAllSelectCardForExchangeOut()) return;
+        this.playersArray.forEach(v => {
 
             let nextplayer = this.getNextPlayerFor(v);
             nextplayer.IncomeExchange(v);
@@ -227,7 +252,7 @@ class Room {
         let m = (new Card()).getCardTypes();
         this.getPlayers((a) => {
             let l = a.length;
-            let lastThings =  a.filter(v=>v.thing == true);
+            let lastThings = a.filter(v => v.thing == true);
             last_thing = lastThings[Math.round(Math.random() * (lastThings.length - 1))];
 
             this.gamestarted = true;
@@ -246,9 +271,9 @@ class Room {
             playercards.set(thing.playerid, [0]);
 
             let currentPlayer = last_thing;
-            if (last_thing == null||last_thing==undefined) {
+            if (last_thing == null || last_thing == undefined) {
                 currentPlayer = a[Math.round(Math.random() * (l - 1))].playerid;
-            }else currentPlayer = last_thing.playerid;
+            } else currentPlayer = last_thing.playerid;
             let curplayer = this.players.get(currentPlayer);
             this.currentplayer = curplayer;
             this.players.set(currentPlayer, curplayer);
@@ -283,12 +308,12 @@ class Room {
 
             this.insertShuffle(res);//оставшиеся карты перетасуем и закинем в деку
 
-            //this.deckcards.push(new Card(this.clientDB, Card.CardsByPlayers.PanicThreeFour.num, this, this.deckcards.length));
+            //this.deckcards.push(new Card(this.clientDB, Card.CardsByPlayers.PanicConfessionTime.num, this, this.deckcards.length));
 
             this.currentplayer.startPlay();
 
             this.gamestarted = true;           // this.clientDB.query('update rooms set gamestarted = true where roomid = $1; ', [this.roomname], (err, data) => { if (err) console.trace(err); });
-            this.players.forEach(v=>v.sendGUIDToPlayer());
+            this.players.forEach(v => v.sendGUIDToPlayer());
             this.needUpdateForAll();
             this.log("игра началась");
 
@@ -384,8 +409,8 @@ class Room {
 
     getPlayerByPlayerName(playername) { return this.players.get(playername); }
 
-    getPlayerByPlace(place){
-        return this.playersArray.filter(v=>v.place == place)[0];
+    getPlayerByPlace(place) {
+        return this.playersArray.filter(v => v.place == place)[0];
     }
 
     getPlayers(callback) {
@@ -396,7 +421,7 @@ class Room {
 
 
     updatePlayers() {
-        
+
         this.getDeckAndDrop((deckData) => {
             this.players.forEach((v, k) => {
                 if (v.needupdate == true)
@@ -409,14 +434,29 @@ class Room {
         });
 
         this.players.forEach((v, k) => {
-            v.send({ messagetype: 'gamelog', gamelog: this.gamelog});
+            v.send({ messagetype: 'gamelog', gamelog: this.gamelog });
+            v.send({ messagetype: 'chat', chat: this.chat });
         });
         this.spectators.forEach((v) => {
-            v.send({ messagetype: 'gamelog', gamelog: this.gamelog});
+            v.send({ messagetype: 'gamelog', gamelog: this.gamelog });
+            v.send({ messagetype: 'chat', chat: this.chat });
         });
         this.checkEndGame();
     }
 
+
+    ShowMyCardToAll( playerFrom, card) {
+
+        this.getDeckAndDrop((deckData) => {
+            this.players.forEach((v, k) => {
+                this.additionalData = { action: "ShowOneCardToAll",  PlayerFrom: playerFrom, Card: card };
+                v.update(deckData);
+                v.needupdate = false;
+            });
+        });
+
+
+    }
 
     ShowMyCardToPlayer(playerTo, playerFrom, card) {
 
@@ -431,7 +471,7 @@ class Room {
 
     }
 
-    ShowMyCardsTo(playerTo,playerFrom) {
+    ShowMyCardsTo(playerTo, playerFrom) {
 
         this.getDeckAndDrop((deckData) => {
             this.players.forEach((v, k) => {
@@ -479,7 +519,7 @@ class Room {
 
         let wasThing = playerdata.thing;
         let player = new Player(this.clientDB, socket, this.roomname, playerdata.playername, playerdata.playername, this, this.gamenum, 0);
-        if(this.gamestarted==false&&playerdata.thing==true)player.thing = true;
+        if (this.gamestarted == false && playerdata.thing == true) player.thing = true;
         this.players.set(playerdata.playername, player);
         player.sendGUIDToPlayer();
         player.insertPlayer();
@@ -492,7 +532,7 @@ class Room {
 
 
         let player = this.players.get(playerdata.playername);//new Player(this.clientDB, socket, this.roomname, playerdata.playername, playerdata.playername, this, this.gamenum, playerdata.quarantineCount, playerdata.Infected);
-        if(this.gamestarted==false&&playerdata.thing==true)player.thing = true;
+        if (this.gamestarted == false && playerdata.thing == true) player.thing = true;
         player.socket = socket;
         player.room = this;
         player.cookieguid = playerdata.guid;
@@ -508,7 +548,7 @@ class Room {
     }
 
     tableToDrop() {
-        if(this.isPanicChain==true)return;
+        if (this.isPanicChain == true) return;
         this.tablecards.forEach(v => this.dropcards.push(v));
         this.tablecards = [];
     }
@@ -523,12 +563,14 @@ class Room {
         if (this.deckcards.length == 0) return;
         let card = this.deckcards[this.deckcards.length - 1];
         let lastdrop = this.dropcards[this.dropcards.length - 1];
-        let drop = this.dropcards.map((v) =>{ return v.card.isPanic?Card.CardsByPlayers.UnknownPanic.num:Card.CardsByPlayers.UnknownAction.num});
+        let drop = this.dropcards.map((v) => { return v.card.isPanic ? Card.CardsByPlayers.UnknownPanic.num : Card.CardsByPlayers.UnknownAction.num });
         let table = this.tablecards.map((v) => v.card.num);
-        let doors = Array.from(this.doors, ([name, value]) => (name));
-        let deck = { table: table, drop: drop, deckCount: this.deckcards.length, dropCount: this.dropcards.length, 
-            card: card.card.isPanic ? Card.CardsByPlayers.UnknownPanic.num : Card.CardsByPlayers.UnknownAction.num, 
-            isGameStarted: true, direction: this.direction , currentPlayer:this.currentplayer.place, doors:doors};
+        let doors = Array.from(this.doors, ([k, value]) => (k));
+        let deck = {
+            table: table, drop: drop, deckCount: this.deckcards.length, dropCount: this.dropcards.length,
+            card: card.card.isPanic ? Card.CardsByPlayers.UnknownPanic.num : Card.CardsByPlayers.UnknownAction.num,
+            isGameStarted: true, direction: this.direction, currentPlayer: this.currentplayer.place, doors: doors
+        };
         callback(deck);
 
 
@@ -546,11 +588,25 @@ class Room {
 
         try { player["action" + data.action](data); } catch (e) {
             console.trace(e);
-            socket.close(1001, e );
+            socket.close(1001, e);
         };
 
 
         this.needUpdateForAll();
+
+    }
+
+    doChat(socket, data) {
+        //console.log(data);
+        let player = this.players.get(data.playername);
+        if (player == undefined) { socket.close(1001, 'Player not found'); return; }
+        //if (data.action == undefined) return;
+        //if (player.isDead == true) { socket.close(1001, 'Player is dead'); return; }
+        this.addChatMessage(player, data.message);
+
+
+
+        //this.needUpdateForAll();
 
     }
 

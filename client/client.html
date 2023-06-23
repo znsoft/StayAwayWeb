@@ -120,10 +120,13 @@
         <button id="startgamebutton" hidden="true" onclick="startGame()" data-tooltip="Подождите пока подключатся все игроки" >Начать игру</button>
 
     </div>
-
-    <textarea id="gamelog" style="opacity: 0.4; position: absolute; transition: opacity 1s;" cols="40" rows="20"
-        onclick="console.log('click')" readonly="true"></textarea>
-
+<div  style="opacity: 0.4; position: absolute; transition: opacity 1s;">
+    <textarea id="gamelog" style="opacity: 0.4; transition: opacity 1s;" cols="40" rows="20"
+        onclick="console.log('click')" readonly="true"></textarea><br>
+    <textarea id="chat" style="opacity: 0.4; transition: opacity 1s;" cols="40" rows="20"
+        onclick="console.log('click')" readonly="true"></textarea><br>
+        <input id="chatmessage" width="40"  ></input><button id="chatbutton" onclick="sendChat()">Отправить</button>
+    </div>
     <canvas id="canvas" width="2000" height="2000" onresize="resizeCanvas()">
         Please update your browser<br> in order
         to
@@ -710,6 +713,9 @@
         Axe: { id: 25, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: Axe },
         Door: { id: 26, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: SetDoor },
         PanicOneTwo: { id: 27, HiLightText: "Выбери игрока", MayMove: true, HLThridPlayers: true, selectPlayer: true, OnSelectPlayer: PanicOneTwo },
+        PanicConfessionTime:{ id: 28, HiLightText: "Время признаний", Button: { Text: "Показать карты всем", action: PanicConfessionTime } },
+        PanicNoConfessionTime:{ id: 29,  Button: { Text: "Не показывать карты всем", action: PanicNoConfessionTime } },
+        PanicStopConfessionTime:{ id: 30,  Button: { Text: "Остановить время признаний", action: PanicStopConfessionTime } },
     };
 
     const Algoritms = {
@@ -833,7 +839,11 @@
 
         }
         ,
+        PanicConfessionTime:(me, card) => {
+            if(card == Cards.Infect)return [Actions.PanicConfessionTime,Actions.PanicNoConfessionTime,Actions.PanicStopConfessionTime];
+            return [Actions.PanicConfessionTime,Actions.PanicNoConfessionTime];
 
+        }
 
 
     };
@@ -868,7 +878,7 @@
         PanicOldRopes: new Card("Old Ropes down", 19, "Старые веревки", "Все сыгранные карты карантин сбрасываются", "/oldropes.jpg", null, null, Algoritms.Panic, null, true),
         PanicThreeFour: new Card("Panic Three Four", 20, "Три четыре", "Все сыгранные карты закалоченная дверь сбрасываются", "/pthreefour.webp", null, null, Algoritms.Panic, null, true),
         PanicUPS: new Card("UPS", 21, "Уупс", "Покажите все свои карты на руке остальным игрокам", "/ups.jpg", null, null, Algoritms.Panic, null, true),
-        PanicConfessionTime: new Card("PanicConfessionTime", 22, "Время признаний", "Начиная с вас и по порядку хода каждый показывает либо не показывает все карты на руке остальным игрокам.\n Время признаний завершается когда кто то из игроков показывает карту заражения", "/priznania.jpg", null, null, Algoritms.Panic, null, true),
+        PanicConfessionTime: new Card("PanicConfessionTime", 22, "Время признаний", "Начиная с вас и по порядку хода каждый показывает либо не показывает все карты на руке остальным игрокам.\n Время признаний завершается когда кто то из игроков показывает карту заражения", "/priznania.jpg", null, null, Algoritms.Panic, Algoritms.PanicConfessionTime, true),
         PanicBetweenUs: new Card("PanicBetweenUs", 23, "Только между нами", "Покажите все карты на руке соседнему игроку по вашему выбору", "/betweenus.jpg", null, null, Algoritms.Panic, null, true),
         PanicForgot: new Card("PanicForgot", 24, "Забывчивость", "Сбросьте три карты с руки и возьмите 3 новые карты из колоды, сбрасывая паники ", "/forgot.jpg", null, null, Algoritms.Panic, Algoritms.PanicOnlyOneCardStayInHand, true),
         PanicFriend: new Card("", 25, "Давай дружить", "поменяйтесь одной картой с любым игроком если он не на карантине", "/friend.jpeg", null, null, Algoritms.Panic, Algoritms.Friends, true),
@@ -1213,6 +1223,18 @@
             this.gamelog.forEach((v) => { result = result + v + "\r" });
 
             let q = document.getElementById("gamelog");
+            q.value = result;
+            q.scrollTop = q.scrollHeight;
+
+        }
+
+
+        parseChat(message) {
+            let result = "";
+
+            message.chat.forEach((v) => { result = result + v.player+":"+v.message + "\r" });
+
+            let q = document.getElementById("chat");
             q.value = result;
             q.scrollTop = q.scrollHeight;
 
@@ -1653,6 +1675,9 @@
                 case 'gamelog':
                     game.parseGamelog(message);
                     break;
+                case 'chat':
+                    game.parseChat(message);
+                break;
 
             }
 
@@ -1966,6 +1991,37 @@
 
     }
 
+
+    function PanicNoConfessionTime(pl){
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "PanicNoConfessionTime";
+        p.place = pl.cardplace;
+        websocket.senddata(p);
+
+
+    }
+
+    function PanicConfessionTime(pl){
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "PanicConfessionTime";
+        p.place = pl.cardplace;
+        websocket.senddata(p);
+
+
+    }
+
+    function PanicStopConfessionTime(pl){
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "PanicStopConfessionTime";
+        p.place = pl.cardplace;
+        websocket.senddata(p);
+
+
+    }
+
     function PanicGoAway(pl) {
         let p = JSON.parse(document.cookie);
         p.messagetype = 'playeraction';
@@ -2042,6 +2098,19 @@
         websocket.senddata({ messagetype: "query", query: q });
 
     }
+
+
+    function sendChat() {
+        let q = document.getElementById("chatmessage");
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'chatmessage';
+        p.message = q.value;
+
+        websocket.senddata(p);
+        q.value = "";
+
+    }
+    
 
     function sendLogin() {
         let loginelement = document.getElementById("login");

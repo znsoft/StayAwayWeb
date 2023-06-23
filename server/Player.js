@@ -31,6 +31,7 @@ class Player {
         this.Perseverance = [];
         this.Quarantine = null;
 
+
     }
 
     toString() {
@@ -125,7 +126,7 @@ class Player {
     endTurn() {
         this.phase = Player.Phases.Exchange;
         this.state = Player.States.SelectCard;
-        if (this.room.nextplayer.quarantineCount == 0 && this.quarantineCount == 0&&this.room.getDoor(this,this.room.nextplayer)==undefined) return;
+        if (this.room.nextplayer.quarantineCount == 0 && this.quarantineCount == 0 && this.room.getDoor(this, this.room.nextplayer) == undefined) return;
         this.stopPlay();
         this.nowNextPlayer();
 
@@ -144,7 +145,7 @@ class Player {
     }
 
     nowNextPlayer() {
-        
+
         this.stopPlay();
         let nextplayer = this.room.nextplayer;
 
@@ -165,7 +166,9 @@ class Player {
         this.isDead = true;
         this.cards.forEach(v => this.room.dropcards.push(v));
         this.cards = [];
-        this.place = null;
+
+
+
         this.stopPlay();
         this.room.killPlayer(this);
     }
@@ -203,9 +206,9 @@ class Player {
 
     }
 
-    dropQuarantine(){
+    dropQuarantine() {
 
-        if(this.quarantineCount>0)            this.room.dropcards.push(this.Quarantine);
+        if (this.quarantineCount > 0) this.room.dropcards.push(this.Quarantine);
         this.quarantineCount = 0;
         this.Quarantine = null;
 
@@ -239,7 +242,8 @@ class Player {
             case Card.CardsByPlayers.PanicConfessionTime:
                 //"Время признаний", "Начиная с вас и по порядку хода каждый показывает либо не показывает все карты на руке остальным игрокам. Время признаний завершается когда кто то из игроков показывает карту заражения"
                 this.state = Player.States.PanicConfessionTime;
-
+                this.room.PanicConfessionTime = this;
+                this.room.log("время признаний для " + this);
                 break;
             case Card.CardsByPlayers.PanicForgot:
                 //"Забывчивость", "Сбросьте три карты с руки и возьмите 3 новые карты из колоды, сбрасывая паники ", "/forgot.jpg", null, null, Algoritms.Panic, null, true),
@@ -283,17 +287,17 @@ class Player {
                 let size = this.room.players.size;
                 let central = this.place;
 
-                let sortedPlayersfromThis = this.room.playersArray.sort((a,b)=>{
+                let sortedPlayersfromThis = this.room.playersArray.sort((a, b) => {
                     let newplaceA = a.place - central;
                     if (newplaceA < 0) newplaceA += size;
                     let newplaceB = b.place - central;
                     if (newplaceB < 0) newplaceB += size;
-                    return newplaceA-newplaceB;
+                    return newplaceA - newplaceB;
                 });
 
-                for(let i=Math.floor(sortedPlayersfromThis.length/2);i>0;i--){
-                    let p1 = sortedPlayersfromThis[i*2-1];
-                    let p2 = sortedPlayersfromThis[i*2-2];
+                for (let i = Math.floor(sortedPlayersfromThis.length / 2); i > 0; i--) {
+                    let p1 = sortedPlayersfromThis[i * 2 - 1];
+                    let p2 = sortedPlayersfromThis[i * 2 - 2];
                     p1.ExchangePlace(p2);
                 }
 
@@ -312,52 +316,101 @@ class Player {
 
                 break;
         }
-        
+
     }
+
+
+    nowNexPlayerForPanicConfessionTime() {
+
+
+        this.stopPlay();
+        let nextplayer = this.room.nextplayer;
+        if(nextplayer == this.room.PanicConfessionTime){this.endPanicConfessionTime();return;}
+        nextplayer.state = Player.States.PanicConfessionTime;
+        nextplayer.phase = Player.Phases.SecondAction;
+        this.room.currentplayer = nextplayer;
+        this.room.log("время признаний для " + nextplayer);
+    }
+
+
+    endPanicConfessionTime() {
+
+        this.stopPlay();
+        this.room.currentplayer = this.room.PanicConfessionTime;
+        this.room.PanicConfessionTime = null;
+        this.room.tableToDrop();
+        this.room.currentplayer.endTurn();
+        this.room.log("время признаний закончилось");
+
+    }
+
+
+
+    actionPanicConfessionTime(data) {
+
+        this.room.ShowMyCardsToAll(this);
+        this.room.log(this + " показывает карты ");
+        this.nowNexPlayerForPanicConfessionTime();
+    }
+
+    actionPanicNoConfessionTime(data) {
+
+        // this.room.ShowMyCardsToAll(this);
+        this.room.log(this + " не показывает карты. ай яй");
+        this.nowNexPlayerForPanicConfessionTime();
+    }
+
+    actionPanicStopConfessionTime(data) {
+        this.room.ShowMyCardToAll(this, data.place);
+        //this.room.ShowMyCardsToAll(this);
+        this.room.log(this + " остановил время признаний");
+
+    }
+
 
     actionAxe(data) {
         if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
-        if(this.room.getDoor(this,nextplayer)==undefined&&nextplayer.quarantineCount==0)throw 'игрок не на карантине и между вами нет двери';
+        if (this.room.getDoor(this, nextplayer) == undefined && nextplayer.quarantineCount == 0) throw 'игрок не на карантине и между вами нет двери';
 
         let bymycardplace = data.bymycardplace;
         let cardindex = this.findcardindex(bymycardplace);
         let mycard = this.cards[cardindex]; //
         if (mycard.card != Card.CardsByPlayers.Axe) throw 'Error is not Axe card';
         this.tableCard(bymycardplace);
-        this.room.removeDoor(this,nextplayer);
+        this.room.removeDoor(this, nextplayer);
         nextplayer.dropQuarantine();
         this.room.log(this + " топор на  " + nextplayer);
         this.endTurn();
     }
 
-    actionDoor(data){
+    actionDoor(data) {
         if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
-        if(this.room.getDoor(this,nextplayer)!=undefined)throw 'Door is set between you';
+        if (this.room.getDoor(this, nextplayer) != undefined) throw 'Door is set between you';
 
         let bymycardplace = data.bymycardplace;
         let cardindex = this.findcardindex(bymycardplace);
         let mycard = this.cards[cardindex]; //
         if (mycard.card != Card.CardsByPlayers.Door) throw 'Error is not Door card';
         this.cards.splice(cardindex, 1);
-        this.room.Door(this,nextplayer,mycard);
+        this.room.Door(this, nextplayer, mycard);
         this.room.log(this + " поставил дверь между  " + nextplayer);
         this.endTurn();
     }
 
-    
+
     actionQuarantine(data) {
         if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
-        
+
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
-        if(this.room.getDoor(this,nextplayer)!=undefined)throw 'Door is set between you';
+        if (this.room.getDoor(this, nextplayer) != undefined) throw 'Door is set between you';
         let bymycardplace = data.bymycardplace;
 
         let cardindex = this.findcardindex(bymycardplace);
@@ -403,7 +456,7 @@ class Player {
 
     }
 
-    actionPanicOneTwo(data){
+    actionPanicOneTwo(data) {
 
         if (this.phase != Player.Phases.SecondAction) throw 'Error is not you action now';
         if (this.state != Player.States.PanicOneTwo) throw 'Error is not you state now';
@@ -508,8 +561,8 @@ class Player {
 
 
         } else {
-            if(this.room.getDoor(this,nextplayer)!=undefined&&this.state != Player.States.SelectCardAndPlayerForOutgoingExchange)throw 'Door is set between you';
-            if(nextplayer.quarantineCount>0)throw 'player on quarantine';
+            if (this.room.getDoor(this, nextplayer) != undefined && this.state != Player.States.SelectCardAndPlayerForOutgoingExchange) throw 'Door is set between you';
+            if (nextplayer.quarantineCount > 0) throw 'player on quarantine';
 
             nextplayer.phase = Player.Phases.Answer;
             nextplayer.state = Player.States.IncomeExchange;
@@ -643,8 +696,8 @@ class Player {
         if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
         let nextplayer = this.room.getPlayerByPlayerName(data.otherPlayerName);
-        if(this.room.getDoor(this,nextplayer)!=undefined)throw 'Door is set between you';
-        if(nextplayer.quarantineCount>0)throw 'player on quarantine';
+        if (this.room.getDoor(this, nextplayer) != undefined) throw 'Door is set between you';
+        if (nextplayer.quarantineCount > 0) throw 'player on quarantine';
         let bymycardplace = data.place;
 
 
@@ -653,7 +706,7 @@ class Player {
         if (mycard.card != Card.CardsByPlayers.Analysis) throw 'Error is not Analysis card';
         this.tableCard(bymycardplace);
         this.endTurn();
-        this.room.ShowMyCardsTo(this,nextplayer);
+        this.room.ShowMyCardsTo(this, nextplayer);
 
         this.room.log(this + " анализирует карты " + nextplayer);
 
@@ -701,11 +754,11 @@ class Player {
         nextplayer.phase = Player.Phases.Answer;
         nextplayer.state = Player.States.DefendPlaceChange;
         this.room.log(this + " меняется местами с " + nextplayer);
-        
+
         let defend = nextplayer.cards.filter((v) =>
             v.card.num == Card.CardsByPlayers.StayHere.num);
         //console.log(defend);
-        if (defend.length > 0){ this.room.log( nextplayer+" есть чем отказать " );   return;}
+        if (defend.length > 0) { this.room.log(nextplayer + " есть чем отказать "); return; }
 
         nextplayer.stopPlay();
         this.ExchangePlace(nextplayer);
@@ -718,8 +771,8 @@ class Player {
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
-        if(this.room.getDoor(this,nextplayer)!=undefined)throw 'Door is set between you';
-        if(nextplayer.quarantineCount>0)throw 'player on quarantine';
+        if (this.room.getDoor(this, nextplayer) != undefined) throw 'Door is set between you';
+        if (nextplayer.quarantineCount > 0) throw 'player on quarantine';
         let bymycardplace = data.bymycardplace;
 
         let cardindex = this.findcardindex(bymycardplace);
@@ -779,8 +832,8 @@ class Player {
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
-        if(this.room.getDoor(this,nextplayer)!=undefined)throw 'Door is set between you';
-        if(nextplayer.quarantineCount>0)throw 'player on quarantine';
+        if (this.room.getDoor(this, nextplayer) != undefined) throw 'Door is set between you';
+        if (nextplayer.quarantineCount > 0) throw 'player on quarantine';
         // let otherCardPlace = data.place;
         let bymycardplace = data.bymycardplace;
 
@@ -829,8 +882,8 @@ class Player {
         if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
-        if(this.room.getDoor(this,nextplayer)!=undefined)throw 'Door is set between you';
-        if(nextplayer.quarantineCount>0)throw 'player on quarantine';
+        if (this.room.getDoor(this, nextplayer) != undefined) throw 'Door is set between you';
+        if (nextplayer.quarantineCount > 0) throw 'player on quarantine';
         let otherCardPlace = data.place;
         let bymycardplace = data.bymycardplace;
 
@@ -916,6 +969,16 @@ class Player {
             if (v.cardForExchangeOut == cardplace) str.ShowTo = true;
             if (additionalData != undefined) {
                 switch (additionalData.action) {
+                    case "ShowOneCardToAll":
+
+                        if (additionalData.Card.place != cardplace) break;
+                        //console.log(additionalData);
+                        if (v.playername != additionalData.PlayerFrom.playername) break;
+                        str.ShowTo = true;
+                        //str.toPlayer = additionalData.PlayerTo.playername;
+                        //if (this.playername == additionalData.PlayerTo.playername)
+                        str.cardnum = c.card.num;
+                        break;
                     case "ShowOneCardToPlayer":
 
                         if (additionalData.Card.place != cardplace) break;
@@ -934,12 +997,12 @@ class Player {
                     case "ShowAllCardsTo":
                         //PlayerTo: playerTo, PlayerFrom: playerFrom 
                         console.log(additionalData.PlayerFrom.playername);
-                            if (v != additionalData.PlayerFrom ) break;
-                            console.log(additionalData.PlayerTo.playername);
-                            str.ShowTo = true;
-                            if (this == additionalData.PlayerTo)str.cardnum = c.card.num;
-                            break;
-                            
+                        if (v != additionalData.PlayerFrom) break;
+                        console.log(additionalData.PlayerTo.playername);
+                        str.ShowTo = true;
+                        if (this == additionalData.PlayerTo) str.cardnum = c.card.num;
+                        break;
+
 
 
                 }
