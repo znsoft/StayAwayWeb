@@ -1,0 +1,4 @@
+{
+    "devCommand": "node server.js",
+    "public": true
+  }

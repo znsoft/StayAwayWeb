@@ -3,10 +3,8 @@
   "version": "1.0.0",
   "description": "simple heroku serv",
   "main": "server.js",
-  "start": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
   },
   "author": "znsoft",
   "license": "ISC",
