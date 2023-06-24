@@ -34,7 +34,7 @@ const game = new Game(clientdb)
 const wsServer = new Server({ server });
 
 wsServer.on('connection', (wsclient) => {
-    //console.log(wsclient._socket.remoteAddress);
+    console.log(wsclient._socket.remoteAddress);
 
     wsclient.mysend = function (message) {
 
