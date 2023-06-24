@@ -565,7 +565,13 @@ class Room {
         let lastdrop = this.dropcards[this.dropcards.length - 1];
         let drop = this.dropcards.map((v) => { return v.card.isPanic ? Card.CardsByPlayers.UnknownPanic.num : Card.CardsByPlayers.UnknownAction.num });
         let table = this.tablecards.map((v) => v.card.num);
-        let doors = Array.from(this.doors, (v,k) => (k));
+        
+        let doors = [];
+        this.doors.forEach((v,k)=>{
+            if(v!=undefined)doors.push(k);
+        });
+        
+//        Array.from(this.doors, (v,k) => (k));
         let deck = {
             table: table, drop: drop, deckCount: this.deckcards.length, dropCount: this.dropcards.length,
             card: card.card.isPanic ? Card.CardsByPlayers.UnknownPanic.num : Card.CardsByPlayers.UnknownAction.num,
