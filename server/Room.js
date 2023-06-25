@@ -110,14 +110,14 @@ class Room {
             if(v==undefined)return; //пустые двероместа не трогаем ) 
             doors[k]=v;
             //if (this.doors[k] == undefined) return;
-            console.log("дверь " + k+ " игрок "+player.place);
+           // console.log("дверь " + k+ " игрок "+player.place);
 
             if (k*1 < 1*player.place) return; //если игрок умирает то места смещаются , и если стояли двери то и двери нужно сместить
 
-            console.log("дверь " + k + " > игрок "+player.place);
+           //console.log("дверь " + k + " > игрок "+player.place);
             let newk = k - 1;
             let d = this.doors[newk];//.get(]newk);//проверяем свободно ли новое место для передвигаемой двери, и если не свободно и там уже есть дверь , 
-            console.log("предыдущее место " + d+" v="+v);
+            //console.log("предыдущее место " + d+" v="+v);
             if (d != undefined)
                 this.dropcards.push(v);
             else  doors[newk] = v;//.set(k, v);// 
