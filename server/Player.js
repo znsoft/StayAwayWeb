@@ -561,6 +561,8 @@ class Player {
 
 
         } else {
+            if( this.state != Player.States.SelectCardAndPlayerForOutgoingExchange&&
+                this.phase != Player.Phases.SecondAction)
             if (this.room.getDoor(this, nextplayer) != undefined && this.state != Player.States.SelectCardAndPlayerForOutgoingExchange) throw 'Door is set between you';
             if (nextplayer.quarantineCount > 0) throw 'player on quarantine';
 

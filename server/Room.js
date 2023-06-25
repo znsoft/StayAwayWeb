@@ -107,8 +107,11 @@ class Room {
 
 
         this.doors.forEach((v, k) => {
-            if(v==undefined)return; //пустые двероместа не трогаем ) 
+            if(this.doors[k]==undefined) return;
+            console.log("дверь "+k);           
+           // if(v==undefined)return; //пустые двероместа не трогаем ) 
             if (k >= player.place) return; //если игрок умирает то места смещаются , и если стояли двери то и двери нужно сместить
+            console.log("перемещаетсЯ дверь "+k);
             let newk = k - 1;
             let d = this.doors[newk];//.get(]newk);//проверяем свободно ли новое место для передвигаемой двери, и если не свободно и там уже есть дверь , 
             if (d != undefined) this.dropcards.push(v); else this.doors[k]=v;//.set(k, v);// 
@@ -120,7 +123,10 @@ class Room {
         this.players.delete(player.playername);
         this.getPlayers((playersArray) => {
             //this.players = new Map();
-            playersArray.filter(pl => !pl.isDead).sort((a, b) => a.place - b.place).forEach((player, i) => { player.place = i });
+            playersArray.filter(pl => !pl.isDead).sort((a, b) => a.place - b.place).forEach((player, i) => { 
+                
+                player.place = i 
+            });
             this.calcNextPlayer();
         });
 
