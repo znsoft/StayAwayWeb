@@ -867,7 +867,7 @@ class Player {
         let cardindex = this.findcardindex(bymycardplace);
         let mycard = this.cards[cardindex]; //
         if (mycard.card != Card.CardsByPlayers.FireResist) throw 'Error is not defend card';
-
+        this.room.tableToDrop();
         console.log(this.playername + " defend from fire ");
         this.tableCard(bymycardplace);
         this.room.giveOneActionCardfromDeckToPlayer(this);
