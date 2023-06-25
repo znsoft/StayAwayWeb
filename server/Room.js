@@ -59,7 +59,7 @@ class Room {
         if (Math.abs(p1.place - p2.place) == (this.players.size - 1)) k = 0;
         //if(k==this.players.size)k=0;
         this.dropcards.push(card);
-        this.doors[k]=undefined;//.delete(k);
+        this.doors[k] = undefined;//.delete(k);
     }
 
     getDoor(p1, p2) {
@@ -72,8 +72,8 @@ class Room {
     }
 
     dropAllDoors() {
-//[].forEach()
-        this.doors.forEach((v, k) => this.dropcards.push(v));
+        //[].forEach()
+        this.doors.forEach((v, k) => {if(v!=undefined)this.dropcards.push(v)});
 
         this.doors = [];//new Map();
 
@@ -105,27 +105,33 @@ class Room {
 
     killPlayer(player) {
 
-
+        let doors = [];
         this.doors.forEach((v, k) => {
-            if(this.doors[k]==undefined) return;
-            console.log("дверь "+k);           
-           // if(v==undefined)return; //пустые двероместа не трогаем ) 
-            if (k >= player.place) return; //если игрок умирает то места смещаются , и если стояли двери то и двери нужно сместить
-            console.log("перемещаетсЯ дверь "+k);
+            if(v==undefined)return; //пустые двероместа не трогаем ) 
+            doors[k]=v;
+            //if (this.doors[k] == undefined) return;
+            console.log("дверь " + k+ " игрок "+player.place);
+
+            if (k*1 < 1*player.place) return; //если игрок умирает то места смещаются , и если стояли двери то и двери нужно сместить
+
+            console.log("дверь " + k + " > игрок "+player.place);
             let newk = k - 1;
             let d = this.doors[newk];//.get(]newk);//проверяем свободно ли новое место для передвигаемой двери, и если не свободно и там уже есть дверь , 
-            if (d != undefined) this.dropcards.push(v); else this.doors[k]=v;//.set(k, v);// 
-            this.doors[k]=undefined;//.delete(k);
+            console.log("предыдущее место " + d+" v="+v);
+            if (d != undefined)
+                this.dropcards.push(v);
+            else  doors[newk] = v;//.set(k, v);// 
+            doors[k] = undefined;//.delete(k);
         });
-
+        this.doors = doors;
         this.spectators.push(player);
         player.place = null;
         this.players.delete(player.playername);
         this.getPlayers((playersArray) => {
             //this.players = new Map();
-            playersArray.filter(pl => !pl.isDead).sort((a, b) => a.place - b.place).forEach((player, i) => { 
-                
-                player.place = i 
+            playersArray.filter(pl => !pl.isDead).sort((a, b) => a.place - b.place).forEach((player, i) => {
+
+                player.place = i
             });
             this.calcNextPlayer();
         });
@@ -315,7 +321,7 @@ class Room {
 
             this.insertShuffle(res);//оставшиеся карты перетасуем и закинем в деку
 
-            //this.deckcards.push(new Card(this.clientDB, Card.CardsByPlayers.PanicConfessionTime.num, this, this.deckcards.length));
+            this.deckcards.push(new Card(this.clientDB, Card.CardsByPlayers.Door.num, this, this.deckcards.length));
 
             this.currentplayer.startPlay();
 
@@ -452,11 +458,11 @@ class Room {
     }
 
 
-    ShowMyCardToAll( playerFrom, card) {
+    ShowMyCardToAll(playerFrom, card) {
 
         this.getDeckAndDrop((deckData) => {
             this.players.forEach((v, k) => {
-                this.additionalData = { action: "ShowOneCardToAll",  PlayerFrom: playerFrom, Card: card };
+                this.additionalData = { action: "ShowOneCardToAll", PlayerFrom: playerFrom, Card: card };
                 v.update(deckData);
                 v.needupdate = false;
             });
@@ -572,13 +578,13 @@ class Room {
         let lastdrop = this.dropcards[this.dropcards.length - 1];
         let drop = this.dropcards.map((v) => { return v.card.isPanic ? Card.CardsByPlayers.UnknownPanic.num : Card.CardsByPlayers.UnknownAction.num });
         let table = this.tablecards.map((v) => v.card.num);
-        
+
         let doors = [];
-        this.doors.forEach((v,k)=>{
-            if(v!=undefined)doors.push(k);
+        this.doors.forEach((v, k) => {
+            if (v != undefined) doors.push(k);
         });
-        
-//        Array.from(this.doors, (v,k) => (k));
+
+        //        Array.from(this.doors, (v,k) => (k));
         let deck = {
             table: table, drop: drop, deckCount: this.deckcards.length, dropCount: this.dropcards.length,
             card: card.card.isPanic ? Card.CardsByPlayers.UnknownPanic.num : Card.CardsByPlayers.UnknownAction.num,
