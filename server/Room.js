@@ -28,7 +28,7 @@ class Room {
         this.chat = [];
         this.chatCount = 0;
         this.PanicConfessionTime = null;
-        //this.moves=[];
+        this.moves=[];
         //this.opponent = null;
     }
 
@@ -474,6 +474,8 @@ class Room {
             v.send({ messagetype: 'chat', chat: this.chat });
         });
         this.checkEndGame();
+        this.moves.forEach(v=>v.ClearMove());
+        this.moves=[];
     }
 
 
@@ -597,19 +599,31 @@ class Room {
         if (this.deckcards.length == 0) return;
         let card = this.deckcards[this.deckcards.length - 1];
         let lastdrop = this.dropcards[this.dropcards.length - 1];
-        let drop = this.dropcards.map((v) => { return v.card.isPanic ? Card.CardsByPlayers.UnknownPanic.num : Card.CardsByPlayers.UnknownAction.num });
+        let dropmove = {};
+        let drop = this.dropcards.map((v) => { 
+            dropmove = v.GetMoveOut(dropmove);
+            return v.card.isPanic ? Card.CardsByPlayers.UnknownPanic.num : Card.CardsByPlayers.UnknownAction.num 
+        });
         let table = this.tablecards.map((v) => v.card.num);
+        
+        let tablemove = {};
+        this.tablecards.forEach(v=>{tablemove = v.GetMoveOut(tablemove);})
 
         let doors = [];
+        let doorsmove = [];
         this.doors.forEach((v, k) => {
-            if (v != undefined) doors.push(k);
+            if (v == undefined)return;
+            doorsmove.push(v.GetMoveOut());
+            doors.push(k);
         });
 
         //        Array.from(this.doors, (v,k) => (k));
         let deck = {
             table: table, drop: drop, deckCount: this.deckcards.length, dropCount: this.dropcards.length,
             card: card.card.isPanic ? Card.CardsByPlayers.UnknownPanic.num : Card.CardsByPlayers.UnknownAction.num,
-            isGameStarted: true, direction: this.direction, currentPlayer: this.currentplayer.place, doors: doors
+            isGameStarted: true, direction: this.direction, currentPlayer: this.currentplayer.place, doors: doors,
+            dropmove:dropmove, tablemove:tablemove, doorsmove:doorsmove
+
         };
         callback(deck);
 

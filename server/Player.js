@@ -982,7 +982,7 @@ class Player {
 
             let str = { cardnum: -1, cardplace: cardplace };
             if (v.playername == this.playername || c.card.isPanic) str = { cardnum: c.card.num, cardplace: cardplace };
-
+            c.GetMoveOut(str,v);
             if (v.cardForExchangeOut == cardplace) str.ShowTo = true;
             if (additionalData != undefined) {
                 switch (additionalData.action) {
