@@ -66,7 +66,7 @@ class Card {
             };
             str.to = {
                 type: this.to.type,
-                player: this.to.player == undefined ? player.place : this.to.player.place,
+                player: this.to.player == undefined ? player==undefined? undefined: player.place : this.to.player.place,
                 place: this.to.place == undefined ? this.place : this.to.place
             };
 
