@@ -175,7 +175,9 @@ class Player {
 
     tableCard(place) {
         let index = this.findcardindex(place);
-        this.room.tablecards.push(this.cards[index]);
+        let card = this.cards[index];
+        card.MoveFromTo({type:"player",player:this,place:place},{type:"table"});
+        this.room.tablecards.push(card);
         //console.log(place + ' ' + this.cards.length)
         this.cards.splice(index, 1);
         this.cards.forEach((v, i) => { v.place = i });
@@ -184,6 +186,8 @@ class Player {
 
     dropOneCard(place) {
         let index = this.findcardindex(place);
+        let card = this.cards[index];
+        card.MoveFromTo({type:"player",player:this,place:place},{type:"drop"});
         this.room.dropcards.push(this.cards[index]);
 
         this.cards.splice(index, 1);
@@ -443,7 +447,10 @@ class Player {
         let mycard = this.cards[cardindex];
         //if (mycard.card == Card.CardsByPlayers.Thing) throw 'Эту карту нельзя скинуть';
         this.cards.splice(cardindex, 1);
-        this.cards.forEach(v => this.room.dropcards.push(v));
+        this.cards.forEach(v =>{ 
+            v.MoveFromTo({type:"player",player:this},{type:"drop"});
+            this.room.dropcards.push(v);
+        });
         this.cards = [];
         this.cards.push(mycard);
         for (let i = 3; i > 0; i--)        this.room.giveOneActionCardfromDeckToPlayer(this);
@@ -475,6 +482,7 @@ class Player {
         this.cards.splice(cardindex, 1);
         this.room.giveOneActionCardfromDeckToPlayer(this);
         this.cards.forEach((v, i) => { v.place = i });
+        mycard.MoveFromTo({type:"player",player:this},{type:"deck"});
         this.room.deckcards.push(mycard);
         this.room.log(this + " подложил карту в колоду");
         this.stopPlay();
@@ -502,7 +510,10 @@ class Player {
         this.cards.push(card);
         this.cards.forEach((v, i) => { v.place = i });
         this.Perseverance.splice(data.place, 1);
-        this.Perseverance.forEach(v => this.room.dropcards.push(v));
+        this.Perseverance.forEach(v =>{ 
+            //v.MoveFromTo("")
+            this.room.dropcards.push(v);
+        });
         this.Perseverance = [];
         this.phase = Player.Phases.Action;
         this.state = Player.States.SelectCard;
@@ -661,11 +672,13 @@ class Player {
 
         let othercardindex = nextplayer.findcardindex(nextplayer.cardForExchangeOut);
         let othercard = nextplayer.cards[othercardindex];
+        othercard.MoveFromTo({type:"player",player:nextplayer,place:nextplayer.cardForExchangeOut},{type:"player",player:this});
         if (othercard.card == Card.CardsByPlayers.Infect) this.Infected = true;
         nextplayer.cards.splice(othercardindex, 1);
 
         let mycardindex = this.findcardindex(data.place);
         let mycard = this.cards[mycardindex];
+        mycard.MoveFromTo({type:"player",player:this,place:mycard.place},{type:"player",player:nextplayer});
         if (mycard.card == Card.CardsByPlayers.Infect) nextplayer.Infected = true;
         this.cards.splice(mycardindex, 1);
 
@@ -687,9 +700,11 @@ class Player {
         let othercardindex = nextplayer.findcardindex(nextplayer.cardForExchangeOut);
         let othercard = nextplayer.cards[othercardindex];
         if (othercard.card == Card.CardsByPlayers.Infect) this.Infected = true;
+        othercard.MoveFromTo({type:"player",player:nextplayer,place:nextplayer.cardForExchangeOut},{type:"player",player:this});
         nextplayer.cards.splice(othercardindex, 1);
         nextplayer.cardForExchangeOut = null;
         this.cards.push(othercard);
+
         this.cards.forEach((v, i) => { v.place = i });
 
     }

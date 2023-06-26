@@ -48,6 +48,20 @@ class Card {
         this.guid = this.generateGUID();
         this.room = room;
         this.nextplayerforcard = null;
+        this.from = {type:"deck"};
+        this.to = {};
+    }
+
+    MoveTo(to){
+
+
+        
+    }
+
+    MoveFromTo(from,to){
+
+
+
     }
 
     getCardTypes() {

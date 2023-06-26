@@ -28,9 +28,11 @@ class Room {
         this.chat = [];
         this.chatCount = 0;
         this.PanicConfessionTime = null;
+        //this.moves=[];
         //this.opponent = null;
     }
 
+    
 
     addChatMessage(player, message) {
         this.chatCount++;
@@ -49,6 +51,8 @@ class Room {
         let k = Math.max(p1.place, p2.place);// % (this.players.size - 1);
         if (Math.abs(p1.place - p2.place) == (this.players.size - 1)) k = 0;
         //if(k==this.players.size)k=0;
+        //this.moves.push({card:v.card.num, moveto:{type: "door",place:k}, movefrom:{type:"player",place:p1.place}});
+        v.MoveFromTo({type:"player",place:p1}, {type: "door",place:k} );
         this.doors[k] = card;
     }
 
@@ -58,6 +62,8 @@ class Room {
         let k = Math.max(p1.place, p2.place);
         if (Math.abs(p1.place - p2.place) == (this.players.size - 1)) k = 0;
         //if(k==this.players.size)k=0;
+        //this.moves.push({card:card.card.num, moveto:{type: "drop"}, movefrom:{type:"door",place:k}});
+        card.MoveFromTo({type:"door",place:k}, {type: "drop"});
         this.dropcards.push(card);
         this.doors[k] = undefined;//.delete(k);
     }
@@ -73,7 +79,13 @@ class Room {
 
     dropAllDoors() {
         //[].forEach()
-        this.doors.forEach((v, k) => {if(v!=undefined)this.dropcards.push(v)});
+        this.doors.forEach((v, k) => {
+            if(v!=undefined)
+            {
+                v.MoveFromTo({type:"door",place:k},{type: "drop"});
+                //this.moves.push({card:v.card.num, moveto:{type: "drop"}, movefrom:});
+                this.dropcards.push(v);
+            }});
 
         this.doors = [];//new Map();
 
@@ -167,7 +179,7 @@ class Room {
         for (; len >= 0; len--) {
 
             let r = Math.round(Math.random() * (res.length - 1));
-
+            
             this.deckcards.push(res[r]);
 
             res.splice(r, 1);
@@ -374,8 +386,12 @@ class Room {
 
             card = this.deckcards.pop();
             if (!card.card.isPanic) break;
+            card.MoveFromTo({type:"deck"},{type:"drop"});
+            //this.moves.push({card:card.card.num, moveto: {type:"drop"}, movefrom:{type:"deck",place:0}});
             this.dropcards.push(card);
         }
+        card.MoveFromTo({type:"deck"},{type:"player",player:player});
+        //this.moves.push({card:card.card.num, moveto: {type:"player"}, movefrom:});
         player.cards.push(card);
         player.cards.forEach((v, i) => { v.place = i });
 
@@ -395,6 +411,7 @@ class Room {
 
             card = this.deckcards.pop();
             if (!card.card.isPanic) break;
+            card.MoveFromTo({type:"deck"},{type:"drop"});
             this.dropcards.push(card);
         }
         player.Perseverance.push(card);
@@ -403,7 +420,9 @@ class Room {
 
     giveOneCardfromDeckToPlayer(player) {
         if (this.deckcards.length < 1) this.dropToDeckWithShuffle();
-        player.cards.push(this.deckcards.pop());
+        let card = this.deckcards.pop();
+        card.MoveFromTo({type:"deck"},{type:"player",player:player});
+        player.cards.push(card);
         player.cards.forEach((v, i) => { v.place = i });
 
     }
@@ -562,7 +581,9 @@ class Room {
 
     tableToDrop() {
         if (this.isPanicChain == true) return;
-        this.tablecards.forEach(v => this.dropcards.push(v));
+        this.tablecards.forEach(v => {
+            v.MoveFromTo({type:"table"},{type:"drop"});
+            this.dropcards.push(v)});
         this.tablecards = [];
     }
 
