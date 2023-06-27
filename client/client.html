@@ -425,6 +425,7 @@
             this.endpos = endpos;
             this.delta = { x: endpos.x - startpos.x, y: endpos.y - startpos.y };
             this.len = Math.max(Math.abs(this.delta.x), Math.abs(this.delta.y));
+            if(this.len>1000)this.len = 1000;
             this.starttime = Date.now();
             this.t = Animator.easetime * this.len;
             this.isMove = true;
