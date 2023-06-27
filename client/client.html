@@ -2317,7 +2317,11 @@
 
     function sendLogin() {
         let loginelement = document.getElementById("login");
-        let pre = JSON.parse(document.cookie);
+        
+        try {
+            let pre = JSON.parse(document.cookie);
+
+            } catch { }
         let p = {
             messagetype: 'newplayer',
             roomname: document.getElementById("room").value,
@@ -2325,7 +2329,7 @@
             numofPlayers: 1,
             playername: loginelement.value,
             guid: game == null ? '' : game.guid,
-            thing: pre.thing
+            thing: pre==undefined?false:pre.thing
 
         };
 
