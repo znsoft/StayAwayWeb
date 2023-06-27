@@ -2317,10 +2317,10 @@
 
     function sendLogin() {
         let loginelement = document.getElementById("login");
-        
+        let thing = false;
         try {
             let pre = JSON.parse(document.cookie);
-
+            thing = pre.thing;
             } catch { }
         let p = {
             messagetype: 'newplayer',
@@ -2329,7 +2329,7 @@
             numofPlayers: 1,
             playername: loginelement.value,
             guid: game == null ? '' : game.guid,
-            thing: pre==undefined?false:pre.thing
+            thing: thing
 
         };
 
