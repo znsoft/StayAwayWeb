@@ -5,7 +5,7 @@ class Room {
     constructor(clientDB, roomname, password, numofPlayers, playername, isNewDBObject, gamenum) {
         this.gamestarted = false;
         this.players = new Map(); //key == playername ,
-        this.spectators = [];
+        this.spectators = new Map();
         this.clientDB = clientDB;
         this.roomname = roomname;
         this.password = password;
@@ -136,7 +136,8 @@ class Room {
             doors[k] = undefined;//.delete(k);
         });
         this.doors = doors;
-        this.spectators.push(player);
+        this.spectators.set(player.playername,player);
+        //this.spectators.push(player);
         player.place = null;
         this.players.delete(player.playername);
         this.getPlayers((playersArray) => {
@@ -214,18 +215,22 @@ class Room {
         this.log(endText);
         if (win) endText = "Нечто победил";
         if (loose) endText = "Нечто проиграл";
+        this.log(endText);
         this.players.forEach((v, k) => {
             v.send({ messagetype: 'gamelog', gamelog: this.gamelog });
         });
         this.spectators.forEach((v) => {
             v.send({ messagetype: 'gamelog', gamelog: this.gamelog });
         });
-        this.playersArray.forEach(v => { v.stopPlay(); v.socket.close(1001, endText); });
+        this.playersArray.forEach(v => { 
+            v.stopPlay(); 
+           // v.socket.close(1001, endText);
+         });
 
 
         this.gamestarted = false;
         this.players = new Map(); //key == playername ,
-        this.spectators = [];
+        this.spectators = new Map();
 
         this.deckcards = [];
         this.dropcards = [];
@@ -653,6 +658,7 @@ class Room {
     doChat(socket, data) {
         //console.log(data);
         let player = this.players.get(data.playername);
+        if(player==undefined)player = this.spectators.get(data.playername);
         if (player == undefined) { socket.close(1001, 'Player not found'); return; }
         //if (data.action == undefined) return;
         //if (player.isDead == true) { socket.close(1001, 'Player is dead'); return; }

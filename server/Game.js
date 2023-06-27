@@ -72,7 +72,11 @@ class Game {
 
     doPlayer(room, data, socket) {
 
-
+        if (data.messagetype == 'chatmessage') {
+            //room.addChatMessage(sqlplayer,data.message);
+            room.doChat(socket,  data);
+            return;
+        }
 
         room.findPlayer(data.playername, (sqlplayerdata) => {
 
@@ -95,11 +99,7 @@ class Game {
             }
 
 
-            if (data.messagetype == 'chatmessage') {
-                //room.addChatMessage(sqlplayer,data.message);
-                room.doChat(socket,  data);
-                return;
-            }
+
 
             if (data.messagetype == 'playeraction') {
                 room.doAction(socket,  data);
