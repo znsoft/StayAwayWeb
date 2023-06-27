@@ -280,6 +280,7 @@ class Room {
             let lastThings = a.filter(v => v.thing == true);
             last_thing = lastThings[Math.round(Math.random() * (lastThings.length - 1))];
 
+            console.log("lastthing "+last_thing);
             this.gamestarted = true;
 
             a.forEach((v, i) => {

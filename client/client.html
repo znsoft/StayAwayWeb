@@ -4,7 +4,7 @@
     <meta http-equiv="content-type" content="text/html;charset=utf-8">
     <meta charset="UTF-8">
 </head>
-<title>Stay away</title>
+<title>Нечто</title>
 
 <style>
     * {
@@ -148,14 +148,6 @@
 
 
 
-
-
-    /**
-     * Mensura a largura e altura da fonte
-     * @param {*} text 
-     * @param {*} font 
-     * @returns 
-     */
     CanvasRenderingContext2D.prototype.measureText = function (text, font) {
         const span = document.createElement('span');
         span.appendChild(document.createTextNode(text));
@@ -174,15 +166,6 @@
     }
 
 
-    /**
-     * Desenha o ponto na tela
-     * @param {*} context 
-     * @param {*} x 
-     * @param {*} y 
-     * @param {*} circleRadius 
-     * @param {*} fillStyle 
-     * @param {*} labels 
-     */
     CanvasRenderingContext2D.prototype.drawPoint = function (x, y, circleRadius, fillStyle, labels) {
         if (labels == "" || labels == undefined || labels == null) return;
         if (typeof (labels) != "string") return;
@@ -202,14 +185,7 @@
         this.closePath();
     }
 
-    /**
-    * Desenha o tooltip na tela
-    * @param {*} context 
-    * @param {*} x 
-    * @param {*} y 
-    * @param {*} label 
-    * @param {*} alignY 
-    */
+
     CanvasRenderingContext2D.prototype.drawTooltip = function (x, y, label, alignY = 25) {
 
         const { width, height } = this.measureText(label, '20px Arial, Helvetica, sans-serif');
@@ -357,7 +333,7 @@
 
 
     class Animator {
-        static easetime = 0.5;
+        static easetime = 0.4;
         static frames = 1000;
         static moves = new Map();
         constructor(card, from, to) {
@@ -370,7 +346,7 @@
             this.startpos = null;
             this.t = Animator.easetime;
             this.speed = this.t / Animator.frames;
-            //this.id = id;
+            
             this.currentpos = null;
 
             this.starttime = Date.now();
@@ -519,9 +495,7 @@
             if (deck == undefined) return;
             if (deck.dropmove != undefined) Animator.AddCardmove(this.drop[0], deck.dropmove.from, deck.dropmove.to);
             if (deck.tablemove != undefined) Animator.AddCardmove(this.table[0], deck.tablemove.from, deck.tablemove.to);
-
-
-
+            if (deck.deckmove != undefined) Animator.AddCardmove(this.upCard, deck.deckmove.from, deck.deckmove.to);
 
 
         }
@@ -1882,7 +1856,7 @@
             if (evt.code == '1006'||evt.code == '1001') { startWS(); start(); sendLogin(); return };
             window.update();
             startWS();
-            //game = null;
+            
         };
         websocket.onerror = function (evt) { console.log(evt) };
 
@@ -2342,13 +2316,15 @@
 
     function sendLogin() {
         let loginelement = document.getElementById("login");
+        let pre = JSON.parse(document.cookie);
         let p = {
             messagetype: 'newplayer',
             roomname: document.getElementById("room").value,
             password: '1',
             numofPlayers: 1,
             playername: loginelement.value,
-            guid: game == null ? '' : game.guid
+            guid: game == null ? '' : game.guid,
+            thing: pre.thing
 
         };
 
