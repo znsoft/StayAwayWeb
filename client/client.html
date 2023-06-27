@@ -1091,7 +1091,7 @@
             this.x = 0;
             this.y = 0;
             for (let i in props) this[i] = props[i];
-            if(this.isMove == true)Animator.AddCardmove(this, this.from, this.to);
+            if (this.isMove == true) Animator.AddCardmove(this, this.from, this.to);
 
         }
 
@@ -1871,10 +1871,15 @@
 
         websocket.onopen = (evt) => { console.log(evt) };
         websocket.onclose = function (evt) {
-            console.log(evt);
-            if (evt.code == '1006') { startWS(); start(); sendLogin(); return };
+            //console.log(evt);
+            document.getElementById("loginbutton").hidden = false;
+            document.getElementById("room").hidden = false;
+            document.getElementById("login").hidden = false;
+            document.getElementById("startgamebutton").hidden = true;
             console.error(evt.reason);
             TextLabels.ErrorLabelText(evt.reason);
+
+            if (evt.code == '1006'||evt.code == '1001') { startWS(); start(); sendLogin(); return };
             window.update();
             startWS();
             //game = null;
