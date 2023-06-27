@@ -98,7 +98,7 @@ class Player {
 
         if (!this.isonline()) {
 
-            if((Date.now()-this.lastseen)>5*60*1000){this.room.killPlayer(this)};
+
 
             return;
         }

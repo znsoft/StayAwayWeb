@@ -116,7 +116,8 @@ class Room {
 
 
     killPlayer(player) {
-
+        
+        //addChatMessage(player, "")
         let doors = [];
         this.doors.forEach((v, k) => {
             if(v==undefined)return; //пустые двероместа не трогаем ) 
@@ -472,6 +473,15 @@ class Room {
         });
 
         this.players.forEach((v, k) => {
+            if (!v.isonline()) {
+
+                if((Date.now()-v.lastseen)>5*60*1000){
+                    this.killPlayer(v);this.isDead = true;
+                    this.log(v+" выбывает по таймауту/отвалился инет");
+                };
+    
+                return;
+            }
             v.send({ messagetype: 'gamelog', gamelog: this.gamelog });
             v.send({ messagetype: 'chat', chat: this.chat });
         });
