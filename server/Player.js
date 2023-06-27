@@ -73,6 +73,7 @@ class Player {
     }
 
     send(data) {
+        //console.log(data);
         let packet = JSON.stringify(data);
         this.socket.send(packet, { binary: false });
     }
@@ -961,7 +962,7 @@ class Player {
 
         this.lastseen = Date.now;
         this.needupdate = false;
-
+        //console.log()
         this.send({ messagetype: 'playerlist', playerlist: exchange, deck: deckData, nextplayer: nextplayer, currentplayer: currentplayer, opponent: opponent });
         //this.send({ messagetype: 'gamelog', gamelog: this.room.gamelog });
     }

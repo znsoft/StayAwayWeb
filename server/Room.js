@@ -52,7 +52,7 @@ class Room {
         if (Math.abs(p1.place - p2.place) == (this.players.size - 1)) k = 0;
         //if(k==this.players.size)k=0;
         //this.moves.push({card:v.card.num, moveto:{type: "door",place:k}, movefrom:{type:"player",place:p1.place}});
-        v.MoveFromTo({type:"player",place:p1}, {type: "door",place:k} );
+        card.MoveFromTo({type:"player",place:p1}, {type: "door",place:k} );
         this.doors[k] = card;
     }
 
@@ -421,7 +421,7 @@ class Room {
     giveOneCardfromDeckToPlayer(player) {
         if (this.deckcards.length < 1) this.dropToDeckWithShuffle();
         let card = this.deckcards.pop();
-        card.MoveFromTo({type:"deck"},{type:"player",player:player});
+        card.MoveFromTo({type:"deck"},{type:"player",player:player,place:4});
         player.cards.push(card);
         player.cards.forEach((v, i) => { v.place = i });
 
@@ -563,8 +563,6 @@ class Room {
 
     restorePlayer(socket, playerdata) {
         let ip = socket._socket.remoteAddress;
-
-
         let player = this.players.get(playerdata.playername);//new Player(this.clientDB, socket, this.roomname, playerdata.playername, playerdata.playername, this, this.gamenum, playerdata.quarantineCount, playerdata.Infected);
         if (this.gamestarted == false && playerdata.thing == true) player.thing = true;
         player.socket = socket;
@@ -598,6 +596,7 @@ class Room {
         if (this.deckcards.length == 0) this.dropToDeckWithShuffle();
         if (this.deckcards.length == 0) return;
         let card = this.deckcards[this.deckcards.length - 1];
+        let deckmove = card.GetMoveOut();
         let lastdrop = this.dropcards[this.dropcards.length - 1];
         let dropmove = {};
         let drop = this.dropcards.map((v) => { 
@@ -617,12 +616,12 @@ class Room {
             doors.push(k);
         });
 
-        //        Array.from(this.doors, (v,k) => (k));
+        //Array.from(this.doors, (v,k) => (k));doorsmove:doorsmove, //error
         let deck = {
             table: table, drop: drop, deckCount: this.deckcards.length, dropCount: this.dropcards.length,
             card: card.card.isPanic ? Card.CardsByPlayers.UnknownPanic.num : Card.CardsByPlayers.UnknownAction.num,
             isGameStarted: true, direction: this.direction, currentPlayer: this.currentplayer.place, doors: doors,
-            dropmove:dropmove, tablemove:tablemove, doorsmove:doorsmove
+            dropmove:dropmove, tablemove:tablemove,  deckmove:deckmove
 
         };
         callback(deck);
