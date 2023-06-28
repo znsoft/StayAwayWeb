@@ -34,7 +34,7 @@ const game = new Game(clientdb)
 const wsServer = new Server({ server });
 
 wsServer.on('connection', (wsclient) => {
-    console.log(wsclient._socket.remoteAddress);
+   
 
     wsclient.mysend = function (message) {
 
@@ -49,11 +49,14 @@ wsServer.on('connection', (wsclient) => {
         } catch (e) { console.log(e)}
     }
     wsclient.on('close', () => {
-        console.log('close');
+        //console.log('close');
     });
     
     wsclient.on('message', function (data, isBinary) {
-        game.messagePlayer(wsclient, JSON.parse(data));
+        try {
+            console.log(wsclient._socket.remoteAddress);
+            game.messagePlayer(wsclient, JSON.parse(data));
+        } catch (e) { console.log(e) }
     });
 
 });
