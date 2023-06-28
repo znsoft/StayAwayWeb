@@ -156,6 +156,7 @@ class Room {
 
     getNextPlayerFor(player) {
         let l = this.players.size;
+        if (player == null) return undefined;
         let place = player.place;
         let nextplace = (place + 1) % l;
         if (this.direction != 0) nextplace = place < 1 ? (l - 1) : (place - 1);
