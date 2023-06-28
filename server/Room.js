@@ -566,7 +566,7 @@ class Room {
 
     addPlayer(socket, playerdata) {
         let ip = socket._socket.remoteAddress;
-        if (playerdata.playername.trim() == "") { socket.close(1001, 'Player error'); return; }
+        if (playerdata.playername.trim() == "") { socket.close(1011, 'Player error'); return; }
         let wasThing = playerdata.thing;
         let player = new Player(this.clientDB, socket, this.roomname, playerdata.playername, playerdata.playername, this, this.gamenum, 0);
         if (this.gamestarted == false && playerdata.thing == true) player.thing = true;
@@ -579,7 +579,7 @@ class Room {
 
     restorePlayer(socket, playerdata) {
         let ip = socket._socket.remoteAddress;
-        if (playerdata.playername.trim() == "") { socket.close(1001, 'Player error'); return; }
+        if (playerdata.playername.trim() == "") { socket.close(1011, 'Player error'); return; }
 
         let player = this.players.get(playerdata.playername);//new Player(this.clientDB, socket, this.roomname, playerdata.playername, playerdata.playername, this, this.gamenum, playerdata.quarantineCount, playerdata.Infected);
         if (this.gamestarted == false && playerdata.thing == true) player.thing = true;
