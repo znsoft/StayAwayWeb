@@ -54,7 +54,7 @@ wsServer.on('connection', (wsclient) => {
     
     wsclient.on('message', function (data, isBinary) {
         try {
-            console.log(wsclient._socket.remoteAddress);
+            //console.log(wsclient._socket.remoteAddress);
             game.messagePlayer(wsclient, JSON.parse(data));
         } catch (e) { console.log(e) }
     });
