@@ -43,8 +43,10 @@ wsServer.on('connection', (wsclient) => {
         }
     }
     wsclient.senddata = function (data) {
-        let message = JSON.stringify(data).toString();
-        wsclient.mysend(message);
+        try {
+            let message = JSON.stringify(data).toString();
+            wsclient.mysend(message);
+        } catch (e) { console.log(e)}
     }
     wsclient.on('close', () => {
         console.log('close');
