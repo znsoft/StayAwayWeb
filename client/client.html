@@ -268,6 +268,7 @@
     }
 
     class Button {
+        //static height = 
         constructor(id, text, x, y, w, h, callback, p) {
             this.id = id;
             this.text = text;
@@ -794,8 +795,8 @@
             let y = 250;
             c.forEach((v) => {
                 if (v.hasOwnProperty("Button")) {
-                    new Button(v.Button.Text, v.Button.Text, x, y, v.Button.Text.length * 10, 20, v.Button.action, z);
-                    x += v.Button.Text.length * 10 + 5;
+                    new Button(v.Button.Text, v.Button.Text, x, y, v.Button.Text.length * 15, 30, v.Button.action, z);
+                    x += v.Button.Text.length * 15 + 5;
                 }
             });
 
