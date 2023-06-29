@@ -908,10 +908,12 @@
             return [Actions.Drop, Actions.SawAllCards]
         },
         ActionBurnFire: (me) => {
-            if (me.QuarantineCount > 0) return Actions.Drop;
+            if (game.selectedOpponent == null) return Actions.Drop;
+            if (me.QuarantineCount > 0 ) return Actions.Drop;
             return [Actions.Drop, Actions.Burn]
         },
         ActionWhiski: (me) => {
+
             if (me.QuarantineCount > 0) return Actions.Drop;
             return [Actions.Drop, Actions.ShowAllCards]
         },
