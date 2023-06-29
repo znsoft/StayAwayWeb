@@ -173,9 +173,9 @@ class Game {
         room.findPlayer(data.playername, (sqlplayerdata) => {
             if (sqlplayerdata.length > 0) {
                 let sqlplayer = sqlplayerdata[0];
-                if (sqlplayer.cookieguid != data.guid) {
+                if (sqlplayer.cookieguid != data.guid && sqlplayer.isonline()) {
                     // only for test  testing
-                    //socket.close(1001, 'This player is already in room'); return;
+                    socket.close(1001, 'Игрок с этим ником уже в игре'); return;
                 }
                 room.restorePlayer(socket, data);
                 sqlplayer.needupdate = true;
