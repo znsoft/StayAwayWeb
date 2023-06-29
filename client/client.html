@@ -126,7 +126,7 @@
             onclick="console.log('click')" readonly="true"></textarea><br>
         <textarea id="chat" style="opacity: 0.74; transition: opacity 1s;" cols="35" rows="15"
             onclick="console.log('click')" readonly="true"></textarea><br>
-        <input id="chatmessage" width="40"></input><button id="chatbutton" onclick="sendChat()">Отправить</button>
+        <input id="chatmessage" width="40" onchange="sendChat()" ></input><button id="chatbutton" onclick="sendChat()">Отправить</button>
     </div>
     <canvas id="canvas" width="2000" height="2000" onresize="resizeCanvas()">
         Please update your browser<br> in order
