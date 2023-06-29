@@ -175,7 +175,7 @@ class Game {
                 let sqlplayer = sqlplayerdata[0];
                 if (sqlplayer.cookieguid != data.guid && sqlplayer.isonline()) {
                     // only for test  testing
-                    socket.close(1001, 'Игрок с этим ником уже в игре'); return;
+                    socket.close(1001, 'пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ'); return;
                 }
                 room.restorePlayer(socket, data);
                 sqlplayer.needupdate = true;
