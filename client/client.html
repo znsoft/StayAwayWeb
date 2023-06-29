@@ -635,8 +635,8 @@
 
 
         static ErrorLabelText(text) {
-
-            new TextLabels(TextLabels.labels.size, text);//, 0, TextLabels.lastY);
+            TextLabels.lastY = game.height/2 +100;
+            new TextLabels(TextLabels.labels.size, text, game.width/2+100);//, 0, TextLabels.lastY);
 
 
         }
@@ -908,7 +908,7 @@
             return [Actions.Drop, Actions.SawAllCards]
         },
         ActionBurnFire: (me) => {
-            if (game.selectedOpponent == null) return Actions.Drop;
+            //if (game.selectedOpponent == null) return Actions.Drop;
             if (me.QuarantineCount > 0 ) return Actions.Drop;
             return [Actions.Drop, Actions.Burn]
         },

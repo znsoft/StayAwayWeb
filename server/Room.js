@@ -476,7 +476,7 @@ class Room {
         this.players.forEach((v, k) => {
             if (!v.isonline()) {
 
-                if((Date.now()-v.lastseen)>5*60*1000){
+                if((Date.now()-v.lastseen)>10*60*1000){
                     this.killPlayer(v);this.isDead = true;
                     this.log(v+" выбывает по таймауту/отвалился инет");
                 };

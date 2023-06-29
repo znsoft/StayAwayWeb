@@ -861,8 +861,7 @@ class Player {
         let cardindex = this.findcardindex(bymycardplace);
         let mycard = this.cards[cardindex]; //
         if (mycard.card != Card.CardsByPlayers.BurnFire) throw 'Error is not burn card';
-
-        //console.log(this.playername + " try Burn " + otherPlayerName);
+        if(nextplayer.thing==true&&this.Infected==true) throw 'Вы заражены и не можете сжечь нечто';
         this.tableCard(bymycardplace);
 
         this.state = Player.States.Nothing;
