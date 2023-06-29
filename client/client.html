@@ -26,7 +26,7 @@
         display: block;
         width: 100%;
         height: 100%;
-        touch-action: none;
+        touch-action: manipulation;
     }
 
     button,
@@ -77,38 +77,6 @@
         transition: opacity 1s;
     }
 
-    *[data-tooltip] {
-        position: relative;
-    }
-
-    *[data-tooltip]::after {
-        content: attr(data-tooltip);
-
-        position: absolute;
-        top: +20px;
-        right: -100px;
-        width: 250px;
-
-        pointer-events: none;
-        opacity: 0;
-        -webkit-transition: opacity .15s ease-in-out;
-        -moz-transition: opacity .15s ease-in-out;
-        -ms-transition: opacity .15s ease-in-out;
-        -o-transition: opacity .15s ease-in-out;
-        transition: opacity .15s ease-in-out;
-
-        display: block;
-        font-size: 12px;
-        line-height: 16px;
-        background: #fefdcd;
-        padding: 2px 2px;
-        border: 1px solid #eb9c09;
-        box-shadow: 2px 4px 5px rgba(0, 0, 0, 0.4);
-    }
-
-    *[data-tooltip]:hover::after {
-        opacity: 1;
-    }
 </style>
 
 <body>
@@ -128,7 +96,7 @@
             onclick="console.log('click')" readonly="true"></textarea><br>
         <input id="chatmessage" width="40" onchange="sendChat()" ></input><button id="chatbutton" onclick="sendChat()">Отправить</button>
     </div>
-    <canvas id="canvas" width="2000" height="2000" onresize="resizeCanvas()">
+    <canvas id="canvas" width="2000" height="2000">
         Please update your browser<br> in order
         to
         view this page.</canvas>
@@ -2365,7 +2333,7 @@
     }
 
 
-    window.addEventListener("resize", resizeCanvas);
+    //window.addEventListener("resize", resizeCanvas);
 
     function resizeCanvas() {
         canvas = document.getElementById("canvas");
