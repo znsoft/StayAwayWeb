@@ -86,6 +86,10 @@ class Game {
 
             let sqlplayer = sqlplayerdata[0];
 
+            if (data.messagetype == 'logoutgame') {
+                room.logoutgame(sqlplayer);
+                return;
+            }
 
             if (data.messagetype == 'startgame') {
                 room.startgame(sqlplayer);

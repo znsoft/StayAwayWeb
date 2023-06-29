@@ -118,10 +118,15 @@
         Комната:<input id="room" value="1" ></input>
         Ваше имя:<input id="login"></input>
         <button id="loginbutton" onclick="sendLogin()">Войти</button>
+        
         <button id="startgamebutton" hidden="true" onclick="startGame()"
             data-tooltip="Подождите пока подключатся все игроки">Начать игру</button>
 
+
+
     </div>
+    <button id="logoutbutton" onclick="LogoutGame()"
+        data-tooltip="Выйти из игры">Выйти из игры</button>
     <div style="opacity: 0.74; position: absolute; transition: opacity 1s;">
         <textarea id="gamelog" style="opacity: 0.74; transition: opacity 1s;" cols="35" rows="15"
             onclick="console.log('click')" readonly="true"></textarea><br>
@@ -2311,6 +2316,7 @@
         let q = document.getElementById("chatmessage");
         let p = JSON.parse(document.cookie);
         p.messagetype = 'chatmessage';
+        if(q.value.Trim()=="")return;
         p.message = q.value;
 
         websocket.senddata(p);
@@ -2341,7 +2347,15 @@
         document.getElementById("startgamebutton").hidden = false;
     }
 
+    function LogoutGame(){
 
+        let p = JSON.parse(document.cookie);
+            p.messagetype = 'logoutgame';
+
+            websocket.senddata(p);
+
+
+    }
 
     function startGame() {
 
