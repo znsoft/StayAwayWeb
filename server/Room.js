@@ -220,19 +220,22 @@ class Room {
         this.log(endText);
         this.players.forEach((v, k) => {
             v.send({ messagetype: 'gamelog', gamelog: this.gamelog });
+            v.send({ messagetype: 'gameend', wintext: endText });
         });
         this.spectators.forEach((v) => {
             v.send({ messagetype: 'gamelog', gamelog: this.gamelog });
+            v.send({ messagetype: 'gameend', wintext: endText });
         });
         this.playersArray.forEach(v => { 
-            v.stopPlay(); 
+            v.stopPlay();
+            this.spectators.set(v.playername, v);
            // v.socket.close(1001, endText);
          });
 
 
         this.gamestarted = false;
         this.players = new Map(); //key == playername ,
-        this.spectators = new Map();
+        //this.spectators = new Map();
 
         this.deckcards = [];
         this.dropcards = [];
@@ -572,6 +575,22 @@ class Room {
 
     }
 
+    addSpectator(socket, playerdata) {
+        let ip = socket._socket.remoteAddress;
+        if (playerdata.playername.trim() == "") { socket.close(1011, 'Player error'); return; }
+        let wasThing = playerdata.thing;
+        let player = new Player(this.clientDB, socket, this.roomname, playerdata.playername, playerdata.playername, this, this.gamenum, 0);
+        if (playerdata.thing == true) player.thing = true;
+        player.isDead = true;
+        this.spectators.set(playerdata.playername, player);
+
+        player.sendGUIDToPlayer();
+        //player.insertPlayer();
+        player.ip = ip;
+        //this.spectators.delete(player.playername);
+        return player.cookieguid;
+    }
+
 
     addPlayer(socket, playerdata) {
         let ip = socket._socket.remoteAddress;
@@ -583,6 +602,7 @@ class Room {
         player.sendGUIDToPlayer();
         player.insertPlayer();
         player.ip = ip;
+        this.spectators.delete(player.playername);
         return player.cookieguid;
     }
 
@@ -598,6 +618,7 @@ class Room {
         this.players.set(playerdata.playername, player);
         player.sendGUIDToPlayer();
         player.ip = ip;
+        this.spectators.delete(player.playername);
         return player.cookieguid;
     }
 

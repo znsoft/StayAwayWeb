@@ -179,13 +179,18 @@ class Game {
                 let sqlplayer = sqlplayerdata[0];
                 if (sqlplayer.cookieguid != data.guid && sqlplayer.isonline()) {
                     // only for test  testing
-                    socket.close(1001, '����� � ���� ����� ��� � ����'); return;
+                    socket.close(1001, 'Игрок с этим именем уже в игре'); return;
                 }
                 room.restorePlayer(socket, data);
                 sqlplayer.needupdate = true;
                 return;
             } else {
-                if (room.gamestarted == true) { socket.close(1001, 'Room full'); return; }
+                if (room.gamestarted == true) {
+                    room.addSpectator(socket, data);
+                   
+                    return;
+                    //socket.close(1001, 'Room full'); return;
+                }
                 room.addPlayer(socket, data);
                 return;
             }
