@@ -495,8 +495,8 @@ class Player {
 
 
     actionChangeDirection(data) {
-        if (this.phase != Player.Phases.Action) throw 'Error is not you Action now';
-        if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you Action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
         let cardindex = this.findcardindex(data.place);
         let mycard = this.cards[cardindex];
         if (mycard.card != Card.CardsByPlayers.ChangeDirection) throw 'Это не карта гляди по сторонам';
@@ -508,8 +508,8 @@ class Player {
     }
 
     actionSelectPerseverance(data) {
-        if (this.phase != Player.Phases.SecondAction) throw 'Error is not you Action now';
-        if (this.state != Player.States.PerseveranceSelectCard) throw 'Error is not you state now';
+        if (this.phase != Player.Phases.SecondAction) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you Action now');
+        if (this.state != Player.States.PerseveranceSelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
         let card = this.Perseverance[data.place];
         this.cards.push(card);
         this.cards.forEach((v, i) => { v.place = i });
@@ -527,8 +527,8 @@ class Player {
 
 
     actionStartPerseverance(data) {
-        if (this.phase != Player.Phases.Action) throw 'Error is not you Action now';
-        if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,  'Error is not you Action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
         let cardindex = this.findcardindex(data.bymycardplace);
         let mycard = this.cards[cardindex];
         if (mycard.card != Card.CardsByPlayers.Perseverance) throw 'Это не карта упорство';
@@ -540,8 +540,8 @@ class Player {
     }
 
     actionStartTemptation(data) {
-        if (this.phase != Player.Phases.Action) throw 'Error is not you Action now';
-        if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you Action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
         let cardindex = this.findcardindex(data.bymycardplace);
         let mycard = this.cards[cardindex];
         if (mycard.card != Card.CardsByPlayers.Temptation) throw 'Это не карта соблазн';
@@ -699,7 +699,7 @@ class Player {
     }
 
     IncomeExchange(nextplayer) {
-        if (nextplayer.cardForExchangeOut == null) throw 'Error no card for exchange';
+        if (nextplayer.cardForExchangeOut == null) this.room.CheckAndTryRestoreGameWhenError(this,   'Error no card for exchange');
 
         let othercardindex = nextplayer.findcardindex(nextplayer.cardForExchangeOut);
         let othercard = nextplayer.cards[othercardindex];
@@ -714,8 +714,8 @@ class Player {
     }
 
     actionAnalysis(data) {
-        if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
-        if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
         let nextplayer = this.room.getPlayerByPlayerName(data.otherPlayerName);
         if (this.room.getDoor(this, nextplayer) != undefined) throw 'Door is set between you';
         if (nextplayer.quarantineCount > 0) throw 'player on quarantine';
@@ -736,8 +736,8 @@ class Player {
     }
 
     actionShowAllCards(data) {
-        if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
-        if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
 
         let bymycardplace = data.place;
 
@@ -756,8 +756,8 @@ class Player {
 
 
     actionChangePlace(data) {
-        if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
-        if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
 
@@ -788,8 +788,8 @@ class Player {
     }
 
     actionChangePlaceNear(data) {
-        if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
-        if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
         if (this.room.getDoor(this, nextplayer) != undefined) throw 'Door is set between you';
@@ -849,8 +849,8 @@ class Player {
 
 
     actionBurnPlayer(data) {
-        if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
-        if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
         if (this.room.getDoor(this, nextplayer) != undefined) throw 'Door is set between you';
@@ -860,7 +860,7 @@ class Player {
 
         let cardindex = this.findcardindex(bymycardplace);
         let mycard = this.cards[cardindex]; //
-        if (mycard.card != Card.CardsByPlayers.BurnFire) throw 'Error is not burn card';
+        if (mycard.card != Card.CardsByPlayers.BurnFire) throw 'Это не огнемет';
         if(nextplayer.thing==true&&this.Infected==true) throw 'Вы заражены и не можете сжечь нечто';
         this.tableCard(bymycardplace);
 
@@ -898,8 +898,8 @@ class Player {
 
 
     actionShowMeCard(data) {
-        if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
-        if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
         if (this.room.getDoor(this, nextplayer) != undefined) throw 'Door is set between you';
@@ -923,8 +923,8 @@ class Player {
 
 
     actionDropCard(data) {
-        if (this.phase != Player.Phases.Action) throw 'Error is not you action now';
-        if (this.state != Player.States.SelectCard) throw 'Error is not you state now';
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
 
         let cardplace = data.place;
         this.dropOneCard(cardplace);

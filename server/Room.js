@@ -247,9 +247,41 @@ class Room {
         this.nextplayer = null;
         this.currentPlayer = null;
         this.additionalData = undefined;
-        this.gamelog = [];
+        //this.gamelog = [];
         this.isPanicChain = false;
 
+    }
+
+    CheckAndTryRestoreGameWhenError(player,errortext){
+
+        //1. если есть игрок с пятью картами на руках то сейчас его ход и всем остальным сбросмит статусы
+        let player5 = this.playersArray.filter((v)=>{v.cards.length==5});
+        if(player5.length==1){
+            let goodPlayer = player5[0];
+            this.playersArray.forEach((v)=>{v.stopPlay(); })
+            goodPlayer.state = Player.States.SelectCard;
+            goodPlayer.phase = Player.Phases.Action;
+            this.currentplayer = goodPlayer;
+            this.needUpdateForAll();
+            if(player==goodPlayer)return;
+        }
+
+        //2. если у игрока на руке уже есть три карты упорства , то этот игрок сейчас играет и ему нужно выбрать карту , остальные нет
+        let player3 = this.playersArray.filter((v)=>{v.Perseverance.length>1});
+        if(player3.length==1){
+            let goodPlayer = player3[0];
+            this.playersArray.forEach((v)=>{v.stopPlay(); })
+            goodPlayer.state = Player.States.PerseveranceSelectCard;
+            goodPlayer.phase = Player.Phases.SecondAction;
+            this.currentplayer = goodPlayer;
+            this.needUpdateForAll();
+            if(player==goodPlayer)return;
+        }
+
+        //3. если у игрока на руках паника то этот игрок ... хотя стоп он должен был отобраться по 5 картам еще 
+        //4. 
+        throw errortext;
+        
     }
 
     dropAllQuarantine() {
