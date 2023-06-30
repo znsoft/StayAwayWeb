@@ -2396,7 +2396,8 @@
 
 
     }
-
+    
+    window.onbeforeunload = ()=>LogoutGame();
     window.addEventListener("close",LogoutGame);
     window.addEventListener("resize", resizeCanvas);
 
