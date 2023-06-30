@@ -258,7 +258,7 @@ class Room {
         let player5 = this.playersArray.filter((v)=>{v.cards.length==5});
         if(player5.length==1){
             let goodPlayer = player5[0];
-            this.playersArray.forEach((v)=>{v.stopPlay(); })
+            this.playersArray.forEach((v)=>{v.stopPlay(); v.Perseverance = [];})
             goodPlayer.state = Player.States.SelectCard;
             goodPlayer.phase = Player.Phases.Action;
             this.currentplayer = goodPlayer;
