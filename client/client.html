@@ -2319,7 +2319,7 @@
         let q = document.getElementById("chatmessage");
         let p = JSON.parse(document.cookie);
         p.messagetype = 'chatmessage';
-        if(q.value.Trim()=="")return;
+        if(q.value.trim()=="")return;
         p.message = q.value;
 
         websocket.senddata(p);
