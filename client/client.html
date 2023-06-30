@@ -114,25 +114,28 @@
 
 <body>
 
-    <div id="logindiv">
-        Комната:<input id="room" value="1" ></input>
-        Ваше имя:<input id="login"></input>
-        <button id="loginbutton" onclick="sendLogin()">Войти</button>
-        
-        <button id="startgamebutton" hidden="true" onclick="startGame()"
-            data-tooltip="Подождите пока подключатся все игроки">Начать игру</button>
 
-
-
-    </div>
-    <button id="logoutbutton" onclick="LogoutGame()" hidden="true"
-        data-tooltip="Выйти из игры">Выйти из игры</button>
+    <button id="logoutbutton" onclick="LogoutGame()" hidden="true" data-tooltip="Выйти из игры">Выйти из игры</button>
     <div style="opacity: 0.74; position: absolute; transition: opacity 1s;">
         <textarea id="gamelog" style="opacity: 0.74; transition: opacity 1s;" cols="35" rows="15"
             onclick="console.log('click')" readonly="true"></textarea><br>
         <textarea id="chat" style="opacity: 0.74; transition: opacity 1s;" cols="35" rows="15"
             onclick="console.log('click')" readonly="true"></textarea><br>
-        <input id="chatmessage" width="40" onkeydown="chat(this)"></input><button id="chatbutton" onclick="sendChat()">Отправить</button>
+        <input id="chatmessage" width="40" onkeydown="chat(this)"></input><button id="chatbutton"
+            onclick="sendChat()">Отправить</button>
+        <div id="logindiv">
+            <br><br>
+            Комната:<input id="room" value="1"></input>
+            Ваше имя:<input id="login"></input>
+            <button id="loginbutton" onclick="sendLogin()">Войти</button>
+
+            <button id="startgamebutton" hidden="true" onclick="startGame()"
+                data-tooltip="Подождите пока подключатся все игроки">Начать игру</button>
+
+
+
+        </div>
+
     </div>
     <canvas id="canvas" width="2000" height="2000">
         Please update your browser<br> in order
@@ -356,11 +359,35 @@
             this.startpos = null;
             this.t = Animator.easetime;
             this.speed = this.t / Animator.frames;
-            
+
             this.currentpos = null;
 
             this.starttime = Date.now();
             Animator.moves.set(card, this);
+
+
+        }
+
+        static EndGame() {
+            let cards = game.Deck.cardsLeft;
+            for (let t = 0; t < cards; t++) {
+                let str = {
+                    isMove: true,
+                    from: {
+                        type: "deck",
+                    },
+                    to: {
+                        type: "player",
+                        player: 0,
+                        place: 0
+                    }
+
+                };
+
+                Animator.AddCardmove(new Card(CardType.Thing, "deck", 0, str), str.from, str.to);
+
+            }
+
 
 
         }
@@ -435,7 +462,7 @@
             this.endpos = endpos;
             this.delta = { x: endpos.x - startpos.x, y: endpos.y - startpos.y };
             this.len = Math.max(Math.abs(this.delta.x), Math.abs(this.delta.y));
-            if(this.len>1000)this.len = 1000;
+            if (this.len > 1000) this.len = 1000;
             this.starttime = Date.now();
             this.t = Animator.easetime * this.len;
             this.isMove = true;
@@ -644,8 +671,8 @@
 
 
         static ErrorLabelText(text) {
-            TextLabels.lastY = game.height/2 +100;
-            new TextLabels(TextLabels.labels.size, text, game.width/2+100);//, 0, TextLabels.lastY);
+            TextLabels.lastY = game.height / 2 + 100;
+            new TextLabels(TextLabels.labels.size, text, game.width / 2 + 100);//, 0, TextLabels.lastY);
 
 
         }
@@ -918,7 +945,7 @@
         },
         ActionBurnFire: (me) => {
             //if (game.selectedOpponent == null) return Actions.Drop;
-            if (me.QuarantineCount > 0 ) return Actions.Drop;
+            if (me.QuarantineCount > 0) return Actions.Drop;
             return [Actions.Drop, Actions.Burn]
         },
         ActionWhiski: (me) => {
@@ -1447,7 +1474,8 @@
 
         parseGameEnd(message) {
 
-            new TextLabels(message.wintext, message.wintext, this.width/2+100, this.height/2, "red",5,0);
+            new TextLabels(message.wintext, message.wintext, this.width / 2 + 100, this.height / 2, "red", 5, 0);
+            //Animator.EndGame();
         }
 
         parseChat(message) {
@@ -1871,10 +1899,10 @@
             console.error(evt.reason);
             TextLabels.ErrorLabelText(evt.reason);
 
-            if (evt.code == '1006'||evt.code == '1001') { startWS(); start(); sendLogin(); return };
+            if (evt.code == '1006' || evt.code == '1001') { startWS(); start(); sendLogin(); return };
             window.update();
             startWS();
-            
+
         };
         websocket.onerror = function (evt) { console.log(evt) };
 
@@ -2328,7 +2356,7 @@
         let q = document.getElementById("chatmessage");
         let p = JSON.parse(document.cookie);
         p.messagetype = 'chatmessage';
-        if(q.value.trim()=="")return;
+        if (q.value.trim() == "") return;
         p.message = q.value;
 
         websocket.senddata(p);
@@ -2349,7 +2377,7 @@
         try {
             let pre = JSON.parse(document.cookie);
             thing = pre.thing;
-            } catch { }
+        } catch { }
         let p = {
             messagetype: 'newplayer',
             roomname: document.getElementById("room").value,
@@ -2365,12 +2393,12 @@
         document.getElementById("startgamebutton").hidden = false;
     }
 
-    function LogoutGame(){
+    function LogoutGame() {
 
         let p = JSON.parse(document.cookie);
-            p.messagetype = 'logoutgame';
+        p.messagetype = 'logoutgame';
 
-            websocket.senddata(p);
+        websocket.senddata(p);
 
 
     }
@@ -2396,9 +2424,9 @@
 
 
     }
-    
-    window.onbeforeunload = ()=>LogoutGame();
-    window.addEventListener("close",LogoutGame);
+
+   // window.onbeforeunload = () => LogoutGame();
+    window.addEventListener("close", LogoutGame);
     window.addEventListener("resize", resizeCanvas);
 
     function resizeCanvas() {
