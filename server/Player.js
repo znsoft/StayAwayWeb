@@ -874,6 +874,7 @@ class Player {
         if (defend.length > 0) return;
         this.room.log(nextplayer + " выбывает");
         nextplayer.dead();
+        nextplayer.send({ messagetype: 'youburned', text: "вас сжег "+this })
         this.endTurn();
     }
 

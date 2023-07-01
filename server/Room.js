@@ -220,11 +220,11 @@ class Room {
         this.log(endText);
         this.players.forEach((v, k) => {
             v.send({ messagetype: 'gamelog', gamelog: this.gamelog });
-            v.send({ messagetype: 'gameend', wintext: endText });
+            v.send({ messagetype: 'gameend', text: endText });
         });
         this.spectators.forEach((v) => {
             v.send({ messagetype: 'gamelog', gamelog: this.gamelog });
-            v.send({ messagetype: 'gameend', wintext: endText });
+            v.send({ messagetype: 'gameend', text: endText });
         });
         this.playersArray.forEach(v => { 
             v.stopPlay();

@@ -1475,11 +1475,20 @@
 
         }
 
+        parseYouBurned(message){
+
+            //youburned
+            //this.isStarted = false;
+            
+            new TextLabels(message.text, message.text,  100, this.height / 3, "red", 5, 0);
+            //this.gameEnded = true;
+            //nimator.EndGame();
+        }
 
         parseGameEnd(message) {
             this.isStarted = false;
             
-            new TextLabels(message.wintext, message.wintext,  100, this.height / 2, "red", 5, 0);
+            new TextLabels(message.text, message.text,  100, this.height / 2, "red", 5, 0);
             this.gameEnded = true;
             //nimator.EndGame();
         }
@@ -1940,6 +1949,9 @@
                 case 'gameend':
                     game.parseGameEnd(message);
                     break;
+                case 'youburned':
+                    game.parseYouBurned(message);
+                break;
 
 
             }
