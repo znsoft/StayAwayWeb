@@ -370,21 +370,23 @@
 
         static EndGame() {
             let cards = game.Deck.cardsLeft;
-            for (let t = 0; t < cards; t++) {
+            for (let t = 0; t < Math.random()*88; t++) {
+
+
                 let str = {
                     isMove: true,
                     from: {
                         type: "deck",
                     },
                     to: {
-                        type: "player",
-                        player: 0,
-                        place: 0
+                        type: "coord",
+                        x: Math.random()*game.width,
+                        y: Math.random()*game.height
                     }
 
                 };
 
-                Animator.AddCardmove(new Card(CardType.Thing, "deck", 0, str), str.from, str.to);
+                Animator.AddCardmove(new Card(Cards.Thing, "deck", 0, str), str.from, str.to);
 
             }
 
@@ -445,8 +447,10 @@
                 case "door":
 
                     break;
+                case "coord":
+                    return fromto;
 
-
+                break;
 
             }
 
@@ -1445,7 +1449,7 @@
             this.height = 0;
             this.doors = new Map();
             //events
-
+            this.gameEnded = false;
 
 
         }
@@ -1473,9 +1477,11 @@
 
 
         parseGameEnd(message) {
-
-            new TextLabels(message.wintext, message.wintext, this.width / 2 + 100, this.height / 2, "red", 5, 0);
-            //Animator.EndGame();
+            this.isStarted = false;
+            
+            new TextLabels(message.wintext, message.wintext,  100, this.height / 2, "red", 5, 0);
+            this.gameEnded = true;
+            //nimator.EndGame();
         }
 
         parseChat(message) {
@@ -1662,7 +1668,7 @@
         }
 
         Draw(ctx, e, w, h) {
-
+            if(this.gameEnded == true) if(Math.random()>0.7) Animator.EndGame();
             this.width = w;
             this.height = h;
             ctx.clearRect(0, 0, w, h);
