@@ -1,4 +1,5 @@
-<html>
+<!doctype html>
+<meta charset=utf-8>
 
 <head>
     <meta http-equiv="content-type" content="text/html;charset=utf-8">
@@ -145,6 +146,349 @@
 
 </body>
 
+<script id="shaderStart" type="x-shader/x-fragment">
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+
+// glslsandbox uniforms
+uniform float time;
+uniform vec2 resolution;
+uniform vec2 mouse;
+// shadertoy globals
+float iTime = 0.0;
+vec3  iResolution = vec3(0.0);
+vec4 iMouse = vec4(0.0);
+
+// --------[ Original ShaderToy begins here ]---------- //
+float N21(vec2 p) {
+	p = fract(p * vec2(2.15, 8.3));
+    p += dot(p, p + 2.5);
+    return fract(p.x * p.y);
+}
+
+vec2 N22(vec2 p) {
+	float n = N21(p);
+    return vec2(n, N21(p + n));
+}
+
+vec2 getPos(vec2 id, vec2 offset) {
+	vec2 n = N22(id + offset);
+    float x = cos(iTime * n.x);
+    float y = sin(iTime * n.y);
+    return vec2(x, y) * 0.4 + offset;
+}
+
+float distanceToLine(vec2 p, vec2 a, vec2 b) {
+	vec2 pa = p - a;
+    vec2 ba = b - a;
+    float t = clamp(dot(pa, ba) / dot(ba, ba), 0., 1.);
+    return length(pa - t * ba);
+}
+
+float getLine(vec2 p, vec2 a, vec2 b) {
+	float distance = distanceToLine(p, a, b);
+    float dx = 15./iResolution.y;
+    return smoothstep(dx, 0., distance) * smoothstep(1.2, 0.3, length(a - b));
+}
+
+float layer(vec2 st) {
+    float m = 0.;
+    vec2 gv = fract(st) - 0.5;
+    vec2 id = floor(st);
+    // m = gv.x > 0.48 || gv.y > 0.48 ? 1. : 0.;
+    vec2 pointPos = getPos(id, vec2(0., 0.));
+    m += smoothstep(0.05, 0.03, length(gv - pointPos));
+    
+    float dx=15./iResolution.y;
+    // m += smoothstep(-dx,0., abs(gv.x)-.5);
+    // m += smoothstep(-dx,0., abs(gv.y)-.5);
+    // m += smoothstep(dx, 0., length(gv - pointPos)-0.03);
+    
+    vec2 p[9];
+    p[0] = getPos(id, vec2(-1., -1.));
+    p[1] = getPos(id, vec2(-1.,  0.));
+    p[2] = getPos(id, vec2(-1.,  1.));
+    p[3] = getPos(id, vec2( 0., -1.));
+    p[4] = getPos(id, vec2( 0.,  0.));
+    p[5] = getPos(id, vec2( 0.,  1.));
+    p[6] = getPos(id, vec2( 1., -1.));
+    p[7] = getPos(id, vec2( 1.,  0.));
+    p[8] = getPos(id, vec2( 1.,  1.));
+    
+    for (int j = 0; j <=8 ; j++) {
+    	m += getLine(gv, p[4], p[j]);
+        vec2 temp = (gv - p[j]) * 100.;
+        m += 1./dot(temp, temp) * (sin(10. * iTime + fract(p[j].x) * 20.) * 0.5 + 0.5);
+        
+    }
+    
+    m += getLine(gv, p[1], p[3]);
+    m += getLine(gv, p[1], p[5]);
+    m += getLine(gv, p[3], p[7]);
+    m += getLine(gv, p[5], p[7]);
+    
+    // m += smoothstep(0.05, 0.04, length(st - vec2(0., 0.)));
+    return m;
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
+    
+    float m = 0.;
+    
+    float theta = iTime * 0.1;
+    mat2 rot = mat2(cos(theta), -sin(theta), sin(theta), cos(theta));
+    vec2 gradient = uv;
+    uv = rot * uv+iMouse.xy/iResolution.y;
+    
+    for (float i = 0.; i < 1.0 ; i += 0.25) {
+    	float depth = fract(i + iTime * 0.1);
+        m += layer(uv * mix(10., 0.5, depth) + i * 20.) * smoothstep(0., 0.2, depth) * smoothstep(1., 0.8, depth);
+    }
+    
+    vec3 baseColor = sin(vec3(3.45, 6.56, 8.78) * iTime * 0.2) * 0.5 + 0.5;
+    
+    vec3 col = (m - gradient.y) * baseColor;
+    // Output to screen
+    fragColor = vec4(col, 1.0);
+}
+// --------[ Original ShaderToy ends here ]---------- //
+
+void main(void)
+{
+    iTime = time;
+    iResolution = vec3(resolution, 0.0);
+    iMouse = vec4(mouse,0.0,0.0);
+    mainImage(gl_FragColor, gl_FragCoord.xy);
+}
+
+
+</script>
+<script id="shaderFire" type="x-shader/x-fragment">
+    precision mediump float;
+
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+    
+    uniform float time;
+    uniform vec2 resolution;
+    
+    uniform vec4 iMouse;
+    #define iTime time
+    #define iResolution resolution
+
+vec3 mod289(vec3 x) {
+	return x - floor(x * (1.0 / 289.0)) * 289.0;
+}
+
+vec4 mod289(vec4 x) {
+	return x - floor(x * (1.0 / 289.0)) * 289.0;
+}
+
+vec4 permute(vec4 x) {
+		 return mod289(((x*34.0)+1.0)*x);
+}
+
+vec4 taylorInvSqrt(vec4 r)
+{
+	return 1.79284291400159 - 0.85373472095314 * r;
+}
+
+float snoise(vec3 v)
+	{ 
+	const vec2	C = vec2(1.0/6.0, 1.0/3.0) ;
+	const vec4	D = vec4(0.0, 0.5, 1.0, 2.0);
+
+// First corner
+	vec3 i	= floor(v + dot(v, C.yyy) );
+	vec3 x0 =	 v - i + dot(i, C.xxx) ;
+
+// Other corners
+	vec3 g = step(x0.yzx, x0.xyz);
+	vec3 l = 1.0 - g;
+	vec3 i1 = min( g.xyz, l.zxy );
+	vec3 i2 = max( g.xyz, l.zxy );
+
+	//	 x0 = x0 - 0.0 + 0.0 * C.xxx;
+	//	 x1 = x0 - i1	+ 1.0 * C.xxx;
+	//	 x2 = x0 - i2	+ 2.0 * C.xxx;
+	//	 x3 = x0 - 1.0 + 3.0 * C.xxx;
+	vec3 x1 = x0 - i1 + C.xxx;
+	vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y
+	vec3 x3 = x0 - D.yyy;			// -1.0+3.0*C.x = -0.5 = -D.y
+
+// Permutations
+	i = mod289(i); 
+	vec4 p = permute( permute( permute( 
+						 i.z + vec4(0.0, i1.z, i2.z, 1.0 ))
+					 + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) 
+					 + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
+
+// Gradients: 7x7 points over a square, mapped onto an octahedron.
+// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)
+	float n_ = 0.142857142857; // 1.0/7.0
+	vec3	ns = n_ * D.wyz - D.xzx;
+
+	vec4 j = p - 49.0 * floor(p * ns.z * ns.z);	//	mod(p,7*7)
+
+	vec4 x_ = floor(j * ns.z);
+	vec4 y_ = floor(j - 7.0 * x_ );		// mod(j,N)
+
+	vec4 x = x_ *ns.x + ns.yyyy;
+	vec4 y = y_ *ns.x + ns.yyyy;
+	vec4 h = 1.0 - abs(x) - abs(y);
+
+	vec4 b0 = vec4( x.xy, y.xy );
+	vec4 b1 = vec4( x.zw, y.zw );
+
+	//vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;
+	//vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;
+	vec4 s0 = floor(b0)*2.0 + 1.0;
+	vec4 s1 = floor(b1)*2.0 + 1.0;
+	vec4 sh = -step(h, vec4(0.0));
+
+	vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;
+	vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
+
+	vec3 p0 = vec3(a0.xy,h.x);
+	vec3 p1 = vec3(a0.zw,h.y);
+	vec3 p2 = vec3(a1.xy,h.z);
+	vec3 p3 = vec3(a1.zw,h.w);
+
+//Normalise gradients
+	//vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+	vec4 norm = inversesqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+	p0 *= norm.x;
+	p1 *= norm.y;
+	p2 *= norm.z;
+	p3 *= norm.w;
+
+// Mix final noise value
+	vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+	m = m * m;
+	return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), 
+																dot(p2,x2), dot(p3,x3) ) );
+	}
+
+//////////////////////////////////////////////////////////////
+
+// PRNG
+// From https://www.shadertoy.com/view/4djSRW
+float prng(in vec2 seed) {
+	seed = fract (seed * vec2 (5.3983, 5.4427));
+	seed += dot (seed.yx, seed.xy + vec2 (21.5351, 14.3137));
+	return fract (seed.x * seed.y * 95.4337);
+}
+
+//////////////////////////////////////////////////////////////
+
+float PI = 3.1415926535897932384626433832795;
+
+float noiseStack(vec3 pos,int octaves,float falloff){
+	float noise = snoise(vec3(pos));
+	float off = 1.0;
+	if (octaves>1) {
+		pos *= 2.0;
+		off *= falloff;
+		noise = (1.0-off)*noise + off*snoise(vec3(pos));
+	}
+	if (octaves>2) {
+		pos *= 2.0;
+		off *= falloff;
+		noise = (1.0-off)*noise + off*snoise(vec3(pos));
+	}
+	if (octaves>3) {
+		pos *= 2.0;
+		off *= falloff;
+		noise = (1.0-off)*noise + off*snoise(vec3(pos));
+	}
+	return (1.0+noise)/2.0;
+}
+
+vec2 noiseStackUV(vec3 pos,int octaves,float falloff,float diff){
+	float displaceA = noiseStack(pos,octaves,falloff);
+	float displaceB = noiseStack(pos+vec3(3984.293,423.21,5235.19),octaves,falloff);
+	return vec2(displaceA,displaceB);
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+		float time = iTime;
+		vec2 resolution = iResolution.xy;
+	vec2 drag = iMouse.xy;
+	vec2 offset = iMouse.xy;
+		//
+	float xpart = fragCoord.x/resolution.x;
+	float ypart = fragCoord.y/resolution.y;
+	//
+	float clip = 410.0;
+	float ypartClip = fragCoord.y/clip;
+	float ypartClippedFalloff = clamp(2.0-ypartClip,0.0,1.0);
+	float ypartClipped = min(ypartClip,1.0);
+	float ypartClippedn = 1.0-ypartClipped;
+	//
+	float xfuel = 1.0-abs(2.0*xpart-1.0);//pow(1.0-abs(2.0*xpart-1.0),0.5);
+	//
+	float timeSpeed = 0.5;
+	float realTime = timeSpeed*time;
+	//
+	vec2 coordScaled = 0.01*fragCoord - 0.02*vec2(offset.x,0.0);
+	vec3 position = vec3(coordScaled,0.0) + vec3(1223.0,6434.0,8425.0);
+	vec3 flow = vec3(4.1*(0.5-xpart)*pow(ypartClippedn,4.0),-2.0*xfuel*pow(ypartClippedn,64.0),0.0);
+	vec3 timing = realTime*vec3(0.0,-1.7,1.1) + flow;
+	//
+	vec3 displacePos = vec3(1.0,0.5,1.0)*2.4*position+realTime*vec3(0.01,-0.7,1.3);
+	vec3 displace3 = vec3(noiseStackUV(displacePos,2,0.4,0.1),0.0);
+	//
+	vec3 noiseCoord = (vec3(2.0,1.0,1.0)*position+timing+0.4*displace3)/1.0;
+	float noise = noiseStack(noiseCoord,3,0.4);
+	//
+	float flames = pow(ypartClipped,0.3*xfuel)*pow(noise,0.3*xfuel);
+	//
+	float f = ypartClippedFalloff*pow(1.0-flames*flames*flames,8.0);
+	float fff = f*f*f;
+	vec3 fire = 1.5*vec3(f, fff, fff*fff);
+	//
+	// smoke
+	float smokeNoise = 0.5+snoise(0.4*position+timing*vec3(1.0,1.0,0.2))/2.0;
+	vec3 smoke = vec3(0.3*pow(xfuel,3.0)*pow(ypart,2.0)*(smokeNoise+0.4*(1.0-noise)));
+	//
+	// sparks
+	float sparkGridSize = 30.0;
+	vec2 sparkCoord = fragCoord - vec2(2.0*offset.x,190.0*realTime);
+	sparkCoord -= 30.0*noiseStackUV(0.01*vec3(sparkCoord,30.0*time),1,0.4,0.1);
+	sparkCoord += 100.0*flow.xy;
+	if (mod(sparkCoord.y/sparkGridSize,2.0)<1.0) sparkCoord.x += 0.5*sparkGridSize;
+	vec2 sparkGridIndex = vec2(floor(sparkCoord/sparkGridSize));
+	float sparkRandom = prng(sparkGridIndex);
+	float sparkLife = min(10.0*(1.0-min((sparkGridIndex.y+(190.0*realTime/sparkGridSize))/(24.0-20.0*sparkRandom),1.0)),1.0);
+	vec3 sparks = vec3(0.0);
+	if (sparkLife>0.0) {
+		float sparkSize = xfuel*xfuel*sparkRandom*0.08;
+		float sparkRadians = 999.0*sparkRandom*2.0*PI + 2.0*time;
+		vec2 sparkCircular = vec2(sin(sparkRadians),cos(sparkRadians));
+		vec2 sparkOffset = (0.5-sparkSize)*sparkGridSize*sparkCircular;
+		vec2 sparkModulus = mod(sparkCoord+sparkOffset,sparkGridSize) - 0.5*vec2(sparkGridSize);
+		float sparkLength = length(sparkModulus);
+		float sparksGray = max(0.0, 1.0 - sparkLength/(sparkSize*sparkGridSize));
+		sparks = sparkLife*sparksGray*vec3(1.0,0.3,0.0);
+	}
+	//
+	fragColor = vec4(max(fire,sparks)+smoke,1.0);
+}
+
+
+
+    void main(void)
+    {
+        mainImage(gl_FragColor, gl_FragCoord.xy);
+    }
+
+  </script>
 <script>
 
 
@@ -279,6 +623,147 @@
         };
     }
 
+
+
+    class Shadertoy {
+
+        constructor(shader) {
+
+            this.a = document.createElement("canvas");
+            //this.a.hidden = false;
+            //this.d;
+            this.g = this.a.getContext('webgl');
+            // GUI: canvas
+            //this.a.style = 'width:100%;height:100vh;float:left';
+            this.shader = shader;
+            this.o = (new Date / 1e3);
+            // Canvas methods hashing:
+            // This loop creates tiny shortcuts for all the webgl context's methods/constants we need:
+            // createProgram => cP
+            // shaderSource => sS
+            // createShader => cS
+            // compileShader => ce
+            // attachShader => aS
+            // linkProgram => lo
+            // useProgram => ug
+            // bindBuffer => bf
+            // createBuffer => cB
+            // enableVertexAttribArray => eV
+            // vertexAttribPointer => vA
+            // bufferData => bD
+            // getUniformLocation => gf
+            // drawArrays => dr
+            // NO_ERROR => NO (value = 0)
+            // FRAGMENT_SHADER => FN (value: 35632)
+            // ELEMENT_ARRAY_BUFFER_BINDING => ET (value: 34965)
+            // We need to redefine the webgl context because adding the textarea in the DOM rewrote the canvas "a".
+            /*
+                for (i in this.g) {
+                    this.g[i[0] + i[6]] = this.g[i];
+                }
+                */
+            // we use only one uniofrom
+            this.g.u = this.g.uniform1f;
+            this.g.uv = this.g.uniform2f;
+            // Use the WebGL context's scope for all the following code
+            //with(this.g){
+            // Define a new program
+            // p=createProgram();
+            this.p = this.g.createProgram();
+
+            // Basic vertex shader
+            // shaderSource(s=createShader(VERTEX_SHADER),"attribute vec2 p;void main(){gl_Position=vec4(p,0,1);}");
+            let s = this.g.createShader(35633);
+            this.g.shaderSource(s, 'attribute vec2 p;void main(){gl_Position=vec4(p,1,1);}');
+
+            // Compile and attach it to the program
+            // compileShader(s);
+            this.g.compileShader(s);
+
+            // DEBUGS
+            if (!this.g.getShaderParameter(s, this.g.COMPILE_STATUS)) {
+                this.g.getShaderInfoLog(s).trim().split("\n").forEach(ss =>
+                    console.warn("[vertex shader] " + ss))
+                //throw new Error("Error while compiling shader")
+            };
+
+
+            //attachShader(p,s);
+            this.g.attachShader(this.p, s);
+
+            // Main program
+            // shaderSource(s=createShader(FRAGMENT_SHADER),'...');
+            let s1 = this.g.createShader(35632);
+            this.g.shaderSource(s1, this.shader);
+            //this.g.shaderSource(s1 ,'precision mediump float;uniform float t,a,x,y;void main(){vec3 f=vec3(gl_FragCoord.rg/640.-.5,1.);f.g*=a;float c=.5+x/500.,v=.5+y/500.;mat2 m=mat2(cos(c),sin(c),-sin(c),cos(c)),s=mat2(cos(v),sin(v),-sin(v),cos(v));f.rb*=m;f.rg*=s;vec3 r=vec3(1.,.5,.5);r+=vec3(t*2.,t,-2.);r.rb*=m;r.rg*=s;float g=.1,b=1.;vec3 i=vec3(0.);for(int l=0;l<20;l++){vec3 o=r+g*f*.5;o=abs(vec3(1.)-mod(o,vec3(2.)));float e,n=e=0.;for(int d=0;d<20;d++)o=abs(o)/dot(o,o)-.53,n+=abs(length(o)-e),e=length(o);if(l>6)b*=1.-max(0.,.3-n*n*.001);i+=b+vec3(g,g*g,g*g*g*g)*n*n*n*.0015*b;b*=.73;g+=.1;}i=mix(vec3(length(i)),i,.85);gl_FragColor=vec4(i*.01,1.);}');
+
+            // Compile and attach it to the program
+            // compileShader(s);
+            this.g.compileShader(s1);
+
+            // DEBUGS
+            if (!this.g.getShaderParameter(s1, this.g.COMPILE_STATUS)) {
+                this.g.getShaderInfoLog(s1).trim().split("\n").forEach(ss =>
+                    console.warn("[fragment shader] " + ss))
+                //throw new Error("Error while compiling shader")
+            };
+
+            // attachShader(p,s);
+            this.g.attachShader(this.p, s1);
+
+            // Link and start the program
+            //linkProgram(P);
+            this.g.linkProgram(this.p);
+
+            //useProgram(p);
+            this.g.useProgram(this.p);
+
+            // Define a big triangle the canvas, containing the viewport
+            // bindBuffer(g=ARRAY_BUFFER, createBuffer());
+            let g = 34962;
+            this.g.bindBuffer(g, this.g.createBuffer());
+
+            // enableVertexAttribArray(0);
+            this.g.enableVertexAttribArray(0);
+
+            // vertexAttribPointer(0, 2, BYTE, 0, 0, 0);
+            this.g.vertexAttribPointer(0, 2, 5120, 0, 0, 0);
+
+            // bufferData(g,new Int8Array([-3, 1, 1, -3, 1, 1]), STATIC_DRAW);
+            this.g.bufferData(g, new Int8Array([-3, 1, 1, -3, 1, 1]), 35044);
+            this.Draw();
+        }
+
+        Draw(e, w, h) {
+            e = e || window.event;
+            this.a.height = w;
+            this.a.width = h;
+            this.g.viewport(0, 0, w, h);
+            // Current playback time (in 1/200 seconds)
+            this.g.u(this.g.getUniformLocation(this.p, 't'), (new Date / 1e3) - this.o);
+            this.g.u(this.g.getUniformLocation(this.p, 'time'), (new Date / 1e3) - this.o);
+            this.g.uv(this.g.getUniformLocation(this.p, 'resolution'), w, h);
+            if(e!=undefined)this.g.uv(this.g.getUniformLocation(this.p, 'mouse'), e.clientX, e.clientY);
+
+            // Current sapect ration
+            this.g.u(this.g.getUniformLocation(this.p, 'a'), h / w);
+
+            // Mouse coordinates
+            //this.g.u(this.g.getUniformLocation(this.p,'x'), x);
+            //u(gf(p,'y'), y);
+
+            // Draw
+            // drawArrays(TRIANGLE_FAN,0,3);
+            this.g.drawArrays(6, 0, 3);
+
+            return this.a;
+        }
+
+
+
+    }
+
+
     class Button {
         //static height = 
         constructor(id, text, x, y, w, h, callback, p) {
@@ -370,7 +855,7 @@
 
         static EndGame() {
             let cards = game.Deck.cardsLeft;
-            for (let t = 0; t < Math.random()*88; t++) {
+            for (let t = 0; t < Math.random() * 88; t++) {
 
 
                 let str = {
@@ -380,8 +865,8 @@
                     },
                     to: {
                         type: "coord",
-                        x: Math.random()*game.width,
-                        y: Math.random()*game.height
+                        x: Math.random() * game.width,
+                        y: Math.random() * game.height
                     }
 
                 };
@@ -450,7 +935,7 @@
                 case "coord":
                     return fromto;
 
-                break;
+                    break;
 
             }
 
@@ -707,13 +1192,19 @@
             ctx.fillStyle = this.c;
             ctx.font = '16px serif';
             ctx.scale(this.s, this.s);
+            ctx.strokeStyle = 'white';
+            // this.fillStyle = "white";
 
             if (this.text != undefined)
                 if (this.isHint) {
                     ctx.drawPoint(this.x, this.y, 5, this.c, this.text);
                     //ctx.drawPoint(this.x, this.y, 5, this.c, [this.text.replace("\n","<br>")]);
                 } else
-                    for (var s of this.text.split("\n")) ctx.fillText(s, 0, l += 17);
+                    for (var s of this.text.split("\n")) {
+                        //ctx.strokeText(s, 0, l += 17);
+                        ctx.fillText(s, 0, l+=17);//+= 17);
+                    }
+
             //TextLabels.lastY = y;
             ctx.restore();
             //ctx.fillText(this.text);//, 3, this.text.length);
@@ -1420,6 +1911,7 @@
     };
 
 
+
     class Game {
 
 
@@ -1450,7 +1942,12 @@
             this.doors = new Map();
             //events
             this.gameEnded = false;
+            this.isBurn = false;
+            this.shader = null;
 
+
+            this.shader = null;//new Shadertoy(document.getElementById("shaderStart").innerText);
+            //this.isBurn = true;
 
         }
 
@@ -1475,20 +1972,22 @@
 
         }
 
-        parseYouBurned(message){
+        parseYouBurned(message) {
 
             //youburned
             //this.isStarted = false;
-            
-            new TextLabels(message.text, message.text,  100, this.height / 3, "red", 5, 0);
+
+            new TextLabels(message.text, message.text, 100, this.height / 3, "red", 5, 0);
             //this.gameEnded = true;
             //nimator.EndGame();
+            this.shader = new Shadertoy(document.getElementById("shaderFire").innerText);
+            this.isBurn = true;
         }
 
         parseGameEnd(message) {
             this.isStarted = false;
-            
-            new TextLabels(message.text, message.text,  100, this.height / 2, "red", 5, 0);
+
+            new TextLabels(message.text, message.text, 100, this.height / 2, "red", 5, 0);
             this.gameEnded = true;
             //nimator.EndGame();
         }
@@ -1670,6 +2169,11 @@
                     break;
 
             }
+            if (this.isStarted == false) {
+                stateText = "Войдите";
+                phaseText = "и дождавшись остальных играков нажмите (Начать игру)";
+            }
+
             new TextLabels("state", stateText + '\n' + phaseText, game.width / 2 - 200, game.height / 2 + 55, "#000", 2, 0);
             //new TextLabels("phase", phaseText, game.width/2-150, game.height/2+44, "#000", 2, 0);
 
@@ -1677,10 +2181,18 @@
         }
 
         Draw(ctx, e, w, h) {
-            if(this.gameEnded == true) if(Math.random()>0.7) Animator.EndGame();
+
+
+            if (this.gameEnded == true) if (Math.random() > 0.7) Animator.EndGame();
+
+
+
             this.width = w;
             this.height = h;
             ctx.clearRect(0, 0, w, h);
+
+
+
             ctx.save();
 
             ctx.save();
@@ -1804,23 +2316,8 @@
             ctx.save();
             Animator.DrawAll(ctx, this);
             ctx.restore();
-            /*
-                        this.exchange.forEach((a) => {
-                            //    currentplayer: p, nextplayer: v.exchange.nextplayer, card: findCardByNum(v.exchange.card)
-                            let n = this.findPlayerByNum(a.nextplayer);
-                            if (n == null) return;
-                            let p = a.currentplayer;
-                            ctx.beginPath();
-                            ctx.moveTo(p.x, p.y);
-                            ctx.lineTo(n.x, n.y);
-                            ctx.stroke();
-                            ctx.closePath();
-            
-            
-            
-                        });
-                        */
 
+            if (this.shader != null) ctx.drawImage(this.shader.Draw(e, 300, 300), 0, 0, w, h);
         }
 
     };
@@ -1939,6 +2436,7 @@
                     game.parsePlayerList(message);
                     document.getElementById("logindiv").hidden = game.isStarted;
                     console.log(evt.data);
+                    //game.shader = null;
                     break;
                 case 'gamelog':
                     game.parseGamelog(message);
@@ -1951,7 +2449,7 @@
                     break;
                 case 'youburned':
                     game.parseYouBurned(message);
-                break;
+                    break;
 
 
             }
@@ -1971,6 +2469,7 @@
 
 
     let game = new Game(123);
+    game.shader =   new Shadertoy(document.getElementById("shaderStart").innerText);
 
 
     window.addEventListener("mousemove", function (event) {
@@ -2443,7 +2942,7 @@
 
     }
 
-   // window.onbeforeunload = () => LogoutGame();
+    // window.onbeforeunload = () => LogoutGame();
     window.addEventListener("close", LogoutGame);
     window.addEventListener("resize", resizeCanvas);
 
