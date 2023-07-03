@@ -286,9 +286,9 @@
 
         load(fragmentUrl) {
 
-            if (typeof (window.localStorage) === "undefined") {
+           // if (typeof (window.localStorage) === "undefined") {
 
-                if (typeof (window.shaderlog[fragmentUrl]) === 'undefined') {
+              //  if (typeof (window.shaderlog[fragmentUrl]) === 'undefined') {
                     var xmlhttp = new XMLHttpRequest();
                     xmlhttp.open("GET", fragmentUrl, false);
                     xmlhttp.send();
@@ -296,11 +296,11 @@
                         window.shaderlog[fragmentUrl] = xmlhttp.responseText;
                         this.fragSrc = xmlhttp.responseText;
                     }
-                } else {
-                    this.fragSrc = window.shaderlog[fragmentUrl];
-                }
+             //   } else {
+               //     this.fragSrc = window.shaderlog[fragmentUrl];
+              // }
                 return;
-            }
+           // }
 
 
             if (window["localStorage"]["getItem"](fragmentUrl) === null || parseInt(window["localStorage"]["getItem"](fragmentUrl).split('\u0003')[1], 16) < window["Date"]["now"]()) {
@@ -325,7 +325,7 @@
         constructor(shader) {
 
             this.a = document.createElement("canvas");
-            //this.a.hidden = false;
+            this.alpha = 0.4;
             //this.d;
             this.g = this.a.getContext('webgl');
             // GUI: canvas
@@ -415,7 +415,7 @@
 
             // Current sapect ration
             this.g.u(this.g.getUniformLocation(this.p, 'a'), h / w);
-
+            this.g.u(this.g.getUniformLocation(this.p, 'alpha'), this.alpha);
             // Mouse coordinates
             //this.g.u(this.g.getUniformLocation(this.p,'x'), x);
             //u(gf(p,'y'), y);
@@ -425,6 +425,14 @@
             this.g.drawArrays(6, 0, 3);
 
             return this.a;
+        }
+
+        FadeOut(callback){
+            setInterval(()=>{
+                this.alpha = this.alpha-0.001;
+                if(this.alpha<=0)callback();
+            },10);
+            //setTimeout()
         }
 
 
@@ -1839,7 +1847,7 @@
             }
             if (this.isStarted == false) {
                 stateText = "Войдите";
-                phaseText = "и дождавшись остальных игроков нажмите (Начать игру)";
+                phaseText = "и дождавшись остальных игроков\n нажмите (Начать игру)";
             }
 
             new TextLabels("state", stateText + '\n' + phaseText, game.width / 2 - 200, game.height / 2 + 55, "#000", 2, 0);
@@ -2092,7 +2100,10 @@
             let message = JSON.parse(evt.data);
             switch (message.messagetype) {
                 case 'playerguid':
+                    let shader = game.shader;
                     game = new Game(message.guid);
+                    game.shader = shader;
+                    game.shader.FadeOut(()=>game.shader=null);
                     document.cookie = evt.data;
                     document.getElementById("loginbutton").hidden = true;
                     document.getElementById("room").hidden = true;

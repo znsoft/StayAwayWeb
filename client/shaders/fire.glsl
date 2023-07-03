@@ -5,6 +5,8 @@
     precision highp float;
     #endif
     
+	uniform float alpha;
+
     uniform float time;
     uniform vec2 resolution;
     
@@ -208,7 +210,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
 		sparks = sparkLife*sparksGray*vec3(1.0,0.3,0.0);
 	}
 	//
-	fragColor = vec4(max(fire,sparks)+smoke,0.5);
+	fragColor = vec4(max(fire,sparks)+smoke,alpha);
 }
 
 

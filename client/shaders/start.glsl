@@ -2,6 +2,7 @@
 precision mediump float;
 #endif
 
+uniform float alpha;
 
 // glslsandbox uniforms
 uniform float time;
@@ -102,9 +103,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     vec3 baseColor = sin(vec3(3.45, 6.56, 8.78) * iTime * 0.2) * 0.5 + 0.5;
     
-    vec3 col = (m - gradient.y) * baseColor;
+    vec3 col = (m - gradient.y) * baseColor*alpha ;
     // Output to screen
-    fragColor = vec4(col, 0.5);
+    fragColor = vec4( col, alpha);
 }
 // --------[ Original ShaderToy ends here ]---------- //
 
