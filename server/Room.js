@@ -322,7 +322,7 @@ class Room {
         this.numofplayers = this.players.size;//.length;  
         player.readyforstart = true;
         if (this.numofplayers < 4) return;
-
+        this.gamelog = [];
         this.avatars = [];
         for(let i=0;i<=Room.avatarscount;i++)this.avatars.push(i);
 
