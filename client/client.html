@@ -1059,7 +1059,7 @@
         inChange: { id: 1, Button: { Text: "Обмен", action: exchangecardin }, isInExchange: true },// OnSelectAction: exchangecard },
         SawOneCard: { id: 2, HiLightText: "Выбери карту игрока", MayMove: true, HiLightRLPlayers: true, selectNearPlayersCards: true, actionOnSelectSecondCard: ShowMeCard },
         SawAllCards: { id: 3, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: Analysis },
-        Burn: { id: 5, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: BurnPlayer },
+        Burn: { id: 5, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: BurnPlayer, Button: {Text: "Использовать", action: PrepareBurn}  },
         DefendFromFire: { id: 6, Button: { Text: "Шашлык", action: DefendFromFire } },
         exChange: { id: 7, Button: { Text: "Обмен", action: exchangecardin } },
         ShowAllCards: { id: 8, HiLightText: "Показать все карты", Button: { Text: "Использовать", action: showAllCards }, },
@@ -1085,6 +1085,7 @@
         PanicConfessionTime: { id: 28, HiLightText: "Время признаний", Button: { Text: "Показать карты всем", action: PanicConfessionTime } },
         PanicNoConfessionTime: { id: 29, Button: { Text: "Не показывать карты всем", action: PanicNoConfessionTime } },
         PanicStopConfessionTime: { id: 30, Button: { Text: "Остановить время признаний", action: PanicStopConfessionTime } },
+        Burn2: { id: 31, HiLightText: "Выбери игрока",  HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: BurnPlayer2 },
     };
 
     const Algoritms = {
@@ -1130,7 +1131,10 @@
             if (me.QuarantineCount > 0) return Actions.Drop;
             return [Actions.Drop, Actions.Temptation]
         },
-        ActionTemptation2: (me, card) => {
+        ActionBurn2: (me, card) => {
+            //if (game.selectedOpponent == null) return Actions.Nothing;
+            return [Actions.Burn2];
+        },        ActionTemptation2: (me, card) => {
             if (game.selectedOpponent == null) return Actions.Nothing;
             return card.GetExchangeArray(me, game.selectedOpponent);
         },
@@ -1228,7 +1232,7 @@
         Infect: new CardType("Infect", 1, "Заражение", "Получив эту карту от другого игрока вы становитесь зараженным \nи обязаны держать ее на руке до конца игры", "/infect.png", Algoritms.MayGiveInfect, Algoritms.MayGiveInfectIn, Algoritms.MayDropInfect, null),//заражение
         Suspicion: new CardType("Suspicion", 2, "Подозрение", "Посмотрите одну карту на руке соседнего игрока", "/suspiction.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionSuspicion, null),//подозрение
         Analysis: new CardType("Analysis", 3, "Анализ", "Посмотрите все карты на руке соседнего игрока", "/analysis.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionAnalysis, null),//анализ
-        BurnFire: new CardType("Burn", 4, "Огнемет", "Соседний игрок выбывает из игры", "/fire.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionBurnFire, null),//огнемет
+        BurnFire: new CardType("Burn", 4, "Огнемет", "Соседний игрок выбывает из игры", "/fire.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionBurnFire, Algoritms.ActionBurn2),//огнемет
         FireResist: new CardType("Defend\nfrom Fire", 5, "Никакого шашлыка", "Отмените эффект карты огнемет, если стали ее целью.\n возьмите 1 карту событие", "/nofire.png", Algoritms.SimpleExchange, Algoritms.FireResistance, Algoritms.OnlyDropAction, null),//шашлык
         Temptation: new CardType("Temptation", 6, "Соблазн", "Поменяйтесь одной картой с любым игроком, если он не на карантине.\n Ваш ход заканчивается", "/temptation.png", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.ActionTemptation, Algoritms.ActionTemptation2),//соблазн
         Perseverance: new CardType("Perseverance", 7, "Упорство", "Возьмите 3 карты событий, оставтье на руке одну.\n Затем сыграйте или сбросьте одну карту", "/perseverance.jpg", Algoritms.SimpleExchange, Algoritms.SimpleAnswer, Algoritms.Perseverance, Algoritms.Perseverance2),//Упорство
@@ -1845,6 +1849,9 @@
 
 
                     break;
+                    case States.SelectPlayer:
+                        stateText = "Выбери игрока";
+                    break;
 
             }
             if (this.isStarted == false) {
@@ -2206,6 +2213,17 @@
         websocket.senddata(p);
 
     }
+    
+    function BurnPlayer2(player){
+
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "BurnPlayer2";
+        p.otherPlayerName = player.name;
+        websocket.senddata(p);
+
+    }
+
 
     function BurnPlayer(player) {
 
@@ -2405,6 +2423,16 @@
         p.action = "inExchangeCard";
         p.place = place.cardplace;
         p.opponent = game.opponent.playername;
+        websocket.senddata(p);
+    }
+
+    function PrepareBurn(pl){
+        let p = JSON.parse(document.cookie);
+        p.messagetype = 'playeraction';
+        p.action = "PrepareBurn";
+        p.place = pl.cardplace;//
+        p.bymycardplace = game.me.selectedCard.cardplace;
+        
         websocket.senddata(p);
     }
 

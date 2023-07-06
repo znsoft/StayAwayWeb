@@ -30,7 +30,7 @@ class Player {
         this.opponent = null;
         this.Perseverance = [];
         this.Quarantine = null;
-        
+
 
 
     }
@@ -180,7 +180,7 @@ class Player {
     tableCard(place) {
         let index = this.findcardindex(place);
         let card = this.cards[index];
-        card.MoveFromTo({type:"player",player:this,place:place},{type:"table"});
+        card.MoveFromTo({ type: "player", player: this, place: place }, { type: "table" });
         this.room.tablecards.push(card);
         //console.log(place + ' ' + this.cards.length)
         this.cards.splice(index, 1);
@@ -191,7 +191,7 @@ class Player {
     dropOneCard(place) {
         let index = this.findcardindex(place);
         let card = this.cards[index];
-        card.MoveFromTo({type:"player",player:this,place:place},{type:"drop"});
+        card.MoveFromTo({ type: "player", player: this, place: place }, { type: "drop" });
         this.room.dropcards.push(this.cards[index]);
 
         this.cards.splice(index, 1);
@@ -333,7 +333,7 @@ class Player {
 
         this.stopPlay();
         let nextplayer = this.room.nextplayer;
-        if(nextplayer == this.room.PanicConfessionTime){this.endPanicConfessionTime();return;}
+        if (nextplayer == this.room.PanicConfessionTime) { this.endPanicConfessionTime(); return; }
         nextplayer.state = Player.States.PanicConfessionTime;
         nextplayer.phase = Player.Phases.SecondAction;
         this.room.currentplayer = nextplayer;
@@ -451,8 +451,8 @@ class Player {
         let mycard = this.cards[cardindex];
         //if (mycard.card == Card.CardsByPlayers.Thing) throw 'Эту карту нельзя скинуть';
         this.cards.splice(cardindex, 1);
-        this.cards.forEach(v =>{ 
-            v.MoveFromTo({type:"player",player:this},{type:"drop"});
+        this.cards.forEach(v => {
+            v.MoveFromTo({ type: "player", player: this }, { type: "drop" });
             this.room.dropcards.push(v);
         });
         this.cards = [];
@@ -486,7 +486,7 @@ class Player {
         this.cards.splice(cardindex, 1);
         this.room.giveOneActionCardfromDeckToPlayer(this);
         this.cards.forEach((v, i) => { v.place = i });
-        mycard.MoveFromTo({type:"player",player:this},{type:"deck"});
+        mycard.MoveFromTo({ type: "player", player: this }, { type: "deck" });
         this.room.deckcards.push(mycard);
         this.room.log(this + " подложил карту в колоду");
         this.stopPlay();
@@ -495,8 +495,8 @@ class Player {
 
 
     actionChangeDirection(data) {
-        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you Action now');
-        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you Action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you state now');
         let cardindex = this.findcardindex(data.place);
         let mycard = this.cards[cardindex];
         if (mycard.card != Card.CardsByPlayers.ChangeDirection) throw 'Это не карта гляди по сторонам';
@@ -508,13 +508,13 @@ class Player {
     }
 
     actionSelectPerseverance(data) {
-        if (this.phase != Player.Phases.SecondAction) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you Action now');
-        if (this.state != Player.States.PerseveranceSelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
+        if (this.phase != Player.Phases.SecondAction) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you Action now');
+        if (this.state != Player.States.PerseveranceSelectCard) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you state now');
         let card = this.Perseverance[data.place];
         this.cards.push(card);
         this.cards.forEach((v, i) => { v.place = i });
         this.Perseverance.splice(data.place, 1);
-        this.Perseverance.forEach(v =>{ 
+        this.Perseverance.forEach(v => {
             //v.MoveFromTo("")
             this.room.dropcards.push(v);
         });
@@ -527,8 +527,8 @@ class Player {
 
 
     actionStartPerseverance(data) {
-        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,  'Error is not you Action now');
-        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you Action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you state now');
         let cardindex = this.findcardindex(data.bymycardplace);
         let mycard = this.cards[cardindex];
         if (mycard.card != Card.CardsByPlayers.Perseverance) throw 'Это не карта упорство';
@@ -540,8 +540,8 @@ class Player {
     }
 
     actionStartTemptation(data) {
-        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you Action now');
-        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you Action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you state now');
         let cardindex = this.findcardindex(data.bymycardplace);
         let mycard = this.cards[cardindex];
         if (mycard.card != Card.CardsByPlayers.Temptation) throw 'Это не карта соблазн';
@@ -576,9 +576,9 @@ class Player {
 
 
         } else {
-            if( this.state != Player.States.SelectCardAndPlayerForOutgoingExchange&&
+            if (this.state != Player.States.SelectCardAndPlayerForOutgoingExchange &&
                 this.phase != Player.Phases.SecondAction)
-            if (this.room.getDoor(this, nextplayer) != undefined && this.state != Player.States.SelectCardAndPlayerForOutgoingExchange) throw 'Door is set between you';
+                if (this.room.getDoor(this, nextplayer) != undefined && this.state != Player.States.SelectCardAndPlayerForOutgoingExchange) throw 'Door is set between you';
             if (nextplayer.quarantineCount > 0) throw 'player on quarantine';
 
             nextplayer.phase = Player.Phases.Answer;
@@ -676,13 +676,13 @@ class Player {
 
         let othercardindex = nextplayer.findcardindex(nextplayer.cardForExchangeOut);
         let othercard = nextplayer.cards[othercardindex];
-        othercard.MoveFromTo({type:"player",player:nextplayer,place:nextplayer.cardForExchangeOut},{type:"player",player:this});
+        othercard.MoveFromTo({ type: "player", player: nextplayer, place: nextplayer.cardForExchangeOut }, { type: "player", player: this });
         if (othercard.card == Card.CardsByPlayers.Infect) this.Infected = true;
         nextplayer.cards.splice(othercardindex, 1);
 
         let mycardindex = this.findcardindex(data.place);
         let mycard = this.cards[mycardindex];
-        mycard.MoveFromTo({type:"player",player:this,place:mycard.place},{type:"player",player:nextplayer});
+        mycard.MoveFromTo({ type: "player", player: this, place: mycard.place }, { type: "player", player: nextplayer });
         if (mycard.card == Card.CardsByPlayers.Infect) nextplayer.Infected = true;
         this.cards.splice(mycardindex, 1);
 
@@ -699,12 +699,12 @@ class Player {
     }
 
     IncomeExchange(nextplayer) {
-        if (nextplayer.cardForExchangeOut == null) this.room.CheckAndTryRestoreGameWhenError(this,   'Error no card for exchange');
+        if (nextplayer.cardForExchangeOut == null) this.room.CheckAndTryRestoreGameWhenError(this, 'Error no card for exchange');
 
         let othercardindex = nextplayer.findcardindex(nextplayer.cardForExchangeOut);
         let othercard = nextplayer.cards[othercardindex];
         if (othercard.card == Card.CardsByPlayers.Infect) this.Infected = true;
-        othercard.MoveFromTo({type:"player",player:nextplayer,place:nextplayer.cardForExchangeOut},{type:"player",player:this});
+        othercard.MoveFromTo({ type: "player", player: nextplayer, place: nextplayer.cardForExchangeOut }, { type: "player", player: this });
         nextplayer.cards.splice(othercardindex, 1);
         nextplayer.cardForExchangeOut = null;
         this.cards.push(othercard);
@@ -714,8 +714,8 @@ class Player {
     }
 
     actionAnalysis(data) {
-        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you action now');
-        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you state now');
         let nextplayer = this.room.getPlayerByPlayerName(data.otherPlayerName);
         if (this.room.getDoor(this, nextplayer) != undefined) throw 'Door is set between you';
         if (nextplayer.quarantineCount > 0) throw 'player on quarantine';
@@ -736,8 +736,8 @@ class Player {
     }
 
     actionShowAllCards(data) {
-        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you action now');
-        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you state now');
 
         let bymycardplace = data.place;
 
@@ -756,8 +756,8 @@ class Player {
 
 
     actionChangePlace(data) {
-        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you action now');
-        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you state now');
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
 
@@ -788,8 +788,8 @@ class Player {
     }
 
     actionChangePlaceNear(data) {
-        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you action now');
-        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you state now');
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
         if (this.room.getDoor(this, nextplayer) != undefined) throw 'Door is set between you';
@@ -847,10 +847,49 @@ class Player {
 
     }
 
+    actionPrepareBurn(data) {
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you state now');
+        if (this.quarantineCount > 0) throw 'Вы на карантине';
+        // let otherCardPlace = data.place;
+        let bymycardplace = data.bymycardplace;
+
+        let cardindex = this.findcardindex(bymycardplace);
+        let mycard = this.cards[cardindex]; //
+        if (mycard.card != Card.CardsByPlayers.BurnFire) throw 'Это не огнемет';
+        this.tableCard(bymycardplace);
+
+        this.state = Player.States.SelectPlayer;
+        this.phase = Player.Phases.SecondAction;
+        this.room.log(this + " играет огнемет");
+    }
+
+    actionBurnPlayer2(data) {
+        if (this.phase != Player.Phases.SecondAction) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you action now');
+        if (this.state != Player.States.SelectPlayer) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you state now');
+        let otherPlayerName = data.otherPlayerName;
+        let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
+        if (this.room.getDoor(this, nextplayer) != undefined) throw 'Door is set between you';
+        if (nextplayer.quarantineCount > 0) throw 'player on quarantine';
+        // let otherCardPlace = data.place;
+
+        this.state = Player.States.Nothing;
+        nextplayer.phase = Player.Phases.Answer;
+        nextplayer.state = Player.States.DefendFireSelectCard;
+        this.room.log(this + " играет огнемет на " + nextplayer);
+        let defend = nextplayer.cards.filter((v) =>
+            v.card.num == Card.CardsByPlayers.FireResist.num);
+        //console.log(defend);
+        if (defend.length > 0) return;
+        this.room.log(nextplayer + " выбывает");
+        nextplayer.dead();
+        nextplayer.send({ messagetype: 'youburned', text: "вас сжег " + this })
+        this.endTurn();
+    }
 
     actionBurnPlayer(data) {
-        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you action now');
-        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you state now');
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
         if (this.room.getDoor(this, nextplayer) != undefined) throw 'Door is set between you';
@@ -861,7 +900,7 @@ class Player {
         let cardindex = this.findcardindex(bymycardplace);
         let mycard = this.cards[cardindex]; //
         if (mycard.card != Card.CardsByPlayers.BurnFire) throw 'Это не огнемет';
-        if(nextplayer.thing==true&&this.Infected==true) throw 'Вы заражены и не можете сжечь нечто';
+        if (nextplayer.thing == true && this.Infected == true) throw 'Вы заражены и не можете сжечь нечто';
         this.tableCard(bymycardplace);
 
         this.state = Player.States.Nothing;
@@ -874,7 +913,7 @@ class Player {
         if (defend.length > 0) return;
         this.room.log(nextplayer + " выбывает");
         nextplayer.dead();
-        nextplayer.send({ messagetype: 'youburned', text: "вас сжег "+this })
+        nextplayer.send({ messagetype: 'youburned', text: "вас сжег " + this })
         this.endTurn();
     }
 
@@ -899,8 +938,8 @@ class Player {
 
 
     actionShowMeCard(data) {
-        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you action now');
-        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you state now');
         let otherPlayerName = data.otherPlayerName;
         let nextplayer = this.room.getPlayerByPlayerName(otherPlayerName);
         if (this.room.getDoor(this, nextplayer) != undefined) throw 'Door is set between you';
@@ -924,8 +963,8 @@ class Player {
 
 
     actionDropCard(data) {
-        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you action now');
-        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this,   'Error is not you state now');
+        if (this.phase != Player.Phases.Action) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you action now');
+        if (this.state != Player.States.SelectCard) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you state now');
 
         let cardplace = data.place;
         this.dropOneCard(cardplace);
@@ -986,7 +1025,7 @@ class Player {
 
             let str = { cardnum: -1, cardplace: cardplace };
             if (v.playername == this.playername || c.card.isPanic) str = { cardnum: c.card.num, cardplace: cardplace };
-            c.GetMoveOut(str,v);
+            c.GetMoveOut(str, v);
             if (v.cardForExchangeOut == cardplace) str.ShowTo = true;
             if (additionalData != undefined) {
                 switch (additionalData.action) {
