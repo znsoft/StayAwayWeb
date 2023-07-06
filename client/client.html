@@ -147,6 +147,9 @@
 <script>
 
 
+const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png','/avatars/rhino.png','/avatars/rabbit.png','/avatars/ostrich.png',
+    '/avatars/monkey.png','/avatars/leopard.png','/avatars/horse.png','/avatars/giraffe.png','/avatars/fox.png',
+    '/avatars/deer.png','/avatars/cat.png','/avatars/camel.png'];
 
     var canvas = document.getElementById("canvas");
     canvas.height = window.innerHeight;
@@ -1309,6 +1312,7 @@
 
 
         constructor(name, num, isMe, cards, state, Phase, QuarantineCount = 0, Perseverance) {
+            this.Avatar = null;
             this.name = name;
             this.playername = name;
             this.place = num;
@@ -1345,6 +1349,13 @@
                     this.Perseverance.push(card);
                 }
             }
+
+        }
+
+        set avatar(v){
+
+            this.Avatar = new Image();
+            this.Avatar.src = avatars[v];
 
         }
 
@@ -1511,6 +1522,8 @@
             ctx.fillText(this, 20, 20);
             ctx.strokeText(this, 20, 20);
             ctx.stroke();
+            //ctx.drawImage(this.img, 0, 0, CardType.width, CardType.height);
+            if(this.Avatar!=null)ctx.drawImage(this.Avatar,-80,-60,90,90);
 
             if (errortext != '') TextLabels.ErrorLabelText(errortext);
 
@@ -1698,7 +1711,7 @@
                 if (v.isDead == true) return;
 
                 let p = new Player(v.playername, v.num, i == 0, v.cards, findStateByNum(v.state), findPhaseByNum(v.phase), v.quarantineCount, v.Perseverance);
-
+                p.avatar = v.avatar;
                 p.Thing = v.thing;
                 p.Infected = v.Infected;
                 this.players.push(p);
@@ -2056,6 +2069,7 @@
         PanicOneTwo: 14,
         DefendPlaceChange: 15,
     };
+
 
 
 

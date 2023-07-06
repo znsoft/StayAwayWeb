@@ -30,6 +30,7 @@ class Player {
         this.opponent = null;
         this.Perseverance = [];
         this.Quarantine = null;
+        this.avatar = null;
 
 
 
@@ -1077,6 +1078,7 @@ class Player {
 
         return {
             playername: v.playername,
+            avatar:v.avatar,
             cardForExchangeOut: v.cardForExchangeOut,
             Perseverance: Perseverancecards.length == 0 ? undefined : Perseverancecards,
             quarantineCount: v.quarantineCount,

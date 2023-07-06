@@ -2,6 +2,8 @@ const Player = require('./Player')
 const Card = require('./Card')
 
 class Room {
+    static avatarscount = 14;
+
     constructor(clientDB, roomname, password, numofPlayers, playername, isNewDBObject, gamenum) {
         this.gamestarted = false;
         this.players = new Map(); //key == playername ,
@@ -29,7 +31,8 @@ class Room {
         this.chatCount = 0;
         this.PanicConfessionTime = null;
         this.moves=[];
-        //this.opponent = null;
+        this.avatars = [];
+
     }
 
     
@@ -38,6 +41,7 @@ class Room {
         this.chatCount++;
         this.chat.push({ id: this.chatCount, player: player.playername, message: message });
     }
+
 
 
 
@@ -319,6 +323,11 @@ class Room {
         player.readyforstart = true;
         if (this.numofplayers < 4) return;
 
+        this.avatars = [];
+        for(let i=0;i<=Room.avatarscount;i++)this.avatars.push(i);
+
+
+
 
         let last_thing = null;
 
@@ -334,12 +343,16 @@ class Room {
             this.gamestarted = true;
 
             a.forEach((v, i) => {
+                let avatarindex = Math.round(Math.random()*(this.avatars.length-1));
                 playercards.set(v.playerid, []);
                 let ppp = this.players.get(v.playerid);
+                ppp.avatar = this.avatars[avatarindex];
                 ppp.cards = [];
                 ppp.place = i;
                 ppp.thing = false;
                 this.players.set(v.playerid, ppp);
+                this.avatars.splice(avatarindex,1);
+
             });
 
             let thing = a[Math.round(Math.random() * (l - 1))];
