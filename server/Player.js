@@ -568,7 +568,7 @@ class Player {
             if (!(this.thing || nextplayer.thing && this.Infected)) throw 'you cant infect other, you not the thing';
         }
 
-
+        //mycard.
         this.cardForExchangeOut = data.place;
         this.state = Player.States.OutgoingExchange;
         if (this.room.isPanicChain) {
@@ -751,6 +751,21 @@ class Player {
         this.endTurn();
         this.room.ShowMyCardsToAll(this);
         this.room.log(this + " показывает карты всем");
+
+    }
+
+    actionShowAllCardsTo(data) {
+        if (this.phase != Player.Phases.SecondAction) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you action now');
+        if (this.state != Player.States.SelectPlayer) this.room.CheckAndTryRestoreGameWhenError(this, 'Error is not you state now');
+
+        let nextplayer = this.room.getPlayerByPlayerName(data.otherPlayerName);
+       /// if (this.room.getDoor(this, nextplayer) != undefined) throw 'Door is set between you';
+       // if (nextplayer.quarantineCount > 0) throw 'player on quarantine';
+
+        this.endTurn();
+        this.room.ShowMyCardsTo(nextplayer,this );
+
+        this.room.log(this + " показал все карты " + nextplayer);
 
     }
 

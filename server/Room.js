@@ -397,7 +397,7 @@ class Room {
 
             this.insertShuffle(res);//оставшиеся карты перетасуем и закинем в деку
 
-            //this.deckcards.push(new Card(this.clientDB, Card.CardsByPlayers.Door.num, this, this.deckcards.length));
+            //this.deckcards.push(new Card(this.clientDB, Card.CardsByPlayers.PanicBetweenUs.num, this, this.deckcards.length));
 
             this.currentplayer.startPlay();
 

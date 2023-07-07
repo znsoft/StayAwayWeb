@@ -1117,7 +1117,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
         NoThanks: { id: 11, HiLightText: "Отклонить обмен", Button: { Text: "Отклонить", action: nothanks } },
         ChangeDirection: { id: 12, HiLightText: "Сменить направление хода", Button: { Text: "Использовать", action: ChangeDirection }, },
         Panic: { id: 13, HiLightText: "Паника", Button: { Text: "Паника", action: Panic }, },
-        ShowAllCardsTo: { id: 14, HiLightText: "Выбери игрока", selectPlayer: true, OnSelectPlayer: ShowAllCardsToPlayer },
+        ShowAllCardsTo: { id: 14, HiLightText: "Выбери игрока", HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: ShowAllCardsToPlayer },
         SelectCardForDeck: { id: 15, Button: { Text: "Подложить в колоду", action: PanicMeet }, },
         PanicOnlyOneCardStayInHand: { id: 16, Button: { Text: "Оставить эту карту", action: PanicForgot }, },
         Mist: { id: 17, HiLightText: "Отклонить обмен", Button: { Text: "Отклонить", action: mist } },
@@ -1134,6 +1134,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
         PanicConfessionTime: { id: 28, HiLightText: "Время признаний", Button: { Text: "Показать карты всем", action: PanicConfessionTime } },
         PanicNoConfessionTime: { id: 29, Button: { Text: "Не показывать карты всем", action: PanicNoConfessionTime } },
         PanicStopConfessionTime: { id: 30, Button: { Text: "Остановить время признаний", action: PanicStopConfessionTime } },
+        
         Burn2: { id: 31, HiLightText: "Выбери игрока",  HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: BurnPlayer2 },
     };
 
@@ -1303,7 +1304,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
         PanicThreeFour: new CardType("Panic Three Four", 20, "Три четыре", "Все сыгранные карты закалоченная дверь сбрасываются", "/pthreefour.png", null, null, Algoritms.Panic, null, true),
         PanicUPS: new CardType("UPS", 21, "Уупс", "Покажите все свои карты на руке остальным игрокам", "/ups.png", null, null, Algoritms.Panic, null, true),
         PanicConfessionTime: new CardType("PanicConfessionTime", 22, "Время признаний", "Начиная с вас и по порядку хода каждый показывает либо не показывает все карты на руке остальным игрокам.\n Время признаний завершается когда кто то из игроков показывает карту заражения", "/priznania.png", null, null, Algoritms.Panic, Algoritms.PanicConfessionTime, true),
-        PanicBetweenUs: new CardType("PanicBetweenUs", 23, "Только между нами", "Покажите все карты на руке соседнему игроку по вашему выбору", "/betweenus.png", null, null, Algoritms.Panic, null, true),
+        PanicBetweenUs: new CardType("PanicBetweenUs", 23, "Только между нами", "Покажите все карты на руке соседнему игроку по вашему выбору", "/betweenus.png", null, null, Algoritms.Panic, Algoritms.PanicBetweenUs, true),
         PanicForgot: new CardType("PanicForgot", 24, "Забывчивость", "Сбросьте три карты с руки и возьмите 3 новые карты из колоды, сбрасывая паники ", "/forgot.png", null, null, Algoritms.Panic, Algoritms.PanicOnlyOneCardStayInHand, true),
         PanicFriend: new CardType("", 25, "Давай дружить", "поменяйтесь одной картой с любым игроком если он не на карантине", "/friend.png", null, null, Algoritms.Panic, Algoritms.Friends, true),
         PanicMeet: new CardType("", 26, "Свидание вслепую", "Поменяйте одну карту с руки на верхнюю карту колоды сбрасывая паники.\n Ваш ход заканчивается", "/meet.png", null, null, Algoritms.Panic, Algoritms.PanicMeet, true),
@@ -2440,8 +2441,10 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
     function ShowAllCardsToPlayer(pl) {
         let p = JSON.parse(document.cookie);
         p.messagetype = 'playeraction';
-        p.action = "ShowAllCards";
-        p.place = pl.cardplace;//
+        p.action = "ShowAllCardsTo";
+ //       p.place = pl.place;//
+//        p.bymycardplace = game.me.selectedCard.cardplace;
+        p.otherPlayerName = pl.name;
         //console.log(place);
         websocket.senddata(p);
     }
