@@ -679,7 +679,8 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
 
     class Lines {
         static lines = new Map();
-
+        static shader = new Shadertoy("shaders/pixelpad.glsl");
+        static width = 10;
         constructor(card,  to) {
             this.card = card;
             //this.from = from;
@@ -691,7 +692,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
 
         static AddLine(card,lineTo){
 
-           // new Lines(card, lineTo);
+            new Lines(card, lineTo);
 
         }
 
@@ -717,11 +718,21 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
         }
 
         Draw(ctx) {
-            
+            ctx.save();
             ctx.beginPath(); // Start a new path
             ctx.moveTo(this.startpos.x, this.startpos.y); // Move the pen to (30, 50)
             ctx.lineTo(this.endpos.x, this.endpos.y); // Draw a line to (150, 100)
-            ctx.stroke(); // Render the path
+            //ctx.stroke(); // Render the path
+            let xx = this.endpos.x -this.startpos.x  ;
+            let yy = this.endpos.y -this.startpos.y  ;
+            let d = Math.sqrt(xx*xx+yy*yy);
+            let ang = Math.atan2(yy,xx);
+            ctx.translate(this.startpos.x,this.startpos.y);
+            ctx.rotate(ang);
+            ctx.drawImage(Lines.shader.Draw(undefined, 100, 100),0,-Lines.width/2,d,Lines.width);
+
+            ctx.restore();
+
         }
 
 
@@ -2190,6 +2201,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
                     let shader = game.shader;
                     game = new Game(message.guid);
                     game.shader = shader;
+                    if(game.shader!=null)
                     game.shader.FadeOut(()=>game.shader=null);
                     document.cookie = evt.data;
                     document.getElementById("loginbutton").hidden = true;

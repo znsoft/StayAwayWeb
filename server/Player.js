@@ -595,16 +595,16 @@ class Player {
 
     clearCardForExchangeOut(nextplayer){
 
-        let cardindex = this.findcardindex(nextplayer.cardForExchangeOut);
-        let cardForExchangeOut = this.cards[cardindex];
+        let cardindex = nextplayer.findcardindex(nextplayer.cardForExchangeOut);
+        let cardForExchangeOut = nextplayer.cards[cardindex];
         cardForExchangeOut.ClearLineTo();
         nextplayer.cardForExchangeOut = null;
     }
 
     lineToCardForExchangeOut(nextplayer,to){
 
-        let cardindex = this.findcardindex(nextplayer.cardForExchangeOut);
-        let cardForExchangeOut = this.cards[cardindex];
+        let cardindex = nextplayer.findcardindex(nextplayer.cardForExchangeOut);
+        let cardForExchangeOut = nextplayer.cards[cardindex];
         cardForExchangeOut.LineTo(to);
         
     }
@@ -693,6 +693,7 @@ class Player {
         let othercard = nextplayer.cards[othercardindex];
         othercard.MoveFromTo({ type: "player", player: nextplayer, place: nextplayer.cardForExchangeOut }, { type: "player", player: this });
         if (othercard.card == Card.CardsByPlayers.Infect) this.Infected = true;
+        this.clearCardForExchangeOut(nextplayer);
         nextplayer.cards.splice(othercardindex, 1);
 
         let mycardindex = this.findcardindex(data.place);
@@ -709,7 +710,7 @@ class Player {
         nextplayer.cards.forEach((v, i) => { v.place = i });
 
         nextplayer.stopPlay();
-        this.clearCardForExchangeOut(nextplayer);
+        
         this.nowNextPlayer();
     }
 
@@ -720,9 +721,10 @@ class Player {
         let othercard = nextplayer.cards[othercardindex];
         if (othercard.card == Card.CardsByPlayers.Infect) this.Infected = true;
         othercard.MoveFromTo({ type: "player", player: nextplayer, place: nextplayer.cardForExchangeOut }, { type: "player", player: this });
+        this.clearCardForExchangeOut(nextplayer);
+
         nextplayer.cards.splice(othercardindex, 1);
 
-        this.clearCardForExchangeOut(nextplayer);
         this.cards.push(othercard);
 
         this.cards.forEach((v, i) => { v.place = i });
