@@ -679,13 +679,19 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
     class Lines {
         static lines = new Map();
 
-        constructor(card, from, to) {
+        constructor(card,  to) {
             this.card = card;
-            this.from = from;
+            //this.from = from;
             this.to = to;
             this.endpos = Animator.getPosition(game, to);
-            this.startpos = Animator.getPosition(game, from);
+            this.startpos = card;
             Lines.lines.set(card, this);
+        }
+
+        static AddLine(card,lineTo){
+
+            //new Lines(card, lineTo);
+
         }
 
         static DrawAll(ctx, game) {
@@ -1334,6 +1340,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
             this.isSelected = false;
             for (let i in props) this[i] = props[i];
             if (this.isMove == true) Animator.AddCardmove(this, this.from, this.to);
+            if (this.lineTo!=undefined)Lines.AddLine(this,this.lineTo);
 
         }
 
@@ -2059,6 +2066,11 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
                         TextLabels.DrawAll(ctx, e);
                         ctx.restore();
             */
+
+
+            ctx.restore();
+            ctx.save();
+            Lines.DrawAll(ctx, this);
             ctx.restore();
             ctx.save();
             Animator.DrawAll(ctx, this);

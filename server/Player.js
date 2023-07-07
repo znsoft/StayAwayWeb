@@ -568,7 +568,10 @@ class Player {
             if (!(this.thing || nextplayer.thing && this.Infected)) throw 'you cant infect other, you not the thing';
         }
 
-        //mycard.
+        //mycard.LineTo({{type:"door",place:k}})
+        //mycard.LineTo({ type: "player", player: nextplayer });
+        
+        //card.MoveFromTo({type:"door",place:k}, {type: "drop"});
         this.cardForExchangeOut = data.place;
         this.state = Player.States.OutgoingExchange;
         if (this.room.isPanicChain) {
@@ -612,6 +615,7 @@ class Player {
         let exchange2 = this.room.getNextPlayerFor(this);
         exchange2.phase = Player.Phases.Answer;
         exchange2.state = Player.States.IncomeExchange;
+        //nextplayer.cardForExchangeOut.LineTo({ type: "player", player: exchange2 });
         this.room.log(this + " сыграл мимо");
 
     }
@@ -627,7 +631,7 @@ class Player {
         if (mycard.card != Card.CardsByPlayers.Fear) throw 'Error no card for reject exchange';
         //this.cards.splice(mycardindex, 1);
         this.dropOneCard(data.place);
-
+        //nextplayer.cardForExchangeOut.ClearLineTo();;
         nextplayer.ShowYourCardToPlayer(this, nextplayer.cardForExchangeOut);
         //this.room.ShowOneOtherCardToPlayer(this, nextplayer.playername, nextplayer.cardForExchangeOut);
         //nextplayer.cards.push(mycard);
@@ -655,7 +659,7 @@ class Player {
         if (mycard.card != Card.CardsByPlayers.NoThanks) throw 'Error no card for reject exchange';
         //this.cards.splice(mycardindex, 1);
         this.dropOneCard(data.place);
-
+        //nextplayer.cardForExchangeOut.ClearLineTo();;
         //nextplayer.cards.push(mycard);
         nextplayer.cardForExchangeOut = null;
 
@@ -695,6 +699,7 @@ class Player {
         nextplayer.cards.forEach((v, i) => { v.place = i });
 
         nextplayer.stopPlay();
+        //nextplayer.cardForExchangeOut.ClearLineTo();;
         nextplayer.cardForExchangeOut = null;
         this.nowNextPlayer();
     }
@@ -707,6 +712,7 @@ class Player {
         if (othercard.card == Card.CardsByPlayers.Infect) this.Infected = true;
         othercard.MoveFromTo({ type: "player", player: nextplayer, place: nextplayer.cardForExchangeOut }, { type: "player", player: this });
         nextplayer.cards.splice(othercardindex, 1);
+        ////nextplayer.cardForExchangeOut.ClearLineTo();;
         nextplayer.cardForExchangeOut = null;
         this.cards.push(othercard);
 

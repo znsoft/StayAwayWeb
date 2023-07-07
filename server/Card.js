@@ -83,6 +83,18 @@ class Card {
 
     }
 
+    LineTo(to){
+
+        this.lineTo = {type:to.type,
+            player: to.player == undefined ? undefined: to.player.place ,
+            place: to.place == undefined ? undefined : to.place};  
+    }
+
+    ClearLineTo(){
+        this.lineTo = undefined;
+
+    }
+
     MoveTo(to) {
 
 
