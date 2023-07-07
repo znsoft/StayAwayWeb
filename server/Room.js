@@ -2,7 +2,7 @@ const Player = require('./Player')
 const Card = require('./Card')
 
 class Room {
-    static avatarscount = 14;
+    static avatarscount = 13;
 
     constructor(clientDB, roomname, password, numofPlayers, playername, isNewDBObject, gamenum) {
         this.gamestarted = false;
@@ -733,7 +733,9 @@ class Room {
 
 
         try { player["action" + data.action](data); } catch (e) {
+            console.log(data.playername);
             console.trace(e);
+            
             socket.close(1001, e);
         };
 

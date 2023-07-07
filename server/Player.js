@@ -1014,8 +1014,12 @@ class Player {
         let additionalData = this.room.additionalData;
         let cardsArray = [];
         let Perseverancecards = [];
-        if (v.playername == this.playername) v.Perseverance.forEach((c, i) => {
-            Perseverancecards.push({ cardnum: c.card.num, cardplace: i });
+        v.Perseverance.forEach((c, i) => {
+            if (v.playername == this.playername) {
+                Perseverancecards.push({ cardnum: c.card.num, cardplace: i })
+            } else {
+                Perseverancecards.push({ cardnum: Card.CardsByPlayers.UnknownAction.num, cardplace: i });
+            }
         });
 
 
