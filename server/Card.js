@@ -51,10 +51,12 @@ class Card {
         this.from = { type: "deck" };
         this.to = {};
         this.isMove = false;
+        this.lineTo = undefined;
     }
 
     GetMoveOut(str, player) {
-        if(str==undefined)str= {};
+        if (str == undefined) str = {};
+        if (this.lineTo != undefined) str.lineTo = this.lineTo;
         if (this.isMove == true) {
             this.room.moves.push(this);
             str.isMove = true;

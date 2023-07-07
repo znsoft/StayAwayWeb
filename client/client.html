@@ -505,7 +505,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
 
     }
 
-
+  
 
 
     class Animator {
@@ -676,228 +676,48 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
 
     }
 
-    class Deck {
+    class Lines {
+        static lines = new Map();
 
-
-
-        constructor(upCard, cardsLeft, dropCount, drop = [], table = [], deck) {
-            this.tableMove = {};
-            this.dropMove = {};
-            this.doorsMove = [];
-            this.deckMove = {};
-
-
-
-            this.upCard = new Card(findCardByNum(upCard), "deck", 0, {});
-            this.cardsLeft = cardsLeft;
-            this.Doors = [];
-            this.Drop = dropCount;
-            this.x = 0;
-            this.y = 0;
-            this.dropX = 0;
-            this.dropY = 0;
-
-
-            this.drop = drop.reverse().map((v, i) => new Card(findCardByNum(v), "drop", i, {}));
-            this.table = table == undefined ? [] : table.map((v, i) => new Card(findCardByNum(v), "table", i, {}));
-            if (deck == undefined) return;
-            if (deck.dropmove != undefined) Animator.AddCardmove(this.drop[0], deck.dropmove.from, deck.dropmove.to);
-            if (deck.tablemove != undefined) Animator.AddCardmove(this.table[0], deck.tablemove.from, deck.tablemove.to);
-            if (deck.deckmove != undefined) Animator.AddCardmove(this.upCard, deck.deckmove.from, deck.deckmove.to);
-
-
+        constructor(card, from, to) {
+            this.card = card;
+            this.from = from;
+            this.to = to;
+            this.endpos = Animator.getPosition(game, to);
+            this.startpos = Animator.getPosition(game, from);
+            Lines.lines.set(card, this);
         }
 
-        getDropCard() {
-
-            if (this.drop.length == 0) return undefined;
-            return this.drop[0];
-
-
-        }
-
-        getTableCard() {
-
-            if (this.table.length == 0) return undefined;
-            return this.table[0];
-
-
-        }
-
-        getDeckCard() {
-
-            return this.upCard;
-
-
-        }
-
-        Draw(ctx, e) {
-            let scrDeck = ctx.getCanvasToWindow(0, 0);
-            this.x = scrDeck.x;//this.transform.e;
-            this.y = scrDeck.y;//this.transform.f
-            ctx.save();
-            // ctx.globalCompositeOperation = 'destination-over';
-            ctx.translate(this.cardsLeft * 2, this.cardsLeft * 2);
-            ctx.rotate(Math.PI / 2);
-            this.upCard.Draw(ctx, e);
-
-            ctx.restore();
-
-            for (let i = this.cardsLeft; i > 1; i--) {
-
-                ctx.save();
-                ctx.translate(i * 2, i * 2);
-                ctx.rotate(Math.PI / 2);
-                Cards.UnknownAction.Draw(ctx);
-                ctx.restore();
-            }
-
-
-            ctx.save();
-            // ctx.globalCompositeOperation = 'destination-over';
-            ctx.translate(0, 100);
-            //ctx.rotate(Math.PI / 2);
-
-            this.table.forEach((v, i) => {
-
-                ctx.save();
-                ctx.translate(i * 102, i * 2);
-                //ctx.rotate(Math.PI / 2);
-                v.Draw(ctx, e);
-                ctx.restore();
-
+        static DrawAll(ctx, game) {
+            Lines.lines.forEach((v, k) => {
+                try {
+                    v.Draw(ctx);
+                } catch (e) { }
             });
 
 
-            ctx.restore();
-
-
-            ctx.save();
-            // ctx.globalCompositeOperation = 'destination-over';
-            ctx.translate(200, -50);
-
-
-            this.drop.forEach((v, i) => {
-
-                ctx.save();
-                ctx.translate(i * 1, i * 1 + 40);
-                ctx.rotate(Math.PI / 1.5 + i / 120);
-                v.Draw(ctx);
-
-                ctx.restore();
-
-
-            });
-
-
-            ctx.rotate(Math.PI / 2.5);
-            ctx.fillStyle = "#000";
-            ctx.font = '16px serif';
-            ctx.fillText("Сброс", 10, 20);
-            ctx.roundRect(0, 0, 95, 150, 10).stroke();
-            //if (this.Drop == 0)Cards.UnknownAction.Draw(ctx);
-
-            ctx.restore();
-
-
-
-
         }
 
-    };
-
-
-
-    class TextLabels {
-
-        constructor(id, text, x = 0, y = undefined, c = "#000", s = 1, t = 3000) {
-            this.id = id;
-            this.text = text;
-            this.x = x;
-            this.y = y;
-            this.c = c;
-            this.s = s;
-            this.t = t;
-            this.isHint = false;
-            this.e = undefined;
-            TextLabels.labels.set(id, this);
-
-            if (t > 0) setTimeout(() => {
-                TextLabels.Delete(id);
-            }, t);
-
-
-        }
-        static lastY = 230;
-        static offsetY = 0;
-        static labels = new Map();
-
-        static hint(x, y, text, c) {
-            let tl = new TextLabels("Hint", text, x, y, c, 1, 0);
-            tl.isHint = true;
-
-        }
-
-
-
-        static ErrorLabelText(text) {
-            TextLabels.lastY = game.height / 2 + 100;
-            new TextLabels(TextLabels.labels.size, text, game.width / 2 + 100);//, 0, TextLabels.lastY);
-
-
-        }
-
-        static DrawAll(ctx, e) {
-            let offset = 0;
-            TextLabels.labels.forEach((v, k) => { offset = v.Draw(ctx, e, offset) });
-            //TextLabels.lastY -= 17;
-        }
 
         static Delete(id) {
-            TextLabels.labels.delete(id);
+            Lines.lines.delete(id);
 
         }
 
         static DeleteAll() {
-            TextLabels.labels.clear();
+            Lines.lines.clear();
         }
 
-        Draw(ctx, e, offset = 0) {
-            let y = this.y;
-            let l = 0;
-            if (this.y == undefined) y = TextLabels.lastY;
-            y += offset;
-
-            ctx.save();
-            ctx.translate(this.x, y);
-            ctx.fillStyle = this.c;
-            ctx.font = '16px serif';
-            ctx.scale(this.s, this.s);
-            ctx.strokeStyle = 'white';
-            // this.fillStyle = "white";
-
-            if (this.text != undefined)
-                if (this.isHint) {
-                    ctx.drawPoint(this.x, this.y, 5, this.c, this.text);
-                    //ctx.drawPoint(this.x, this.y, 5, this.c, [this.text.replace("\n","<br>")]);
-                } else
-                    for (var s of this.text.split("\n")) {
-                        //ctx.strokeText(s, 0, l += 17);
-                        ctx.fillText(s, 0, l += 17);//+= 17);
-                    }
-
-            //TextLabels.lastY = y;
-            ctx.restore();
-            //ctx.fillText(this.text);//, 3, this.text.length);
-            return l + offset;
-
+        Draw(ctx) {
+            ctx.beginPath(); // Start a new path
+            ctx.moveTo(this.startpos.x, this.startpos.y); // Move the pen to (30, 50)
+            ctx.lineTo(this.endpos.x, this.endpos.y); // Draw a line to (150, 100)
+            ctx.stroke(); // Render the path
         }
+
 
 
     }
-
-
-
 
 
     class CardType {
@@ -1052,6 +872,232 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
 
 
     };
+
+
+    class Deck {
+
+        static Table = { x: 0, y: 100, w: 2 * CardType.width + 10, h: CardType.height+10 }
+        static Drop = { x: 200, y: -50, w: CardType.width , h: CardType.height  }
+        static Deck = { x:0, y: 0, w: CardType.width, h: CardType.height }
+
+        constructor(upCard, cardsLeft, dropCount, drop = [], table = [], deck) {
+            this.tableMove = {};
+            this.dropMove = {};
+            this.doorsMove = [];
+            this.deckMove = {};
+
+
+
+            this.upCard = new Card(findCardByNum(upCard), "deck", 0, {});
+            this.cardsLeft = cardsLeft;
+            this.Doors = [];
+            this.Drop = dropCount;
+            this.x = 0;
+            this.y = 0;
+            this.dropX = 0;
+            this.dropY = 0;
+
+
+            this.drop = drop.reverse().map((v, i) => new Card(findCardByNum(v), "drop", i, {}));
+            this.table = table == undefined ? [] : table.map((v, i) => new Card(findCardByNum(v), "table", i, {}));
+            if (deck == undefined) return;
+            if (deck.dropmove != undefined) Animator.AddCardmove(this.drop[0], deck.dropmove.from, deck.dropmove.to);
+            if (deck.tablemove != undefined) Animator.AddCardmove(this.table[0], deck.tablemove.from, deck.tablemove.to);
+            if (deck.deckmove != undefined) Animator.AddCardmove(this.upCard, deck.deckmove.from, deck.deckmove.to);
+
+
+        }
+
+        getDropCard() {
+
+            if (this.drop.length == 0) return undefined;
+            return this.drop[0];
+
+
+        }
+
+        getTableCard() {
+
+            if (this.table.length == 0) return undefined;
+            return this.table[0];
+
+
+        }
+
+        getDeckCard() {
+
+            return this.upCard;
+
+
+        }
+
+        Draw(ctx, e) {
+            let scrDeck = ctx.getCanvasToWindow(0, 0);
+            this.x = scrDeck.x;//this.transform.e;
+            this.y = scrDeck.y;//this.transform.f
+            ctx.save();
+            // ctx.globalCompositeOperation = 'destination-over';
+            ctx.translate(this.cardsLeft * 2 + Deck.Deck.x, this.cardsLeft * 2 + Deck.Deck.y);
+            ctx.rotate(Math.PI / 2);
+            this.upCard.Draw(ctx, e);
+
+            ctx.restore();
+
+            for (let i = this.cardsLeft; i > 1; i--) {
+
+                ctx.save();
+                ctx.translate(i * 2 + Deck.Deck.x, i * 2 + Deck.Deck.y);
+                ctx.rotate(Math.PI / 2);
+                Cards.UnknownAction.Draw(ctx);
+                ctx.restore();
+            }
+
+
+            ctx.save();
+            // ctx.globalCompositeOperation = 'destination-over';
+            ctx.translate(Deck.Table.x, Deck.Table.y);
+            //ctx.rotate(Math.PI / 2);
+
+            this.table.forEach((v, i) => {
+
+                ctx.save();
+                ctx.translate(i * 102, i * 2);
+                //ctx.rotate(Math.PI / 2);
+                v.Draw(ctx, e);
+                ctx.restore();
+
+            });
+
+
+            ctx.restore();
+
+
+            ctx.save();
+            // ctx.globalCompositeOperation = 'destination-over';
+            ctx.translate(Deck.Drop.x, Deck.Drop.y);
+
+
+            this.drop.forEach((v, i) => {
+
+                ctx.save();
+                ctx.translate(i * 1, i * 1 + 40);
+                ctx.rotate(Math.PI / 1.5 + i / 120);
+                v.Draw(ctx);
+
+                ctx.restore();
+
+
+            });
+
+
+            ctx.rotate(Math.PI / 2.5);
+            ctx.fillStyle = "#000";
+            ctx.font = '16px serif';
+            ctx.fillText("Сброс", 10, 20);
+            ctx.roundRect(0, 0, Deck.Drop.w, Deck.Drop.h, 10).stroke();
+            //if (this.Drop == 0)Cards.UnknownAction.Draw(ctx);
+
+            ctx.restore();
+
+
+
+
+        }
+
+    };
+
+
+
+    class TextLabels {
+
+        constructor(id, text, x = 0, y = undefined, c = "#000", s = 1, t = 3000) {
+            this.id = id;
+            this.text = text;
+            this.x = x;
+            this.y = y;
+            this.c = c;
+            this.s = s;
+            this.t = t;
+            this.isHint = false;
+            this.e = undefined;
+            TextLabels.labels.set(id, this);
+
+            if (t > 0) setTimeout(() => {
+                TextLabels.Delete(id);
+            }, t);
+
+
+        }
+        static lastY = 230;
+        static offsetY = 0;
+        static labels = new Map();
+
+        static hint(x, y, text, c) {
+            let tl = new TextLabels("Hint", text, x, y, c, 1, 0);
+            tl.isHint = true;
+
+        }
+
+
+
+        static ErrorLabelText(text) {
+            TextLabels.lastY = game.height / 2 + 100;
+            new TextLabels(TextLabels.labels.size, text, game.width / 2 + 100);//, 0, TextLabels.lastY);
+
+
+        }
+
+        static DrawAll(ctx, e) {
+            let offset = 0;
+            TextLabels.labels.forEach((v, k) => { offset = v.Draw(ctx, e, offset) });
+            //TextLabels.lastY -= 17;
+        }
+
+        static Delete(id) {
+            TextLabels.labels.delete(id);
+
+        }
+
+        static DeleteAll() {
+            TextLabels.labels.clear();
+        }
+
+        Draw(ctx, e, offset = 0) {
+            let y = this.y;
+            let l = 0;
+            if (this.y == undefined) y = TextLabels.lastY;
+            y += offset;
+
+            ctx.save();
+            ctx.translate(this.x, y);
+            ctx.fillStyle = this.c;
+            ctx.font = '16px serif';
+            ctx.scale(this.s, this.s);
+            ctx.strokeStyle = 'white';
+            // this.fillStyle = "white";
+
+            if (this.text != undefined)
+                if (this.isHint) {
+                    ctx.drawPoint(this.x, this.y, 5, this.c, this.text);
+                    //ctx.drawPoint(this.x, this.y, 5, this.c, [this.text.replace("\n","<br>")]);
+                } else
+                    for (var s of this.text.split("\n")) {
+                        //ctx.strokeText(s, 0, l += 17);
+                        ctx.fillText(s, 0, l += 17);//+= 17);
+                    }
+
+            //TextLabels.lastY = y;
+            ctx.restore();
+            //ctx.fillText(this.text);//, 3, this.text.length);
+            return l + offset;
+
+        }
+
+
+    }
+
+
+
 
 
 
@@ -1284,6 +1330,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
             this.props = props;
             this.x = 0;
             this.y = 0;
+            this.isSelected = false;
             for (let i in props) this[i] = props[i];
             if (this.isMove == true) Animator.AddCardmove(this, this.from, this.to);
 
@@ -1486,7 +1533,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
 
                 ctx.strokeStyle = "#af2";
                 //if (this.isMe)
-                if (this.selected == z || v.ShowTo == true) { h = -5; ctx.scale(1.2, 1.2); mx = 10; ctx.strokeStyle = "#a00"; }
+                if (this.selected == z || v.ShowTo == true) { h = -5; ctx.scale(1.2, 1.2); mx = 10; ctx.strokeStyle = "#a00"; ctx.translate(0, -50); }
                 ctx.translate(i * 111 - mx, h);
 
                 if (e != undefined) {
@@ -1523,8 +1570,9 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
             ctx.strokeText(this, 20, 20);
             ctx.stroke();
             //ctx.drawImage(this.img, 0, 0, CardType.width, CardType.height);
-            if(this.Avatar!=null)ctx.drawImage(this.Avatar,-80,-60,90,90);
-
+            try {
+                if (this.Avatar != null) ctx.drawImage(this.Avatar, -80, -60, 90, 90);
+            } catch (e) { }
             if (errortext != '') TextLabels.ErrorLabelText(errortext);
 
 
