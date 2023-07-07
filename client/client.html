@@ -505,7 +505,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
 
     }
 
-
+  
 
 
     class Animator {
@@ -676,7 +676,48 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
 
     }
 
+    class Lines {
+        static lines = new Map();
 
+        constructor(card, from, to) {
+            this.card = card;
+            this.from = from;
+            this.to = to;
+            this.endpos = Animator.getPosition(game, to);
+            this.startpos = Animator.getPosition(game, from);
+            Lines.lines.set(card, this);
+        }
+
+        static DrawAll(ctx, game) {
+            Lines.lines.forEach((v, k) => {
+                try {
+                    v.Draw(ctx);
+                } catch (e) { }
+            });
+
+
+        }
+
+
+        static Delete(id) {
+            Lines.lines.delete(id);
+
+        }
+
+        static DeleteAll() {
+            Lines.lines.clear();
+        }
+
+        Draw(ctx) {
+            ctx.beginPath(); // Start a new path
+            ctx.moveTo(this.startpos.x, this.startpos.y); // Move the pen to (30, 50)
+            ctx.lineTo(this.endpos.x, this.endpos.y); // Draw a line to (150, 100)
+            ctx.stroke(); // Render the path
+        }
+
+
+
+    }
 
 
     class CardType {
