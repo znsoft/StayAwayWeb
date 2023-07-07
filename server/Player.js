@@ -568,9 +568,8 @@ class Player {
             if (!(this.thing || nextplayer.thing && this.Infected)) throw 'you cant infect other, you not the thing';
         }
 
-        //mycard.LineTo({{type:"door",place:k}})
-        //mycard.LineTo({ type: "player", player: nextplayer });
-        
+        mycard.LineTo({ type: "player", player: nextplayer });
+        if(this.cardForExchangeOut!=null)this.clearCardForExchangeOut(this);
         //card.MoveFromTo({type:"door",place:k}, {type: "drop"});
         this.cardForExchangeOut = data.place;
         this.state = Player.States.OutgoingExchange;
@@ -594,7 +593,21 @@ class Player {
 
     }
 
+    clearCardForExchangeOut(nextplayer){
 
+        let cardindex = this.findcardindex(nextplayer.cardForExchangeOut);
+        let cardForExchangeOut = this.cards[cardindex];
+        cardForExchangeOut.ClearLineTo();
+        nextplayer.cardForExchangeOut = null;
+    }
+
+    lineToCardForExchangeOut(nextplayer,to){
+
+        let cardindex = this.findcardindex(nextplayer.cardForExchangeOut);
+        let cardForExchangeOut = this.cards[cardindex];
+        cardForExchangeOut.LineTo(to);
+        
+    }
 
 
     actionMist(data) {
@@ -615,7 +628,7 @@ class Player {
         let exchange2 = this.room.getNextPlayerFor(this);
         exchange2.phase = Player.Phases.Answer;
         exchange2.state = Player.States.IncomeExchange;
-        //nextplayer.cardForExchangeOut.LineTo({ type: "player", player: exchange2 });
+        this.lineToCardForExchangeOut(nextplayer,{ type: "player", player: exchange2 });
         this.room.log(this + " сыграл мимо");
 
     }
@@ -631,12 +644,9 @@ class Player {
         if (mycard.card != Card.CardsByPlayers.Fear) throw 'Error no card for reject exchange';
         //this.cards.splice(mycardindex, 1);
         this.dropOneCard(data.place);
-        //nextplayer.cardForExchangeOut.ClearLineTo();;
+ 
         nextplayer.ShowYourCardToPlayer(this, nextplayer.cardForExchangeOut);
-        //this.room.ShowOneOtherCardToPlayer(this, nextplayer.playername, nextplayer.cardForExchangeOut);
-        //nextplayer.cards.push(mycard);
-        nextplayer.cardForExchangeOut = null;
-
+        this.clearCardForExchangeOut(nextplayer);
         //this.tableCard(bymycardplace);
         this.room.giveOneActionCardfromDeckToPlayer(this);
         this.stopPlay();
@@ -646,6 +656,7 @@ class Player {
         this.room.log(this + " отклонил и посмотрел");
 
     }
+
 
 
     actionNoThanks(data) {
@@ -659,9 +670,8 @@ class Player {
         if (mycard.card != Card.CardsByPlayers.NoThanks) throw 'Error no card for reject exchange';
         //this.cards.splice(mycardindex, 1);
         this.dropOneCard(data.place);
-        //nextplayer.cardForExchangeOut.ClearLineTo();;
-        //nextplayer.cards.push(mycard);
-        nextplayer.cardForExchangeOut = null;
+        
+        this.clearCardForExchangeOut(nextplayer);
 
         //this.tableCard(bymycardplace);
         this.room.giveOneActionCardfromDeckToPlayer(this);
@@ -699,8 +709,7 @@ class Player {
         nextplayer.cards.forEach((v, i) => { v.place = i });
 
         nextplayer.stopPlay();
-        //nextplayer.cardForExchangeOut.ClearLineTo();;
-        nextplayer.cardForExchangeOut = null;
+        this.clearCardForExchangeOut(nextplayer);
         this.nowNextPlayer();
     }
 
@@ -712,8 +721,8 @@ class Player {
         if (othercard.card == Card.CardsByPlayers.Infect) this.Infected = true;
         othercard.MoveFromTo({ type: "player", player: nextplayer, place: nextplayer.cardForExchangeOut }, { type: "player", player: this });
         nextplayer.cards.splice(othercardindex, 1);
-        ////nextplayer.cardForExchangeOut.ClearLineTo();;
-        nextplayer.cardForExchangeOut = null;
+
+        this.clearCardForExchangeOut(nextplayer);
         this.cards.push(othercard);
 
         this.cards.forEach((v, i) => { v.place = i });
