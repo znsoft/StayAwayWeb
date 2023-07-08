@@ -170,6 +170,8 @@ class Room {
                 if (v.place == nextplace) nextplayer = v;
             });
         });
+        if(nextplayer.isDead)nextplayer = this.getNextPlayerFor(nextplayer);
+
         if (nextplayer == null) console.log('how can it be , nextplayer is null');
         return nextplayer;
 
@@ -533,7 +535,8 @@ class Room {
             if (!v.isonline()) {
 
                 if((Date.now()-v.lastseen)>5*60*1000){
-                    this.killPlayer(v);this.isDead = true;
+                    v.isDead = true;
+                    this.killPlayer(v);
                     this.log(v+" выбывает по таймауту/отвалился инет");
                 };
     
@@ -549,6 +552,9 @@ class Room {
         this.checkEndGame();
         this.moves.forEach(v=>v.ClearMove());
         this.moves=[];
+
+        let deadplayers = this.playersArray.filter(v=>v.isDead==true);
+        deadplayers.forEach(v=>this.killPlayer(v));
     }
 
 

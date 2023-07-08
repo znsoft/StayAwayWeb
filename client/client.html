@@ -719,9 +719,9 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
 
         Draw(ctx) {
             ctx.save();
-            ctx.beginPath(); // Start a new path
-            ctx.moveTo(this.startpos.x, this.startpos.y); // Move the pen to (30, 50)
-            ctx.lineTo(this.endpos.x, this.endpos.y); // Draw a line to (150, 100)
+            //ctx.beginPath(); // Start a new path
+            //ctx.moveTo(this.startpos.x, this.startpos.y); // Move the pen to (30, 50)
+            //ctx.lineTo(this.endpos.x, this.endpos.y); // Draw a line to (150, 100)
             //ctx.stroke(); // Render the path
             let xx = this.endpos.x -this.startpos.x  ;
             let yy = this.endpos.y -this.startpos.y  ;
@@ -1380,13 +1380,21 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
         static y2 = 250;
 
 
-        constructor(name, num, isMe, cards, state, Phase, QuarantineCount = 0, Perseverance) {
+        constructor(name, num, isMe, cards, state, Phase, QuarantineCount = 0, Perseverance, isDead) {
             this.Avatar = null;
             this.name = name;
             this.playername = name;
             this.place = num;
             this.isMe = isMe;
             this.cards = [];
+            this.shader = null;
+            this.isDead = isDead;
+            if(this.isDead&&this.isMe==false){
+                
+                this.shader = new Shadertoy("shaders/fire.glsl");
+                this.shader.FadeOut(()=> this.shader = null);
+            
+            }
             cards.forEach((v) => {
                 let cardtype = findCardByNum(v.cardnum);
                 let card = new Card(cardtype, this, v.cardplace, v);
@@ -1597,7 +1605,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
             } catch (e) { }
             if (errortext != '') TextLabels.ErrorLabelText(errortext);
 
-
+            if(this.shader!=null)ctx.drawImage(this.shader.Draw(undefined, 100, 100),Player.x1,Player.y1,Player.x2,Player.y2);
 
         }
 
@@ -1778,9 +1786,9 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
             this.exchange = [];
             this.players = [];
             message.playerlist.forEach((v, i) => {
-                if (v.isDead == true) return;
+                //if (v.isDead == true) return;
 
-                let p = new Player(v.playername, v.num, i == 0, v.cards, findStateByNum(v.state), findPhaseByNum(v.phase), v.quarantineCount, v.Perseverance);
+                let p = new Player(v.playername, v.num, i == 0, v.cards, findStateByNum(v.state), findPhaseByNum(v.phase), v.quarantineCount, v.Perseverance, v.isDead);
                 p.avatar = v.avatar;
                 p.Thing = v.thing;
                 p.Infected = v.Infected;
@@ -2744,7 +2752,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
     }
 
     // window.onbeforeunload = () => LogoutGame();
-    window.addEventListener("close", LogoutGame);
+    //window.addEventListener("close", LogoutGame);
     window.addEventListener("resize", resizeCanvas);
 
     function resizeCanvas() {

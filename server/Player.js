@@ -31,6 +31,7 @@ class Player {
         this.Perseverance = [];
         this.Quarantine = null;
         this.avatar = null;
+        this.isBurn = false;
 
 
 
@@ -167,16 +168,28 @@ class Player {
     }
 
     dead() {
-        //this.room.tableToDrop();
+        this.dead2();
+        return; 
         this.isDead = true;
         this.cards.forEach(v => this.room.dropcards.push(v));
         this.cards = [];
-
-
-
         this.stopPlay();
         this.room.killPlayer(this);
     }
+
+    dead2() {
+        this.cards.forEach(v => {
+            this.room.dropcards.push(v);
+            v.MoveFromTo({ type: "player", player: this, place: v.place }, { type: "drop" });
+        });
+        this.cards = [];
+        this.stopPlay();
+        this.isBurn = true;
+        this.isDead = true;
+        
+    }   
+
+
 
     tableCard(place) {
         let index = this.findcardindex(place);
@@ -1009,7 +1022,7 @@ class Player {
         if (this.room.nextplayer == null) return;
         let nextplayer = this.room.nextplayer.place;
         let currentplayer = this.room.currentplayer.place;
-        let opponent = this.room.nextplayer.place;
+        let opponent =  this.room.getNextPlayerFor(this.room.currentplayer).place;// this.room.nextplayer.place;
         if (this.place != currentplayer) opponent = currentplayer;
         if (this.room.isPanicChain == true) {
             opponent = this.room.getNextPlayerFor(this).place;
