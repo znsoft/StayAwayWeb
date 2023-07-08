@@ -28,7 +28,7 @@
 
     затем открыть браузер на странице
 
-    http://localhost:3000
+    http://localhost
 
 
 
