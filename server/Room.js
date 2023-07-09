@@ -32,10 +32,61 @@ class Room {
         this.PanicConfessionTime = null;
         this.moves=[];
         this.avatars = [];
+        this.startedAt = null;
 
     }
 
-    
+    startgame(player){
+        this.startedAt = Date.now();
+        //this.ConfirmStart(player);
+
+        this.players.forEach((v, k) => {
+            //if(v==player)return;
+            v.isReadyToStart = false;
+            //this.addChatMessage(v, "Вы готовы играть?");
+            v.send({ messagetype: 'confirmStart',  startConfirm: this.startedAt, waitFor: 30});
+            
+        });        
+        this.spectators.forEach((v, k) => {
+            v.isReadyToStart = false;
+            //this.addChatMessage(v, "Вы готовы играть?");
+            v.send({ messagetype: 'confirmStart', startConfirm: this.startedAt, waitFor: 30});
+            
+        }); 
+        setTimeout(()=>this.checkForGameStart(),31*1000);
+
+    }
+
+    checkForGameStart(){
+
+        this.players.forEach((v) => {
+            
+            if(v.isReadyToStart == false||v.isDead==true){
+                
+                this.spectators.set(v.playername,v);
+                this.players.delete(v.playername);
+            }
+            
+        });   
+
+        this.startnewgame();
+
+    }
+
+    ConfirmStart(player){
+        //console.log("Confirm"+typeof(player));
+        this.players.set(player.playername, player);
+        this.spectators.delete(player.playername);
+        player.isDead = false;
+        player.cardForExchangeOut = null;
+        player.opponent = null;
+        player.Perseverance = [];
+        player.Quarantine = null;
+        player.isReadyToStart = true;
+        this.log(player+" подтвердил участие");
+
+
+    }
 
     addChatMessage(player, message) {
         this.chatCount++;
@@ -297,14 +348,11 @@ class Room {
     ChainPanicEnd() {
         if (this.isNotAllSelectCardForExchangeOut()) return;
         this.playersArray.forEach(v => {
-
             let nextplayer = this.getNextPlayerFor(v);
             nextplayer.IncomeExchange(v);
             //v.IncomeExchange(nextplayer);
             v.stopPlay();
-
-        }
-        );
+        }        );
         this.isPanicChain = false;
         this.tableToDrop();
         this.nowNextPlayer();
@@ -312,24 +360,22 @@ class Room {
     }
 
     logoutgame(player){
-
         player.dead();
-        
         this.log(player+" покинул игру");
-
     }
 
-    startgame(player) {
+    startnewgame() {
+        //this.startConfirmation();
         if (this.gamestarted == true) return;
         this.numofplayers = this.players.size;//.length;  
-        player.readyforstart = true;
-        if (this.numofplayers < 4) return;
+        
+        this.startedAt = null;
+        if (this.numofplayers < 4){ 
+            this.log("нельзя начать игру менее чем в 4 игрока")
+            return;}
         this.gamelog = [];
         this.avatars = [];
         for(let i=0;i<=Room.avatarscount;i++)this.avatars.push(i);
-
-
-
 
         let last_thing = null;
 
@@ -531,7 +577,8 @@ class Room {
 
         });
 
-        this.players.forEach((v, k) => {
+        this.players.forEach((v) => {
+
             if (!v.isonline()) {
 
                 if((Date.now()-v.lastseen)>5*60*1000){
@@ -544,7 +591,12 @@ class Room {
             }
             v.send({ messagetype: 'gamelog', gamelog: this.gamelog });
             v.send({ messagetype: 'chat', chat: this.chat });
-        });
+
+    });
+
+
+
+
         this.spectators.forEach((v) => {
             v.send({ messagetype: 'gamelog', gamelog: this.gamelog });
             v.send({ messagetype: 'chat', chat: this.chat });
@@ -617,6 +669,25 @@ class Room {
             callback([player]);
             return;
         }
+        callback([]);
+
+
+    }
+
+
+    findPlayerOrSpectator(playername, callback) {
+        let player = this.players.get(playername);
+        let spectator = this.spectators.get(playername);
+
+        if (player != undefined) {
+            callback(player);
+            return;
+        }
+        if (spectator != undefined) {
+            callback(spectator);
+            return;
+        }
+
         callback([]);
 
 

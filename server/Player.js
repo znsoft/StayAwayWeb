@@ -32,7 +32,7 @@ class Player {
         this.Quarantine = null;
         this.avatar = null;
         this.isBurn = false;
-
+        this.isReadyToStart = false;
 
 
     }
@@ -77,6 +77,7 @@ class Player {
 
     send(data) {
         //console.log(data);
+        data.timestamp = Date.now();
         let packet = JSON.stringify(data);
         this.socket.send(packet, { binary: false });
     }
@@ -98,12 +99,7 @@ class Player {
     update(deckData) {
 
 
-        if (!this.isonline()) {
-
-
-
-            return;
-        }
+        if (!this.isonline()) {  return; }
         this.sendplayers(deckData);
         this.lastseen = Date.now();
         this.needupdate = false;
@@ -343,8 +339,6 @@ class Player {
 
 
     nowNexPlayerForPanicConfessionTime() {
-
-
         this.stopPlay();
         let nextplayer = this.room.nextplayer;
         if (nextplayer == this.room.PanicConfessionTime) { this.endPanicConfessionTime(); return; }
@@ -356,27 +350,23 @@ class Player {
 
 
     endPanicConfessionTime() {
-
         this.stopPlay();
         this.room.currentplayer = this.room.PanicConfessionTime;
         this.room.PanicConfessionTime = null;
         this.room.tableToDrop();
         this.room.currentplayer.endTurn();
         this.room.log("время признаний закончилось");
-
     }
 
 
 
     actionPanicConfessionTime(data) {
-
         this.room.ShowMyCardsToAll(this);
         this.room.log(this + " показывает карты ");
         this.nowNexPlayerForPanicConfessionTime();
     }
 
     actionPanicNoConfessionTime(data) {
-
         // this.room.ShowMyCardsToAll(this);
         this.room.log(this + " не показывает карты. ай яй");
         this.nowNexPlayerForPanicConfessionTime();

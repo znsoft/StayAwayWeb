@@ -78,6 +78,13 @@ class Game {
             return;
         }
 
+        if(data.messagetype == 'confirmStart'){
+            room.findPlayerOrSpectator(data.playername,(player)=>{
+                room.ConfirmStart(player);
+            });
+            return;
+        }
+
         room.findPlayer(data.playername, (sqlplayerdata) => {
 
             if (sqlplayerdata.length == 0) {
@@ -101,9 +108,6 @@ class Game {
                 room.restorePlayer(socket, data);
                 return;
             }
-
-
-
 
             if (data.messagetype == 'playeraction') {
                 room.doAction(socket,  data);

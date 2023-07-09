@@ -133,9 +133,19 @@
             <button id="startgamebutton" hidden="true" onclick="startGame()"
                 data-tooltip="Подождите пока подключатся все игроки">Начать игру</button>
         </div><br><br><br><br><br><br><br><br><br><br><br><br>
-        <button id="startgamebutton" onclick="LogoutGame()" width="10" 
-        data-tooltip="Ваши карты сбросятся">Выйти</button>
+        <button id="startgamebutton" onclick="LogoutGame()" width="10"
+            data-tooltip="Ваши карты сбросятся">Выйти</button>
     </div>
+
+    <dialog style="padding: 0">
+        <div id="modal-box" style="padding: 1rem">
+            <div id="modalBoxText"></div>
+            <button id="Yes-modal-btn" onclick="confirmStart(this)">Да</button>
+            <button id="close-modal-btn">Нет</button>
+        </div>
+    </dialog>
+
+
     <canvas id="canvas" width="2000" height="2000">
         Please update your browser<br> in order
         to
@@ -145,11 +155,28 @@
 </body>
 
 <script>
+    const modal = document.querySelector('dialog');
+    const modalBox = document.getElementById('modalBoxText');
+
+    const closeModalBtn = document.getElementById('close-modal-btn')
+    
+    closeModalBtn.addEventListener('click', () => {
+        modal.close()
+        
+    });
+/*
+    document.addEventListener('click', (e) => {
+        if (isModalOpen && !modalBox.contains(e.target)) {
+            modal.close()
+        }
+    })
+*/
 
 
-const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png','/avatars/rhino.png','/avatars/rabbit.png','/avatars/ostrich.png',
-    '/avatars/monkey.png','/avatars/leopard.png','/avatars/horse.png','/avatars/giraffe.png','/avatars/fox.png',
-    '/avatars/deer.png','/avatars/cat.png','/avatars/camel.png'];
+
+    const avatars = ['/avatars/zebra.png', '/avatars/tiger.png', '/avatars/squirrel.png', '/avatars/rhino.png', '/avatars/rabbit.png', '/avatars/ostrich.png',
+        '/avatars/monkey.png', '/avatars/leopard.png', '/avatars/horse.png', '/avatars/giraffe.png', '/avatars/fox.png',
+        '/avatars/deer.png', '/avatars/cat.png', '/avatars/camel.png'];
 
     var canvas = document.getElementById("canvas");
     canvas.height = window.innerHeight;
@@ -287,21 +314,21 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
 
         load(fragmentUrl) {
 
-           // if (typeof (window.localStorage) === "undefined") {
+            // if (typeof (window.localStorage) === "undefined") {
 
-              //  if (typeof (window.shaderlog[fragmentUrl]) === 'undefined') {
-                    var xmlhttp = new XMLHttpRequest();
-                    xmlhttp.open("GET", fragmentUrl, false);
-                    xmlhttp.send();
-                    if ((xmlhttp.status === 200)) {
-                        window.shaderlog[fragmentUrl] = xmlhttp.responseText;
-                        this.fragSrc = xmlhttp.responseText;
-                    }
-             //   } else {
-               //     this.fragSrc = window.shaderlog[fragmentUrl];
-              // }
-                return;
-           // }
+            //  if (typeof (window.shaderlog[fragmentUrl]) === 'undefined') {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("GET", fragmentUrl, false);
+            xmlhttp.send();
+            if ((xmlhttp.status === 200)) {
+                window.shaderlog[fragmentUrl] = xmlhttp.responseText;
+                this.fragSrc = xmlhttp.responseText;
+            }
+            //   } else {
+            //     this.fragSrc = window.shaderlog[fragmentUrl];
+            // }
+            return;
+            // }
 
 
             if (window["localStorage"]["getItem"](fragmentUrl) === null || parseInt(window["localStorage"]["getItem"](fragmentUrl).split('\u0003')[1], 16) < window["Date"]["now"]()) {
@@ -428,12 +455,12 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
             return this.a;
         }
 
-        FadeOut(callback){
+        FadeOut(callback) {
             this.interval =
-            setInterval(()=>{
-                this.alpha = this.alpha-0.01;
-                if(this.alpha<=0){callback();clearInterval(this.interval );}
-            },100);
+                setInterval(() => {
+                    this.alpha = this.alpha - 0.01;
+                    if (this.alpha <= 0) { callback(); clearInterval(this.interval); }
+                }, 100);
 
         }
 
@@ -505,7 +532,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
 
     }
 
-  
+
 
 
     class Animator {
@@ -534,7 +561,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
         static EndGame() {
             let cards = game.Deck.cardsLeft;
             for (let t = 0; t < Math.random() * 88; t++) {
-                let cardnum = Math.round(Math.random()*29);
+                let cardnum = Math.round(Math.random() * 29);
 
 
                 let str = {
@@ -572,13 +599,13 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
 
         static DrawAll(ctx, game) {
             Animator.moves.forEach((v, k) => {
-                try{
-                if (v.isMove == false) {
-                    v.StartMove(Animator.getPosition(game, v.from), Animator.getPosition(game, v.to));
-                    //v.Move(ctx);
-                } else
-                    v.Move(ctx);
-            }catch(e){}
+                try {
+                    if (v.isMove == false) {
+                        v.StartMove(Animator.getPosition(game, v.from), Animator.getPosition(game, v.to));
+                        //v.Move(ctx);
+                    } else
+                        v.Move(ctx);
+                } catch (e) { }
             });
 
 
@@ -591,7 +618,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
             switch (fromto.type) {
                 case "player":
                     let player = game.findPlayerByNum(fromto.player);
-                    if(player==null)return {x:0,y:0};
+                    if (player == null) return { x: 0, y: 0 };
                     let coord = { x: player.x, y: player.y };
 
                     c = player.findCardByPlace(fromto.place);
@@ -681,16 +708,16 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
         static lines = new Map();
         static shader = new Shadertoy("shaders/pixelpad.glsl");
         static width = 10;
-        constructor(card,  to) {
+        constructor(card, to) {
             this.card = card;
             //this.from = from;
             this.to = to;
-            
+
             this.startpos = card;
             Lines.lines.set(card, this);
         }
 
-        static AddLine(card,lineTo){
+        static AddLine(card, lineTo) {
 
             new Lines(card, lineTo);
 
@@ -723,13 +750,13 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
             //ctx.moveTo(this.startpos.x, this.startpos.y); // Move the pen to (30, 50)
             //ctx.lineTo(this.endpos.x, this.endpos.y); // Draw a line to (150, 100)
             //ctx.stroke(); // Render the path
-            let xx = this.endpos.x -this.startpos.x  ;
-            let yy = this.endpos.y -this.startpos.y  ;
-            let d = Math.sqrt(xx*xx+yy*yy);
-            let ang = Math.atan2(yy,xx);
-            ctx.translate(this.startpos.x,this.startpos.y);
+            let xx = this.endpos.x - this.startpos.x;
+            let yy = this.endpos.y - this.startpos.y;
+            let d = Math.sqrt(xx * xx + yy * yy);
+            let ang = Math.atan2(yy, xx);
+            ctx.translate(this.startpos.x, this.startpos.y);
             ctx.rotate(ang);
-            ctx.drawImage(Lines.shader.Draw(undefined, 100, 100),0,-Lines.width/2,d,Lines.width);
+            ctx.drawImage(Lines.shader.Draw(undefined, 100, 100), 0, -Lines.width / 2, d, Lines.width);
 
             ctx.restore();
 
@@ -896,9 +923,9 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
 
     class Deck {
 
-        static Table = { x: 0, y: 100, w: 2 * CardType.width + 10, h: CardType.height+10 }
-        static Drop = { x: 200, y: -50, w: CardType.width , h: CardType.height  }
-        static Deck = { x:0, y: 0, w: CardType.width, h: CardType.height }
+        static Table = { x: 0, y: 100, w: 2 * CardType.width + 10, h: CardType.height + 10 }
+        static Drop = { x: 200, y: -50, w: CardType.width, h: CardType.height }
+        static Deck = { x: 0, y: 0, w: CardType.width, h: CardType.height }
 
         constructor(upCard, cardsLeft, dropCount, drop = [], table = [], deck) {
             this.tableMove = {};
@@ -1128,7 +1155,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
         inChange: { id: 1, Button: { Text: "Обмен", action: exchangecardin }, isInExchange: true },// OnSelectAction: exchangecard },
         SawOneCard: { id: 2, HiLightText: "Выбери карту игрока", MayMove: true, HiLightRLPlayers: true, selectNearPlayersCards: true, actionOnSelectSecondCard: ShowMeCard },
         SawAllCards: { id: 3, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: Analysis },
-        Burn: { id: 5, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: BurnPlayer, Button: {Text: "Использовать", action: PrepareBurn}  },
+        Burn: { id: 5, HiLightText: "Выбери игрока", MayMove: true, HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: BurnPlayer, Button: { Text: "Использовать", action: PrepareBurn } },
         DefendFromFire: { id: 6, Button: { Text: "Шашлык", action: DefendFromFire } },
         exChange: { id: 7, Button: { Text: "Обмен", action: exchangecardin } },
         ShowAllCards: { id: 8, HiLightText: "Показать все карты", Button: { Text: "Использовать", action: showAllCards }, },
@@ -1154,8 +1181,8 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
         PanicConfessionTime: { id: 28, HiLightText: "Время признаний", Button: { Text: "Показать карты всем", action: PanicConfessionTime } },
         PanicNoConfessionTime: { id: 29, Button: { Text: "Не показывать карты всем", action: PanicNoConfessionTime } },
         PanicStopConfessionTime: { id: 30, Button: { Text: "Остановить время признаний", action: PanicStopConfessionTime } },
-        
-        Burn2: { id: 31, HiLightText: "Выбери игрока",  HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: BurnPlayer2 },
+
+        Burn2: { id: 31, HiLightText: "Выбери игрока", HiLightRLPlayers: true, selectPlayer: true, OnSelectPlayer: BurnPlayer2 },
     };
 
     const Algoritms = {
@@ -1204,7 +1231,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
         ActionBurn2: (me, card) => {
             //if (game.selectedOpponent == null) return Actions.Nothing;
             return [Actions.Burn2];
-        },        ActionTemptation2: (me, card) => {
+        }, ActionTemptation2: (me, card) => {
             if (game.selectedOpponent == null) return Actions.Nothing;
             return card.GetExchangeArray(me, game.selectedOpponent);
         },
@@ -1354,7 +1381,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
             this.isSelected = false;
             for (let i in props) this[i] = props[i];
             if (this.isMove == true) Animator.AddCardmove(this, this.from, this.to);
-            if (this.lineTo!=undefined)Lines.AddLine(this,this.lineTo);
+            if (this.lineTo != undefined) Lines.AddLine(this, this.lineTo);
 
         }
 
@@ -1389,11 +1416,11 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
             this.cards = [];
             this.shader = null;
             this.isDead = isDead;
-            if(this.isDead&&this.isMe==false){
-                
+            if (this.isDead && this.isMe == false) {
+
                 this.shader = new Shadertoy("shaders/fire.glsl");
-                this.shader.FadeOut(()=> this.shader = null);
-            
+                this.shader.FadeOut(() => this.shader = null);
+
             }
             cards.forEach((v) => {
                 let cardtype = findCardByNum(v.cardnum);
@@ -1429,7 +1456,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
 
         }
 
-        set avatar(v){
+        set avatar(v) {
 
             this.Avatar = new Image();
             this.Avatar.src = avatars[v];
@@ -1605,7 +1632,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
             } catch (e) { }
             if (errortext != '') TextLabels.ErrorLabelText(errortext);
 
-            if(this.shader!=null)ctx.drawImage(this.shader.Draw(undefined, 100, 100),Player.x1,Player.y1,Player.x2,Player.y2);
+            if (this.shader != null) ctx.drawImage(this.shader.Draw(undefined, 100, 100), Player.x1, Player.y1, Player.x2, Player.y2);
 
         }
 
@@ -1781,7 +1808,7 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
             let j = 0;
             let selected = this.me.selected;
             //if (this.me.selected!=null) return;//заглушка чтобы карты не сбрасывались с мышки когда поступает пакет от сервера
-            Lines.DeleteAll(); 
+            Lines.DeleteAll();
             this.ShowOneCard = null;
             this.exchange = [];
             this.players = [];
@@ -1940,8 +1967,8 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
 
 
                     break;
-                    case States.SelectPlayer:
-                        stateText = "Выбери игрока";
+                case States.SelectPlayer:
+                    stateText = "Выбери игрока";
                     break;
 
             }
@@ -2209,8 +2236,8 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
                     let shader = game.shader;
                     game = new Game(message.guid);
                     game.shader = shader;
-                    if(game.shader!=null)
-                    game.shader.FadeOut(()=>game.shader=null);
+                    if (game.shader != null)
+                        game.shader.FadeOut(() => game.shader = null);
                     document.cookie = evt.data;
                     document.getElementById("loginbutton").hidden = true;
                     document.getElementById("room").hidden = true;
@@ -2235,6 +2262,27 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
                     break;
                 case 'youburned':
                     game.parseYouBurned(message);
+                    break;
+                case 'confirmStart':
+                    //console.log(message);
+                    let modal = document.querySelector('dialog');
+                    let modalBox = document.getElementById('modalBoxText');
+                    document.getElementById('Yes-modal-btn').hidden = false;
+                    closeModalBtn.hidden = false;
+                    let loosetime = (message.timestamp - message.startConfirm);
+                    let duration = message.waitFor * 1000 - loosetime;
+                    let startshow = Date.now();
+                    let estim = (duration - (Date.now() - startshow)) / 1000;
+                    modalBox.innerText = "Начало через:\n" + Math.round(estim) + " секунд\nВы готовы?";
+                    modal.showModal();
+                    let timerId =  setInterval(() => {
+                        let estim = (duration - (Date.now() - startshow)) / 1000;
+                        modalBox.innerText = "Начало через:\n" + Math.round(estim) + " секунд\nВы готовы?";
+                    }, 500);
+
+                    setTimeout(() => { modal.close();
+                        clearInterval(timerId);
+                    }, duration);
                     break;
 
 
@@ -2311,8 +2359,8 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
         websocket.senddata(p);
 
     }
-    
-    function BurnPlayer2(player){
+
+    function BurnPlayer2(player) {
 
         let p = JSON.parse(document.cookie);
         p.messagetype = 'playeraction';
@@ -2477,8 +2525,8 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
         let p = JSON.parse(document.cookie);
         p.messagetype = 'playeraction';
         p.action = "ShowAllCardsTo";
- //       p.place = pl.place;//
-//        p.bymycardplace = game.me.selectedCard.cardplace;
+        //       p.place = pl.place;//
+        //        p.bymycardplace = game.me.selectedCard.cardplace;
         p.otherPlayerName = pl.name;
         //console.log(place);
         websocket.senddata(p);
@@ -2526,13 +2574,13 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
         websocket.senddata(p);
     }
 
-    function PrepareBurn(pl){
+    function PrepareBurn(pl) {
         let p = JSON.parse(document.cookie);
         p.messagetype = 'playeraction';
         p.action = "PrepareBurn";
         p.place = pl.cardplace;//
         p.bymycardplace = game.me.selectedCard.cardplace;
-        
+
         websocket.senddata(p);
     }
 
@@ -2718,6 +2766,19 @@ const avatars=['/avatars/zebra.png','/avatars/tiger.png','/avatars/squirrel.png'
         websocket.senddata(p);
         document.getElementById("startgamebutton").hidden = false;
     }
+
+
+    function confirmStart(btn) {
+        let p = JSON.parse(document.cookie);
+    
+        p.messagetype = 'confirmStart';
+    
+        websocket.senddata(p);
+        btn.hidden = true;
+        closeModalBtn.hidden = true;
+        //modal.close();
+    }
+
 
     function LogoutGame() {
 
