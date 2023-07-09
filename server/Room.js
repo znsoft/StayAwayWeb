@@ -305,6 +305,7 @@ class Room {
         this.currentPlayer = null;
         this.additionalData = undefined;
         //this.gamelog = [];
+        this.chat = [];
         this.isPanicChain = false;
 
     }
