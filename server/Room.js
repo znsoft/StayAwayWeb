@@ -372,7 +372,7 @@ class Room {
         
         this.startedAt = null;
         if (this.numofplayers < 4){ 
-            this.log("нельзя начать игру менее чем в 4 игрока")
+            this.log("Для игры нужно минимум 4 игрока")
             return;}
         this.gamelog = [];
         this.avatars = [];
