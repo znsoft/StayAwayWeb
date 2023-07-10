@@ -85,6 +85,11 @@ class Player {
     sendGUIDToPlayer() {
         this.lastseen = Date.now();
         this.send({ messagetype: 'playerguid', guid: this.cookieguid, playername: this.playername, roomname: this.roomid, password: this.room.password, quarantineCount: this.quarantineCount, infected: this.Infected, thing: this.thing, gamenum: this.gamenum });
+        if( this.room.startedAt == null)return;
+        if(this.isReadyToStart == true) return;
+        //this.addChatMessage(v, "Вы готовы играть?");
+        this.send({ messagetype: 'confirmStart',  startConfirm: this.room.startedAt, waitFor: 30});
+    
     }
 
     insertPlayer() {
@@ -629,10 +634,16 @@ class Player {
         this.stopPlay();
 
         let exchange2 = this.room.getNextPlayerFor(this);
+        this.room.log(this + " сыграл мимо");
+        if(nextplayer==exchange2){
+            this.clearCardForExchangeOut(nextplayer);
+            this.room.nowNextPlayer();
+            return;
+        }
         exchange2.phase = Player.Phases.Answer;
         exchange2.state = Player.States.IncomeExchange;
         this.lineToCardForExchangeOut(nextplayer,{ type: "player", player: exchange2 });
-        this.room.log(this + " сыграл мимо");
+        
 
     }
 

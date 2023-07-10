@@ -68,7 +68,7 @@ class Room {
             }
             
         });   
-
+        this.startedAt = null;
         this.startnewgame();
 
     }
