@@ -222,6 +222,9 @@ class Game {
         let stateText = "";
         if (this.opponent != null) stateText = "сейчас ходит " + this.opponent;
         let phaseText = "";
+
+
+
         switch (this.me.state) {
             case States.PanicOneTwo:
                 stateText = "Выбери 3 игрока для смены мест";
@@ -259,6 +262,14 @@ class Game {
                 stateText = "Выбери свою карту \nдля обмена или отказа";
 
                 break;
+            case States.DefendPlaceChange:
+                    stateText = "Выбери свою карту \nдля отказа от смены мест или пересадки";
+    
+                    break;
+            case States.DefendFireSelectCard:
+                        stateText = "Выбери свою карту Никакого шашлыка\nдля защиты от огнемета";
+        
+                    break;
             case States.SelectCard:
                 stateText = "Выбери свою карту";
                 switch (this.me.Phase) {

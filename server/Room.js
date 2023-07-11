@@ -33,6 +33,7 @@ class Room {
         this.moves=[];
         this.avatars = [];
         this.startedAt = null;
+        this.waitFor = null;
 
     }
 
@@ -336,6 +337,8 @@ class Room {
             if(player==goodPlayer)return;
         }
 
+        
+
         //3. если у игрока на руках паника то этот игрок ... хотя стоп он должен был отобраться по 5 картам еще 
         //4. 
         throw errortext;
@@ -499,6 +502,25 @@ class Room {
 
             card = this.deckcards.pop();
             if (!card.card.isPanic) break;
+            card.MoveFromTo({type:"deck"},{type:"drop"});
+            //this.moves.push({card:card.card.num, moveto: {type:"drop"}, movefrom:{type:"deck",place:0}});
+            this.dropcards.push(card);
+        }
+        card.MoveFromTo({type:"deck"},{type:"player",player:player});
+        //this.moves.push({card:card.card.num, moveto: {type:"player"}, movefrom:});
+        player.cards.push(card);
+        player.cards.forEach((v, i) => { v.place = i });
+
+    }
+
+    giveOneActionNoInfectCardfromDeckToPlayer(player) {
+        let card = undefined;
+
+        while (true) {
+            if (this.deckcards.length < 1) this.dropToDeckWithShuffle();
+
+            card = this.deckcards.pop();
+            if (!card.card.isPanic&&card.card!=Card.CardsByPlayers.Infect) break;
             card.MoveFromTo({type:"deck"},{type:"drop"});
             //this.moves.push({card:card.card.num, moveto: {type:"drop"}, movefrom:{type:"deck",place:0}});
             this.dropcards.push(card);

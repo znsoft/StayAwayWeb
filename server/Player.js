@@ -19,8 +19,8 @@ class Player {
         this.thing = false;
         this.place = 0;
         this.gamenum = gamenum;
-        this.state = Player.States.Nothing;
-        this.phase = Player.Phases.Nothing;
+        this.State = Player.States.Nothing;
+        this.Phase = Player.Phases.Nothing;
         this.exchange = null;
         this.needupdate = true;
         this.lastseen = Date.now();
@@ -36,6 +36,23 @@ class Player {
 
 
     }
+
+    set phase(v){
+        this.Phase = v;
+    }
+    
+    get phase(){
+        return this.Phase; 
+    }
+
+    set state(v){
+        this.State = v;
+    }
+    
+    get state(){
+        return this.State; 
+    }
+
 
     toString() {
         return this.playername;
@@ -118,6 +135,7 @@ class Player {
         this.state = Player.States.SelectCard;
         this.getOneCardfromDeckForAction();
         this.room.log(this + " начинает ход");
+        this.room.waitFor = this;
         if (this.quarantineCount > 0) {
             this.quarantineCount--;
             if (this.quarantineCount == 0) {
@@ -133,6 +151,7 @@ class Player {
     endTurn() {
         this.phase = Player.Phases.Exchange;
         this.state = Player.States.SelectCard;
+        this.room.waitFor = this;
         if (this.room.nextplayer.quarantineCount == 0 && this.quarantineCount == 0 && this.room.getDoor(this, this.room.nextplayer) == undefined) return;
         this.stopPlay();
         this.nowNextPlayer();
@@ -157,6 +176,7 @@ class Player {
         let nextplayer = this.room.nextplayer;
 
         this.room.currentplayer = nextplayer;
+       // this.room.waitFor = nextplayer;
         //this.room.calcNextPlayer();
         nextplayer.startPlay();
 
@@ -236,6 +256,26 @@ class Player {
         this.Quarantine = null;
 
 
+    }
+
+    
+
+    checkFourInfect(opponent){
+        if(!this.isMyCardsOnlyInfectAndNoCardForExcange(opponent))return;
+        this.room.log("упс , у "+ this + " 4 заражения, заменяет одну из колоды");
+        let card = this.cards.pop();
+        card.MoveFromTo({type:"player",player:this},{type:"drop"});
+        this.dropcards.push(card);
+        this.room.giveOneActionNoInfectCardfromDeckToPlayer(this);
+    }
+
+
+    isMyCardsOnlyInfectAndNoCardForExcange(opponent){
+        let allmyCardIsInfect = this.cards.filter((v)=>v.card == Card.CardsByPlayers.Infect).length==4; 
+        if(!allmyCardIsInfect)return false;
+        if(!opponent.thing)return true;
+        if(this.infected)return false;
+        return true;
     }
 
     actionPanic(data) {
@@ -351,6 +391,7 @@ class Player {
         nextplayer.phase = Player.Phases.SecondAction;
         this.room.currentplayer = nextplayer;
         this.room.log("время признаний для " + nextplayer);
+        this.room.waitFor = nextplayer;
     }
 
 
@@ -532,6 +573,7 @@ class Player {
         this.state = Player.States.SelectCard;
         this.room.log(this + " выбрал карту и продолжает ход");
         this.room.tableToDrop();
+        this.room.waitFor = this;
     }
 
 
@@ -546,6 +588,7 @@ class Player {
         this.tableCard(data.bymycardplace);
         this.room.givethreePerseverenceCardsfromDeckToPlayer(this);
         this.room.log(this + " играет упорство");
+        this.room.waitFor = this;
     }
 
     actionStartTemptation(data) {
@@ -560,13 +603,12 @@ class Player {
         //this.room.opponent = null;
         this.opponent = null;
         this.room.log(this + " играет соблазн");
+        this.room.waitFor = this;
     }
 
     actionoutExchangeCard(data) {
-        //if (this.phase != Player.Phases.Exchange) throw 'Error is not you Exchange now';
-        //if (this.state != Player.States.SelectCard)  throw 'Error is not you state now'; 
         let nextplayer = this.room.getPlayerByPlayerName(data.opponent);
-
+        if (this.phase == Player.Phases.Exchange && this.state == Player.States.SelectCard) nextplayer = this.room.getNextPlayerFor(this);//  PlayerByPlayerName(data.opponent);
         this.opponent = nextplayer;
         nextplayer.opponent = this;
 
@@ -595,11 +637,19 @@ class Player {
             nextplayer.phase = Player.Phases.Answer;
             nextplayer.state = Player.States.IncomeExchange;
 
+            
+            
+
+
+            this.room.waitFor = nextplayer;
             this.room.log(this + " обменивается картами с " + nextplayer);
+            nextplayer.checkFourInfect(this);
         }
 
 
     }
+
+
 
     clearCardForExchangeOut(nextplayer){
 
@@ -642,7 +692,9 @@ class Player {
         }
         exchange2.phase = Player.Phases.Answer;
         exchange2.state = Player.States.IncomeExchange;
+        this.room.waitFor = exchange2;
         this.lineToCardForExchangeOut(nextplayer,{ type: "player", player: exchange2 });
+        exchange2.checkFourInfect(nextplayer);
         
 
     }
@@ -826,7 +878,7 @@ class Player {
         let defend = nextplayer.cards.filter((v) =>
             v.card.num == Card.CardsByPlayers.StayHere.num);
         //console.log(defend);
-        if (defend.length > 0) { this.room.log(nextplayer + " есть чем отказать "); return; }
+        if (defend.length > 0) {        this.room.waitFor = nextplayer; this.room.log(nextplayer + " есть чем отказать, ждем... "); return; }
 
         nextplayer.stopPlay();
         this.ExchangePlace(nextplayer);
@@ -857,7 +909,7 @@ class Player {
         let defend = nextplayer.cards.filter((v) =>
             v.card.num == Card.CardsByPlayers.StayHere.num);
         //console.log(defend);
-        if (defend.length > 0) return;
+        if (defend.length > 0) {this.room.waitFor = nextplayer; this.room.log(nextplayer + " есть чем отказать "); return; }
         nextplayer.stopPlay();
         this.ExchangePlace(nextplayer);
 
@@ -908,6 +960,7 @@ class Player {
 
         this.state = Player.States.SelectPlayer;
         this.phase = Player.Phases.SecondAction;
+        this.room.waitFor = this;
         this.room.log(this + " играет огнемет");
     }
 
@@ -927,7 +980,7 @@ class Player {
         let defend = nextplayer.cards.filter((v) =>
             v.card.num == Card.CardsByPlayers.FireResist.num);
         //console.log(defend);
-        if (defend.length > 0) return;
+        if (defend.length > 0) {this.room.waitFor = nextplayer; this.room.log(nextplayer + " есть чем защититься "); return; }
         this.room.log(nextplayer + " выбывает");
         nextplayer.dead();
         nextplayer.send({ messagetype: 'youburned', text: "вас сжег " + this })
@@ -957,7 +1010,7 @@ class Player {
         let defend = nextplayer.cards.filter((v) =>
             v.card.num == Card.CardsByPlayers.FireResist.num);
         //console.log(defend);
-        if (defend.length > 0) return;
+        if (defend.length > 0) {this.room.waitFor = nextplayer; this.room.log(nextplayer + " есть чем защититься "); return; }
         this.room.log(nextplayer + " выбывает");
         nextplayer.dead();
         nextplayer.send({ messagetype: 'youburned', text: "вас сжег " + this })
@@ -1023,8 +1076,11 @@ class Player {
         if (this.room.nextplayer == null) return;
         let nextplayer = this.room.nextplayer.place;
         let currentplayer = this.room.currentplayer.place;
-        let opponent =  this.room.getNextPlayerFor(this.room.currentplayer).place;// this.room.nextplayer.place;
-        if (this.place != currentplayer) opponent = currentplayer;
+        let opponent =  this.room.waitFor.place;//this.room.getNextPlayerFor(this.room.currentplayer).place;// this.room.nextplayer.place;
+        //if (this.place != currentplayer) opponent = currentplayer;
+        if (this.phase == Player.Phases.Answer)  opponent = currentplayer;
+        
+
         if (this.room.isPanicChain == true) {
             opponent = this.room.getNextPlayerFor(this).place;
         }
