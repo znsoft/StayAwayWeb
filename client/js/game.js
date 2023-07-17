@@ -15,7 +15,7 @@ class Game {
         this.currentPlayer = null;
         //            this.players =
         this.isStarted = false;
-        this.players = [new Player("Игра Нечто", 0, true, [], States.SelectCard, Phases.Action, 0)];
+        this.players = [new Player("", 0, true, [], States.Nothing, Phases.Nothing, 0)];
         this.selectedOtherCardPlace = null;
         this.me = this.players[0];
         this.Deck = new Deck(Cards.UnknownAction, 4, 2);
@@ -293,8 +293,8 @@ class Game {
 
         }
         if (this.isStarted == false) {
-            stateText = "Войдите";
-            phaseText = "и дождавшись остальных игроков\n нажмите (Начать игру)";
+            stateText = "";
+            phaseText = "";
         }
 
         new TextLabels("state", stateText + '\n' + phaseText, game.width / 2 - 200, game.height / 2 + 55, "#000", 2, 0);
@@ -427,7 +427,7 @@ class Game {
 
         ctx.save();
         ctx.translate(-20, -200);
-        this.Deck.Draw(ctx, e);
+        if( this.isStarted == true)this.Deck.Draw(ctx, e);
         ctx.restore();
         /*
                     ctx.save();

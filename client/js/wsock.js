@@ -57,6 +57,7 @@ function startWS() {
                 document.getElementById("room").hidden = true;
                 document.getElementById("login").hidden = true;
                 document.getElementById("startgamebutton").hidden = false;
+                document.getElementById("instruction").hidden = true;
 
                 break;
             case 'playerlist':
@@ -495,6 +496,7 @@ function sendLogin() {
 
     websocket.senddata(p);
     document.getElementById("startgamebutton").hidden = false;
+    document.getElementById("instruction").hidden = false;
 }
 
 
