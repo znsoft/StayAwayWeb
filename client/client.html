@@ -116,7 +116,7 @@
 <body>
     <div id="instruction" style="opacity: 0.74; position: absolute; transition: opacity 1s; align-items: center; justify-content: center; top: 50%;
     left: 50%; margin-right: -50%;    transform: translate(-50%, -50%)">
-<textarea id="instructiontext" style="text-align: center; vertical-align: middle;  " cols="115" rows="55">
+        <textarea id="instructiontext" style="text-align: center; vertical-align: middle;  " cols="115" rows="55">
 
     Противостояние разворачивается между двумя командами:
 
@@ -166,7 +166,7 @@
    
 
 </textarea>
-        </div>
+    </div>
 
 
 
@@ -187,8 +187,7 @@
             <button id="startgamebutton" hidden="true" onclick="startGame()"
                 data-tooltip="Подождите пока подключатся все игроки">Начать игру</button>
         </div><br><br><br><br><br><br><br><br><br><br><br><br>
-        <button id="logoutbutton" onclick="LogoutGame()" width="10"
-            data-tooltip="Ваши карты сбросятся">Выйти</button>
+        <button id="logoutbutton" onclick="LogoutGame()" width="10" data-tooltip="Ваши карты сбросятся">Выйти</button>
     </div>
 
     <dialog style="padding: 0">
@@ -225,8 +224,8 @@
     const modalBox = document.getElementById('modalBoxText');
 
     const closeModalBtn = document.getElementById('close-modal-btn')
-    
-    closeModalBtn.addEventListener('click', () => { modal.close()    });
+
+    closeModalBtn.addEventListener('click', () => { modal.close() });
 
 
     var canvas = document.getElementById("canvas");
@@ -246,8 +245,18 @@
 
 
     let game = new Game(123);
-    game.shader = new Shadertoy("shaders/start.glsl");
-
+    let rrr = Math.round(Math.random() * 2);
+    switch (rrr) {
+        case 0:
+            game.shader = new Shadertoy("shaders/start.glsl");
+            break;
+        case 1:
+            game.shader = new Shadertoy("shaders/eye.glsl");
+            break;
+        case 2:
+            game.shader = new Shadertoy("shaders/feathers.glsl");
+            break;
+    }
 
     window.addEventListener("mousemove", function (event) {
         if (game == null) return;
@@ -313,7 +322,7 @@
         h = canvas.height;
         game.Draw(ctx, e, w, h);
     }
-  
+
     function chat(e) {
         e = window.event;
         if (e.keyCode == 13) {

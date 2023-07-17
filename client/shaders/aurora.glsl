@@ -1,10 +1,20 @@
 
+#ifdef GL_ES
+precision mediump float;
+#endif
 
-precision highp float;
+uniform float alpha;
+
+// glslsandbox uniforms
 uniform float time;
-uniform vec2 mouse;
 uniform vec2 resolution;
-uniform sampler2D texture;
+uniform vec2 mouse;
+// shadertoy globals
+float iTime = 0.0;
+vec3  iResolution = vec3(0.0);
+vec4 iMouse = vec4(0.0);
+
+
 #define iGlobalTime time
 #define iTime time
 #define iMouse (mouse * resolution)
@@ -151,10 +161,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     }
 
 
-	fragColor = vec4(col, 1);
+	fragColor = vec4(col, alpha);
 }
 void main( void ) {
 	vec4 colo = vec4(0.0);
 	mainImage(colo, gl_FragCoord.xy);
+    //colo.a = colo.a* alpha;
 	gl_FragColor = colo;
 }

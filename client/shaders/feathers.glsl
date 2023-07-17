@@ -1,3 +1,18 @@
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform float alpha;
+
+// glslsandbox uniforms
+uniform float time;
+uniform vec2 resolution;
+uniform vec2 mouse;
+// shadertoy globals
+float iTime = 0.0;
+vec3  iResolution = vec3(0.0);
+vec4 iMouse = vec4(0.0);
+
 #define S smoothstep
 #define T (iTime*2.3)
 
@@ -109,4 +124,15 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     col = pow(col, vec4(.4545));
     
     fragColor = col;
+}
+
+// --------[ Original ShaderToy ends here ]---------- //
+
+void main(void)
+{
+    iTime = time;
+    iResolution = vec3(resolution, 0.0);
+    iMouse = vec4(mouse,0.0,0.0);
+    mainImage(gl_FragColor, gl_FragCoord.xy);
+    gl_FragColor.a = alpha;
 }
