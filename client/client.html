@@ -245,6 +245,8 @@
 
 
     let game = new Game(123);
+
+/*
     let rrr = Math.round(Math.random() * 2);
     switch (rrr) {
         case 0:
@@ -257,6 +259,8 @@
             game.shader = new Shadertoy("shaders/feathers.glsl");
             break;
     }
+*/
+    game.shader = new Shadertoy("shaders/eye.glsl");
 
     window.addEventListener("mousemove", function (event) {
         if (game == null) return;
