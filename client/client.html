@@ -194,7 +194,7 @@
         <div id="modal-box" style="padding: 1rem">
             <div id="modalBoxText"></div>
             <button id="Yes-modal-btn" onclick="confirmStart(this)">Да</button>
-            <button id="close-modal-btn">Нет</button>
+            <button id="close-modal-btn" onclick="document.querySelector('dialog').close()">Нет</button>
         </div>
     </dialog>
 
@@ -223,7 +223,9 @@
     const modal = document.querySelector('dialog');
     const modalBox = document.getElementById('modalBoxText');
 
-    const closeModalBtn = document.getElementById('close-modal-btn')
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const yesModalBtn = document.getElementById('Yes-modal-btn')
+    yesModalBtn.addEventListener('click', () => { confirmStart(yesModalBtn) });
 
     closeModalBtn.addEventListener('click', () => { modal.close() });
 

@@ -609,7 +609,7 @@ class Player {
     actionoutExchangeCard(data) {
         let nextplayer = this.room.getPlayerByPlayerName(data.opponent);
         if (this.phase == Player.Phases.Exchange && this.state == Player.States.SelectCard) nextplayer = this.room.getNextPlayerFor(this);//  PlayerByPlayerName(data.opponent);
-        if(nextplayer==this) throw 'Вы неможете выбрать себя для обмена';
+        if(nextplayer==this) throw 'Вы не можете выбрать себя для обмена';
         
         this.opponent = nextplayer;
         nextplayer.opponent = this;
