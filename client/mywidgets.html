@@ -1,0 +1,144 @@
+<html>
+<style>
+body {
+  font-family: Arial;
+  height: 100vh;
+  background: linear-gradient(#7d6cfc, #76aaf8);
+}
+
+
+.sortable {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sortable li {
+  margin: 0px 3px 3px 0;
+  padding: 1px;
+  float: left;
+  width: 545px;
+  height: 500px;
+  background: linear-gradient(#0c0c0f, #35ea62);
+  border-radius: 15%;
+}
+
+.action {
+ 
+  background-color: #f7fa42;
+  border-radius: 15%;
+  text-align: center;
+  box-shadow: 0 5px 5px rgba(0,0,0,0.1);
+}
+
+.action button {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 0;
+  border-radius: 25%;
+  font-size: 40px;
+  color: #a13dea;
+  transition: 0.3s ease-in-out;
+  outline: none;
+  cursor: pointer;
+  transform:scale(0.9);
+}
+
+.action.active button {
+  transform:scale(1);
+}
+
+
+
+/*
+.action ul {
+  position: absolute;
+  bottom: 55px;
+  background-color: #fff;
+  min-width: 100px;
+  display: grid;
+  grid-gap: 10px;
+  border-radius: 20px;
+  padding: 20px;
+  list-style-type: none;
+  margin: 0;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s;
+}
+
+.action.active ul {
+  opacity: 1;
+  visibility: visible;
+  transition: 0.3s;
+  bottom: 65px;
+}
+*/
+
+</style>
+<body>
+<ul class="sortable">
+
+
+<li>
+    <div class="action">
+        SomeBody
+        <button><table>000
+            <td>1.menu</td>
+            <td>2.vessel</td>
+            <td>3.gdugh</td>
+            
+            <tr>
+            
+                <td>4</td>
+                <td>5</td>
+                <td>6</td>
+
+                <tr>
+                    
+                    <td>7</td>
+                    <td>8</td>
+                    <td>9</td>
+
+             </table></button>
+
+
+      </div>
+    </li>
+
+
+    <li>
+
+kjnkjnjkn
+    </li>
+<li>
+
+oiojoijuoij
+</li>
+
+
+    </ul>
+    <script>
+const action = document.querySelector('.action');
+action.addEventListener('click', ()=> {
+  action.classList.toggle('active')
+})
+        </script>
+    </body>
+
+</html>  
+        
+    
+
+
+
