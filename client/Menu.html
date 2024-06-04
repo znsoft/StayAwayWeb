@@ -1235,16 +1235,58 @@
         overflow-y: hidden;
     }
 
+    .buttonstable {
+        list-style-type: none;
+        width: 100%;
+        height: 100%;
+        margin-left: 0;
+        margin-right: 0;
+        z-index: 1;
+        border-radius: 10%;
+        align-content: space-around;
+        justify-content: center;
+        align-items: stretch;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+        overflow-x: hidden;
+        overflow-y: hidden;
+        table-layout: fixed;
+    }
 
+    .buttonstable td {
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    .buttonstable tr {
+        justify-content: center;
+        flex-shrink: 1;
+    }
+
+
+    .buttonstable button {
+        width: 100%;
+        height: 100%;
+        border-color: #ecd341;
+        background: linear-gradient(#f3e17b, #f1f1bd);
+        color: rgb(0, 0, 0);
+        border-radius: 10%;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        font-size: 3vw;
+        flex-grow: 1;
+    }
 
 
 
     .keyboard {
         position: absolute;
-        top: 14%;
-        padding-left: 1%;
-        width: 55%;
-        height: 62%;
+        bottom: 25%;
+        width: 58%;
+        height: 60%;
         align-items: flex-end;
     }
 
@@ -1274,11 +1316,17 @@
         background-image: linear-gradient(to bottom, #4d6398, #334266);
     }
 
-
-    .button.next {
-
+    .button::before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        padding: 1px;
         width: 100%;
-
+        height: 100%;
+        top: -1px;
+        left: -1px;
+        border-radius: 5px;
+        background-image: linear-gradient(to bottom, #1a2133, #222c44);
     }
 
     .button.clear {
@@ -1290,47 +1338,48 @@
         font-size: 2vw;
     }
 
-    .button.backspace {
-        /*position: relative;
-        top: 8px;
-
-        right: 3px;*/
-        align-content: center;
-        vertical-align: middle;
-        text-align: center;
+    .button.search {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' stroke='%23fffff' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        fill: #ffffff;
+        stroke: #ffffff;
+        width: 9%;
+        height: 7%;
+        margin-right: 5px;
+        padding-top: 15px;
+        margin-top: -15px;
         color: #ffffff;
+        font-size: 2vw;
 
-        font-size: 3vw;
     }
 
-
+    .button.backspace {
+        text-align: center;
+        align-self: center;
+        align-content: center;
+        vertical-align: middle;
+        /*margin-right: -7%;*/
+        /*right: 0;*/
+        color: #ffffff;
+        /*flex-shrink: 1;*/
+        /*width: 10%;*/
+        height: 10%;
+        font-size: 4vw;
+    }
 
     .button.close {
-        /* position: fixed;*/
-        /*left: 3px;
-        top:9px;*/
+        /* right: -1px;*/
         color: #ffffff;
-        width: 10%;
-        height: 100%;
+        /*        flex-shrink: 1;*/
+        width: 20%;
+        height: 10%;
         font-size: 4vw;
-        z-index: 4;
     }
 
     .button.close.collapsed {
-        width: 25%;
-    }
-
-
-    .button.Записать {
-        //*position: fixed;
-        top: 9px;
-        */ padding-right: 5px;
-        right: 3px;
-        color: #ffffff;
-        width: 15%;
-        height: 100%;
-        font-size: 2vw;
-        z-index: 4;
+        width: 5%;
     }
 
     .button.open {
@@ -1364,126 +1413,10 @@
         font-size: 3vw;
     }
 
-    .СтильОсновногоОкна {
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-        height: 100%;
-    }
-
-    .ЗаголовокОкна {
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-        height: 13%;
-        border-color: #413d2b;
-        background: linear-gradient(#e2d9a3, #f1f1bd);
-        color: rgb(0, 0, 0);
-        border-radius: 4%;
-        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
-        font-size: 4vw;
-        resize: none;
-        z-index: 2;
-        font-weight: bold;
-        margin-bottom: 7px;
-        transform: translateZ(0);
-    }
-
-
-
-
-    .СтильЛевогоОкна {
-        transition: 1s;
-        height: 85%;
-        width: 100%;
-        align-content: space-between;
-    }
-
-    .ЛевоеОкноСЗаголовком {
-        transition: 1s;
-        width: 100%;
-        align-content: space-between;
-    }
-
-    .ЛевоеОкноСЗаголовком.collapsed {
-        width: 85%;
-        padding-right: 10%;
-    }
-
-
-    .СтильПравыйБлок {
-        flex-grow: 4;
-        width: 60%;
-        align-content: space-between;
-
-    }
-
-    .Середина {
-        flex-grow: 3;
-        width: 10%;
-        align-content: space-between;
-    }
-
-    .СтильПравыйБлок.collapsed {
-        transition: 1s;
-        flex-grow: 0;
-        align-content: flex-end;
-        width: 0px;
-        margin-right: -2%;
-    }
-
-
-
-    .ЗаголовокПоиска {
-
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-        height: 13%;
-        border-color: #413d2b;
-        background: linear-gradient(#e2d9a3, #f1f1bd);
-        color: rgb(0, 0, 0);
-        border-radius: 4%;
-        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
-        font-size: 4vw;
-        resize: none;
-        z-index: 2;
-        font-weight: bold;
-        margin-left: 3%;
-    }
-
-    .СтильПравыйБлок.expanded {
-        margin-right: 0;
-        transition: 1s;
-        margin-right: 0%;
-    }
-
-    .СтильПолеВводаПравое {
-        padding-left: 1%;
-        margin-left: 1%;
-        vertical-align: middle;
-        top: 3px;
-        overflow: hidden;
-        /*height: 900%;*/
-        width: 85%;
-        border-style: none;
-        align-self: center;
-        /*border-color: #413d2b;*/
-        background: linear-gradient(#e2d9a3, #f1f1bd);
-        color: rgb(0, 0, 0);
-        border-radius: 5%;
-        /*box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);*/
-        font-size: 4vw;
-        resize: none;
-        z-index: 2;
-        /*margin-top: -6px;*/
-
-    }
 
 
     .error-line {
-        /*position: fixed;
-        top: 50%;*/
+        display: flex;
         align-self: center;
         align-content: center;
         vertical-align: middle;
@@ -1493,126 +1426,112 @@
         font-size: 3vw;
     }
 
-
-    .ПанельБольшихКнопокСписком {
-        list-style-type: none;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .ПанельБольшихКнопокСписком li {
-        margin: 0px 3px 3px 0;
-        padding: 1px;
-        float: left;
-        background: linear-gradient(#f1f397, #f5f5f3);
-        color: black;
-        border-radius: 10%;
-        text-align: center;
-        /*justify-content: center;*/
-        align-items: center;
-        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
-
-    }
-
-    .ПанельБольшихКнопок {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        grid-gap: 1px;
-        grid-auto-rows: minmax(1px, auto);
-
-        height: 100%;
-        text-align: center;
-
-        font-size: 4vh;
-        font-weight: bold;
-
-    }
-
-    .ПанельБольшихКнопок button {
-        margin: 0px 3px 3px 0;
-        padding: 1px;
-        float: left;
-        background: linear-gradient(#f1f397, #f5f5f3);
-        color: black;
-        border-radius: 10%;
-        text-align: center;
-        justify-content: center;
-        align-items: center;
-        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
-        font-size: 3vw;
-    }
-
-    .ПанельБольшихКнопок button:active {
-        padding: 2px;
-        background: linear-gradient(#ccce63, #a8a89c);
-        border-radius: 15%;
-        box-shadow: 0 11px 11px rgba(0, 0, 0, 0.1);
-    }
-
-
-    .ТаблицаАдреса {
+    .lefttables {
+        display: flex;
+        flex-direction: column;
+        bottom: 25%;
         width: 100%;
+        height: 85%;
+
+    }
+
+    .table {
+
+        top: 3%;
+        width: 100%;
+        margin-bottom: 7px;
         border-color: #413d2b;
         background: linear-gradient(#e2d9a3, #f1f1bd);
         color: rgb(0, 0, 0);
         border-radius: 3%;
         box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
-        font-size: 2vw;
-        text-wrap: wrap;
+
     }
 
     .wraptext {
         text-wrap: wrap;
     }
 
+    .table.search {
 
-    .ТаблицаАдреса .tabulator-header {
-        font-size: 2vw;
-    }
-
-
-    .ТаблицаАдреса .tabulator-paginator {
-        margin-bottom: 25px;
-        height: 25px;
-    }
-
-    .ТаблицаАдреса .tabulator-page {
-        margin-bottom: 25px;
-        border-color: #413d2b;
-
-        color: rgb(0, 0, 0);
-        border-radius: 3%;
-        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
-        font-size: 2vw;
-        text-wrap: wrap;
-        height: 25px;
-    }
-
-    .ТаблицаАдреса button {
-        width: 45px;
-        height: 45px;
         font-size: 3vw;
-        background-color: linear-gradient(to bottom, #fc5e5e, #dfbdbc);
-        color: #1a2133;
-        border-radius: 7%;
-        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+    }
 
+    .table.result {
+        font-size: 2vw;
+    }
+
+    .table .tabulator-header {
+        font-size: 2vw;
     }
 
 
+    .searcharea {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        height: 100%;
+    }
+
+    .search-block-left {
+
+        flex-grow: 3;
+        width: 60%;
+    }
+
+    .search-block-right {
+        flex-grow: 2;
+        width: 40%;
+        align-content: space-between;
+    }
+
+    .search-block-middle {
+        flex-grow: 0;
+        width: 6%;
+        align-content: space-between;
+        margin-right: 10px;
+    }
+
+    .search-block-right.collapsed {
+        transition: 1s;
+        flex-grow: 0;
+        align-content: flex-end;
+        width: 0px;
+        margin-right: -2%;
+    }
+
+    .search-block-right.expanded {
+        margin-right: 0;
+        transition: 1s;
+        flex-grow: 2;
+        width: 40%;
+        align-content: space-between;
+        margin-right: 0%;
+    }
+
+    .input-search {
+        vertical-align: middle;
+        width: 84.5%;
+        border-style: none;
+        margin-right: 1px;
+        /*border-color: #413d2b;*/
+        background: linear-gradient(#e2d9a3, #f1f1bd);
+        color: rgb(0, 0, 0);
+        border-radius: 5%;
+        /*box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);*/
+        font-size: 5vw;
+        resize: none;
+        z-index: 2;
+
+    }
 
     .textcentre {
         text-align: center;
-        /*align-self: center;*/
+        align-self: center;
         align-content: center;
         vertical-align: middle;
 
 
-    }
-
-    .СтильЛевогоОкна.collapsed {
-        transition: 1s;
-        width: 60%;
     }
 
 
@@ -1620,12 +1539,42 @@
         width: 100%;
     }
 
-    .off {
-        display: none;
+    .search-header {
+
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        border-color: #413d2b;
+        background: linear-gradient(#e2d9a3, #f1f1bd);
+        color: rgb(0, 0, 0);
+        border-radius: 4%;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+        font-size: 3vw;
+        resize: none;
+        z-index: 2;
+        font-weight: bold;
+    }
+
+    .leftwindow {
+        transition: 1s;
+        width: 90%;
+        align-content: space-between;
+    }
+
+    .leftwindow.expanded {
+        transition: 1s;
+        width: 98.9%;
+        align-content: space-between;
     }
 
 
+    .leftwindow.expanded .button.close {
+        width: 7%;
+    }
 
+    .off {
+        display: none;
+    }
 
     .grow3 {
         flex-grow: 3;
@@ -1635,282 +1584,260 @@
         flex-grow: 2;
     }
 
-    .ТаблицаСекции {
-
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        height: 100%;
-        align-items: stretch;
-        background-color: #ffffff;
-        justify-content: stretch;
-
-    }
-
-    .СтрокаТаблицыСекции {
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-        /*align-items: stretch;*/
-        justify-content: stretch;
-        justify-items: stretch;
-        flex-grow: 1;
-
-    }
-
-    .ЯчейкаТаблицыСекции {
-        display: grid;
-        grid-template-columns: repeat(1fr, 2);
-        grid-gap: 1px;
-        /*grid-auto-rows: minmax(1px, auto);*/
-        overflow-y: auto;
-        height: 100%;
-        border-style: solid;
-        border-width: 1px;
-        flex-grow: 1;
-        font-size: 4vh;
-        font-weight: bold;
-
-    }
-
-    .ЯчейкаТаблицыСекции div:nth-child(even) {
-        background-color: lightyellow;
-    }
-
-    .ЯчейкаТаблицыСекцииРяд {
-        height: 100%;
-        text-align: center;
-        flex-grow: 1;
-        font-size: 3vh;
-        font-weight: bold;
-        color: #133519;
-        background-color: rgb(229, 243, 178);
-        border-top-color: #000;
-        border-top: #000;
-        border-top-style: solid;
-
-    }
-
 
 
     .КлавиатураВыборСекций {
         display: grid;
-        height: 100%;
-        grid-template-columns: repeat(7, 1fr);
-        grid-gap: 10px;
-        grid-auto-rows: minmax(10px, auto);
+        height:100%;
+        width:100%;
+        grid-template-columns: repeat(2,50%);
+/*        grid-template-rows: 1fr;
+        grid-template-columns: repeat(50px, 50px);*/
+        grid-gap: 9px;
+        /*grid-auto-rows: minmax(10px, auto);*/
+        padding-right: 9px;
 
-
-        flex-grow: 1;
     }
 
     .КлавиатураВыборСекций div {
         border-style: solid;
         border-width: 1px;
-        padding-right: 7px;
+        padding-right: 9px;
         padding-left: 7px;
         margin-left: 7px;
-        margin-right: 7px;
+        margin-right: 9px;
         padding-top: 7px;
         margin-top: 7px;
         border-radius: 5px;
         box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
-        
+
         vertical-align: middle;
         display: flex;
-        align-items: center ;
+        align-items: center;
 
     }
 
     .КлавиатураВыборСекций div>p {
-        font-size: 4vh;
-        font-weight: bold;
-        text-align: center; 
-        width:100%;   
+        text-align: center;
+        width: 100%;
     }
 
+    .КлавиатураВыборСекций button {
+        font-size: 3vw;
 
-    .СтильКнопкиДобавитьСтроку {
-        width: 100%;
-        height: 10%;
-        font-size: 4vw;
-        background-color: linear-gradient(to bottom, #fc5e5e, #dfbdbc);
-        color: #1a2133;
-        border-radius: 7%;
+        
+        
+        border-color: #ecd341;
+        background: linear-gradient(#f3e17b, #f1f1bd);
+        color: rgb(0, 0, 0);
+        border-radius: 10%;
         box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
-        background-image: linear-gradient(to bottom, #67b27a, #5aad68);
+
+        text-wrap: wrap;
+        
+        border-style: solid;
+        border-width: 1px;
+        padding-right: 9px;
+        padding-left: 7px;
+        margin-left: 7px;
+        margin-right: 9px;
+        padding-top: 7px;
+        margin-top: 7px;
+
+
+        
     }
 
-
-    @keyframes АнимацияОжиданияОтвета {
-        0% {
-            background-position: -800px 0
-           
-
-        }
-
-        100% {
-            background-position: 800px 0
-            
-
-        }
-    }
-
-    .АнимированныйФон {
-        transform: translateZ(0);
-        animation-duration: 2s;
-        animation-fill-mode: forwards;
-        animation-iteration-count: infinite;
-        animation-name: АнимацияОжиданияОтвета;
-        animation-timing-function: linear;
-        background: linear-gradient(to right, #f1f397 8%, #bbbbbb 18%, #f1f397 33%);
-        background-size: 800px 104px;
-    }
-
-    .ВопросПоЦентруЭкрана {
-
-        display: flex;
-        flex-direction: column;
-
-        align-items: center;
-
-        justify-content: center;
-
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-
-        z-index: 5;
-
-
-
-    }
-
-
-    .ТекстНаВесьЭкран {
-        margin-top: 10%;
-        width: 100%;
-        height: 100%;
-        font-size: 8vw;
-        align-self: center;
-    }
-
-
-    .КнопкиВопросаНаВесьЭкран {
-
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        width: 100%;
-        height: 30%;
-        align-items: center;
-        justify-items: stretch;
-
-    }
 </style>
 
 
 <body>
     <a id="lnk" hidden=true></a>
 
-    <div id="ОсновноеОкно" class="СтильОсновногоОкна">
+    <div id="searcharea" class="off">
+        <div class="searcharea">
+            <div class="search-block-left" id="leftsearch">
+                <div id="leftwindow" class="leftwindow">
+                    <div id="leftheader" class="search-header">
+                        <button class="button close" type="button" id="closesearch">⏎</button>
+                        <div id="leftheadertitle" class="textcentre width100 grow3">Поиск по маркировке</div>
+                    </div>
 
-        <div id="ЛевоеОкноСЗаголовком" class="ЛевоеОкноСЗаголовком">
-            <div id="closebuttondiv" class="ЗаголовокОкна">
-                <button class="button close" type="button" id="Назад">⏎</button>
-                <div id="ЗаголовокОкна" class="textcentre width100 grow3" style="align-self: center;">Инвентаризация
+                    <div id="errortext" class="error-line off"></div>
+                    <div id="lefttables" class="lefttables"></div>
+
                 </div>
-                <button class="button Записать off" type="button" id="Записать">Записать</button>
             </div>
-            <div id="errortext" class="error-line textcentre off"></div>
-            <div id="ЛевоеОкно" class="СтильЛевогоОкна">
+
+            <div class="search-block-middle" id="middlesearch">
+
+                <button class="button open off" type="button" id="openkeypad">&leftarrow;</button>
+            </div>
+
+            <div class="search-block-right" id="rightsearch">
+                <div id="rightheader" class="search-header">
+                    <textarea id="input-search" class="input-search textcentre" rows="1" readonly></textarea>
+                    <button class="button backspace" type="button" id="erasebutton">⌫</button>
+                </div>
+
+                <section class="keyboard">
+                    <div class="keyboard-line">
+                        <button class="button key" type="button" id="index_0">1</button>
+                        <button class="button key" type="button" id="index_1">2</button>
+                        <button class="button key" type="button" id="index_2">3</button>
+                    </div>
+                    <div class="keyboard-line">
+                        <button class="button key" type="button" id="index_12">4</button>
+                        <button class="button key" type="button" id="index_13">5</button>
+                        <button class="button key" type="button" id="index_14">6</button>
+                    </div>
+                    <div class="keyboard-line">
+                        <button class="button key" type="button" id="index_24">7</button>
+                        <button class="button key" type="button" id="index_25">8</button>
+                        <button class="button key" type="button" id="index_26">9</button>
+                    </div>
+                    <div class="keyboard-line">
+                        <button class="button key" type="button" id="slashbutton">/</button>
+                        <button class="button key" type="button" id="index_28">0</button>
+                        <button class="button clear" type="button" id="clearbutton">Очистить</button>
+                    </div>
+                </section>
+
+
 
             </div>
 
         </div>
-
-
-
-
-        <div class="Середина off" id="КнопкаОткрытьКлавиатуру">
-            <button class="button open " type="button" id="ПоказатьКлавиатуру">&leftarrow;</button>
-        </div>
-
-        <div class="СтильПравыйБлок off" id="Клавиатура">
-
-            <div id="rightheader" class="ЗаголовокПоиска">
-                <textarea id="СтильПолеВводаПравое" class="СтильПолеВводаПравое textcentre" rows="1"
-                    readonly></textarea>
-                <button class="button backspace" type="button" id="erasebutton">⌫</button>
-            </div>
-
-            <section class="keyboard">
-                <div class="keyboard-line">
-                    <button class="button key" type="button" id="index_0">1</button>
-                    <button class="button key" type="button" id="index_1">2</button>
-                    <button class="button key" type="button" id="index_2">3</button>
-                </div>
-                <div class="keyboard-line">
-                    <button class="button key" type="button" id="index_12">4</button>
-                    <button class="button key" type="button" id="index_13">5</button>
-                    <button class="button key" type="button" id="index_14">6</button>
-                </div>
-                <div class="keyboard-line">
-                    <button class="button key" type="button" id="index_24">7</button>
-                    <button class="button key" type="button" id="index_25">8</button>
-                    <button class="button key" type="button" id="index_26">9</button>
-                </div>
-                <div class="keyboard-line">
-                    <button class="button key" type="button" id="slashbutton">/</button>
-                    <button class="button key" type="button" id="index_28">0</button>
-                    <button class="button clear" type="button" id="clearbutton">Очистить</button>
-                </div>
-            </section>
-
-
-
-        </div>
-
     </div>
 
-    <div id="ВопросПоЦентруЭкрана" class="off">
-        <div id="ТекстНаВесьЭкран" class="ТекстНаВесьЭкран textcentre"></div>
-        <div id="КнопкиВопросаНаВесьЭкран" class="КнопкиВопросаНаВесьЭкран"> </div>
-    </div>
+<div id="buttons" class="КлавиатураВыборСекций">
+</div>
 
 
+    <table id="buttons1" class="buttonstable">
+    </table>
     <script>
-        async  function return1c(element, data1) {
+        //                        <input type="none" id="input-search">
 
-            Ожидание();
-
+        function return1c(element, data1) {
             let lnk = document.getElementById("lnk");
             let evt = document.createEvent("MouseEvent");
             evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, null);
 
+            //let lnk = document.getElementById("lnk");
             evt.data = JSON.stringify(data1);
 
+            //console.log(data1);
             lnk.dispatchEvent(evt);
         }
 
+        function clear(id) {
+            let buttons = document.getElementById(id);
+            buttons.innerHTML = "";
+        }
 
-        //var таймерОжидание = 0;
-        function Ожидание() {
-            let elem = document.getElementById("closebuttondiv");
-            elem.classList.add("АнимированныйФон");
-            //таймерОжидание = setInterval(()=>{console.log(Math.random());elem.style.backgroundPositionX++;  },0.1);//elem.style.backgroundPositionX
+        function addButton(rowid, buttonid, ref, inner) {
+
+            let buttons = document.getElementById("buttons");
+/*
+            let row = document.getElementById(rowid);
+            if (row == null) {
+                row = document.createElement("tr");
+                row.setAttribute("id", rowid);
+                buttons.appendChild(row);
+            }
+            let button;// = document.getElementById(buttonid);
+
+            //if (button == null) {
+            let td = document.createElement("td");
+            row.appendChild(td);*/
+            button = document.createElement("button");
+            //button.setAttribute("id",buttonid);
+            button.setAttribute("href", ref);
+            button.addEventListener("click", (t, e) => return1c(button, { "type": "menubutton", "ref": ref, "id": buttonid }));
+            button.innerHTML = inner;
+            //button.append(inner);
+            //button.appendChild(inner);
+            buttons.appendChild(button);
+            //td.appendChild(button);
+            //}
+
+
+        }
+
+        function addElement(parentid, id, type, cssclassid) {
+
+            let alreadyHere = document.getElementById(id);
+            if (alreadyHere != null) return;
+
+
+
+            let ul = document.getElementById(parentid);
+            t = document.createElement(type);
+            t.setAttribute("id", id);
+            t.setAttribute("class", cssclassid);
+            ul.appendChild(t);
+
+        }
+
+        function updateElement(id, innerHTML, attr = "") {
+            let e = document.getElementById(id);
+            if (e == null) return;
+            if (innerHTML != null) e.innerHTML = innerHTML;
+            try {
+                let obj = JSON.parse(attr);
+                for (let prop in obj) {
+                    e.setAttribute(prop, obj[prop]);
+                }
+            } catch (err) {
+            }
         }
 
 
-        function СнятьОжидание() {
-            let elem = document.getElementById("closebuttondiv");
-            elem.classList.remove("АнимированныйФон");
-            //clearInterval(таймерОжидание);
+        function enableElement(id) {
+            let elem = document.getElementById(id);
+            if (elem == null) return;
+            elem.classList.remove("off");
         }
 
-        function ДобавитьЭлемент(parentid, id, type, attr = "", innerHTML = null) {
+        function disableElement(id) {
+            let elem = document.getElementById(id);
+            if (elem == null) return;
+            elem.classList.add("off");
+        }
+
+        function addTable(parentid, tableid, cssclassid) {
+
+            let alreadyHere = document.getElementById(tableid);
+            if (alreadyHere != null) return;
+            let ul = document.getElementById(parentid);
+            t = document.createElement("div");
+            t.setAttribute("id", tableid);
+            t.setAttribute("class", cssclassid);
+            ul.appendChild(t);
+
+        }
+
+        function updateTable(tableid, data, options) {
+            let searchtable = document.getElementById(tableid);
+
+            options_ = JSON.parse(options);
+            options_.data = JSON.parse(data);
+            let table = new Tabulator("#" + tableid, options_);
+
+            table.on("rowClick", function (e, row) {
+                return1c(searchtable, { "type": "tablerow", "row": row._row.data, "id": tableid });
+            });
+
+            table.on("rowTap", function (e, row) {
+
+            });
+
+
+        }
+
+
+        function ДобавитьЭлемент(parentid, id, type = "div", attr = "", innerHTML = null) {
             let t = document.getElementById(id);
             if (t != null) return;
 
@@ -1980,16 +1907,16 @@
             let searchtable = document.getElementById(tableid);
 
             options_ = JSON.parse(options);
+            for (let tabParam in options_) {
+                if (typeof options_[tabParam] === 'string' || options_[tabParam] instanceof String)
+                    if (options_[tabParam].startsWith("function")) {
+                        options_[tabParam] = new Function("return " + options_[tabParam])();
+
+                    }
+            }
+
             options_.data = JSON.parse(data);
             window[tableid] = new Tabulator("#" + tableid, options_);
-
-            //            table.on("rowClick", function (e, row) {
-            //              return1c(searchtable, { "type": "ВыбранаСтрокаТаблицы", "row": row._row.data, "id": tableid });
-            //        });
-
-            //            table.on("rowTap", function (e, row) {
-            //              return1c(searchtable, { "type": "ВыбранаСтрокаТаблицы", "row": row._row.data, "id": tableid });
-            //        });
 
             window[tableid].on("cellClick", function (e, cell) {
                 return1c(searchtable, { "type": "ВыбранаЯчейкаТаблицы", "ДанныеСтроки": cell._cell.row.data, "Колонка": cell._cell.column.field, "Значение": cell._cell.value, "id": tableid });
@@ -2004,39 +1931,9 @@
         }
 
 
-        function ВыстроитьСекции(parentid, id, data) {
-            //console.log(data);
-            let data_ = JSON.parse(data);
-            let КоличествоСекцийНаЭкран = data_.Список.length;
-            let КоличествоСекцийНаСтроку = Math.floor(Math.sqrt(КоличествоСекцийНаЭкран)) + 2;
-            //console.log(КоличествоСекцийНаСтроку);
-            //let Максимум = data_.Максимум;
-            let parent = ДобавитьЭлемент(parentid, id, "div", "{\"class\":\"КлавиатураВыборСекций\",\"style\":\"grid-template-columns: repeat(" + КоличествоСекцийНаСтроку + ",1fr);\"}");
-            //parent.style.grid-template-columns = "repeat(" + КоличествоСекцийНаСтроку + ",1fr);";
-            let НомерЗаписи = 1;
-            for (let ДанныеКнопки of data_.Список) {
-                let Максимум = ДанныеКнопки.Максимум;
-                let Процент = Math.round(100 - 100 * ДанныеКнопки.Значение / (Максимум == 0 ? 1 : Максимум));
-                let СтильКнопки = "{\"style\": \"КонтейнерКнопкиВыбораСекции\",\"style\": \"background-image: linear-gradient(to bottom, #f1f397 ,#f5f5f3 " + Процент + "% ,  #a6b9e4 " + (Процент + 1) + "% , #455887);\" }";
-                let КнопкаСекции_id = "КнопкаСекции_" + НомерЗаписи;
-                ДобавитьЭлемент(id, КнопкаСекции_id, "div", СтильКнопки);
-                ДобавитьЭлемент(КнопкаСекции_id, КнопкаСекции_id + "button", "p", "", ДанныеКнопки.Представление);
-                //ДобавитьЭлемент(id, КнопкаСекции_id, "button", СтильКнопки, ДанныеКнопки.Представление);
-                ПриНажатии(КнопкаСекции_id, ДанныеКнопки.ФормаВыбора, ДанныеКнопки.Ссылка);
-                НомерЗаписи++;
-            }
-
-
-
-        }
-
-
-
         function ПриНажатии(id, type, ref) {
             let element = document.getElementById(id);
-            /*            element.addEventListener(type,(e,ee)=>{
-                            return1c(element, { "type": type, "id": id, "ref":ref });
-                        });*/
+
             element.onclick = (ev) => {
                 ev.preventDefault();
                 return1c(element, { "type": type, "id": id, "ref": ref });
@@ -2045,25 +1942,45 @@
         }
 
 
+        function ПодписатьНаСобытие(eventType, id, type, ref) {
+            let element = document.getElementById(id);
+            element.addEventListener(eventType, (ev) => {
+                ev.preventDefault();
+                return1c(element, { "type": type, "id": id, "ref": ref });
+            });
+        }
 
-        function ПодключитьКлавиатуру() {
+
+
+        function enableSearch() {
+            let rightsearch = document.getElementById("rightsearch");
             let errortext = document.getElementById("errortext");
             let keyboard = document.querySelector(".keyboard");
             let key = document.querySelectorAll('.key');
-            let display = document.getElementById('СтильПолеВводаПравое');
+            let display = document.getElementById('input-search');
             let clearkey = document.getElementById('clearbutton');
             let backspacekey = document.getElementById('erasebutton');
+            let closesearch = document.getElementById('closesearch');
+            let searcharea = document.getElementById('searcharea');
+            let buttons = document.getElementById("buttons");
+            let openkeypad = document.getElementById("openkeypad");
+            searcharea.classList.remove("off");
             display.textContent = '';
+            //            errortext.classList.add("off");
+            //          errortext.innerHTML = "";
+            buttons.classList.add("off");
+            //            openkeypad.classList.add("off");
+            rightsearch.classList.remove("collapsed");
+            rightsearch.classList.add("expanded");
+
             keyboard.classList.remove("off");
 
             for (let k of key) {
-                k.onclick = (ev) => {
-                    ev.preventDefault();
+                k.onclick = () => {
                     display.textContent += k.textContent;
                     errortext.classList.add("off");
                     errortext.innerHTML = "";
-                    //if(display.textContent.length>4)
-                    return1c(display, { "type": "ВводТекстаПоискаМарки", "id": k.id, "СтрокаПоиска": display.textContent });
+                    return1c(display, { "type": "searchtexttyping", "id": k.id, "search": display.textContent });
                 }
             }
 
@@ -2073,9 +1990,16 @@
                 display.textContent = '';
                 errortext.classList.add("off");
                 errortext.innerHTML = "";
-                return1c(display, { "СтрокаПоиска": display.textContent, "id": clearkey.id, "type": "ОчиститьПоиск" });
+                return1c(display, { "search": display.textContent, "id": clearkey.id, "type": "clearsearch" });
             }
 
+            display.onclick = (ev) => {
+
+                keyboard.classList.remove("off");
+                //searchtable.classList.add("off");
+                errortext.classList.add("off");
+                errortext.innerHTML = "";
+            }
 
 
             backspacekey.onclick = (ev) => {
@@ -2084,75 +2008,64 @@
                 display.textContent = display.textContent.substr(0, display.textContent.length - 1);
                 errortext.classList.add("off");
                 errortext.innerHTML = "";
-                return1c(display, { "type": "ВводТекстаПоискаМарки", "id": backspacekey.id, "СтрокаПоиска": display.textContent });
+                return1c(display, { "type": "searchtexttyping", "id": backspacekey.id, "search": display.textContent });
             }
 
+            openkeypad.onclick = (ev) => {
+                ev.preventDefault();
+                return1c(display, { "type": "openkeypad", "id": openkeypad.id });
+            }
+
+
+            closesearch.onclick = (ev) => {
+                display.textContent = '';
+                buttons.classList.remove("off");
+                searcharea.classList.add("off");
+                return1c(display, { "type": "closesearch", "id": closesearch.id });
+            }
+
+
         }
 
 
-        let test = {
-            "Список": [
-                {
-                    "Максимум": 6,
-                    "ФормаВыбора": "ВыборЯчейки",
-                    "Представление": "Негабарит контейнера",
-                    "Значение": 4,
-                    "ОбратныйПорядокОбходаСекции": false,
-                    "Ссылка": "{\"#\",daea8b98-382f-4504-9dfb-6552e5e37c27,91568:bb71b06ebfceebf111ee6bc6c65cf769}"
-                },
-                {
-                    "Максимум": 1,
-                    "ФормаВыбора": "ВыборАдреса",
-                    "Представление": "Негабарит улица 1",
-                    "Значение": 0,
-                    "ОбратныйПорядокОбходаСекции": false,
-                    "Ссылка": "{\"#\",daea8b98-382f-4504-9dfb-6552e5e37c27,91568:bb71b06ebfceebf111ee6c77b53699da}"
-                },
-                {
-                    "Максимум": 1,
-                    "ФормаВыбора": "ВыборАдреса",
-                    "Представление": "Негабарит улица 2",
-                    "Значение": 0,
-                    "ОбратныйПорядокОбходаСекции": false,
-                    "Ссылка": "{\"#\",daea8b98-382f-4504-9dfb-6552e5e37c27,91568:bb71b06ebfceebf111ee6c77b53699db}"
-                }
-            ],
-            "ВложенныхГрупп": 0,
-            "ВложенныхЯчеек": 8,
-            "ЭтоГруппа": true
-        };
 
-        function ПоказатьДиалогВопросОВыходеИзИнвентаризации() {
+        /*
+                 enableSearch();
+updateElement("rightsearch", null, '{"class":"search-block-right collapsed"}');
+enableElement("openkeypad");
+updateElement("leftwindow", null, '{"class":"leftwindow expanded"}');
 
-            let СтильКнопки = "{\"class\":\"button key next\"}";
-            ОбновитьЭлемент("ТекстНаВесьЭкран", "Инвентаризация не записана. Вы уверены что хотите выйти?");
-            ДобавитьЭлемент("КнопкиВопросаНаВесьЭкран", "КнопкаДа", "button", СтильКнопки, "Да");
-            ПриНажатии("КнопкаДа", "НажатаКнопкаДа", "");
-            ДобавитьЭлемент("КнопкиВопросаНаВесьЭкран", "КнопкаНет", "button", СтильКнопки, "Нет");
-            ПриНажатии("КнопкаНет", "НажатаКнопкаНет", "");
 
-            ОбновитьЭлемент("ВопросПоЦентруЭкрана", null, "{\"class\":\"ВопросПоЦентруЭкрана АнимированныйФон\"}");
 
-        }
+                addTable("lefttables", "search-table", "table search");
+                let options = {
+                    
+                    headerVisible: false,
+                    columns: [
+                        { title: "Name", field: "name" }
+                    ],
+                };
+                var tabledata = [
+                    { name: "Oli Bob" },
+                    { name: "Mary May" },
+                    { name: "Christine Lobowski" },
+                    { name: "Brendon Philips" },
+                    { name: "Margret Marmajuke" },
+                    { name: "Frank Harbours" },
+                ];
+                updateTable("search-table", JSON.stringify(tabledata), JSON.stringify(options));
+       
 
-        //ПоказатьДиалогВопросОВыходеИзИнвентаризации();
-/*
-        Скрыть("errortext");
-        Показать("ЛевоеОкно");
-        ОбновитьЭлемент("ЛевоеОкно", "");
-        Скрыть("Клавиатура");
-        Скрыть("КнопкаОткрытьКлавиатуру");
-        //Показать("Записать");
 
-        ДобавитьЭлемент("ЛевоеОкно", "ВыбораСекций", "div", "{\"style\":\"width:100%; height:100%\"}");
-        ВыстроитьСекции("ВыбораСекций", "КнопкиВыбораСекций", JSON.stringify(test));
+                addButton("r1","b0", "ИнформацияПоГрузуCFS", "Поиск груза на складе CFS");
+		
+                addButton("r1","b1", "ВывозГенГрузаСоСкладаCFS", "Вывоз генерального груза на авто"); 	
+		
+                addButton("r2","b2", "ИнвентаризацияCFS","Инвентаризация"); 
+		
+		        addButton("r2","b3", "ЗавозГГCFS", "Завоз ген. груза на CFS склад"); 
+*/ 
 
-        // ПодключитьКлавиатуру();
-        // Показать("Клавиатура");
-        //Показать("errortext");
-        //ОбновитьЭлемент("errortext","<h1>Груза с введенной маркой на складе не обнаружено</h1>");
-        // ОбновитьЭлемент("ЛевоеОкноСЗаголовком", null, "{\"class\":\"ЛевоеОкноСЗаголовком collapsed\"}");
-*/
     </script>
 
 </body>

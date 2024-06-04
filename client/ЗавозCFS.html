@@ -1293,7 +1293,6 @@
     .button.backspace {
         /*position: relative;
         top: 8px;
-
         right: 3px;*/
         align-content: center;
         vertical-align: middle;
@@ -1318,6 +1317,17 @@
 
     .button.close.collapsed {
         width: 25%;
+    }
+
+    .button.СмотретьГрузы {
+        position: fixed;
+        bottom: 9px;
+        left: 9px;
+        /*width: 10%;*/
+        height: 10%;
+        color: #ffffff;
+        font-size: 2vw;
+
     }
 
 
@@ -1482,8 +1492,9 @@
 
 
     .error-line {
-        /*position: fixed;
-        top: 50%;*/
+        /*position: fixed;*/
+        top: 50%;
+        height: 100%;
         align-self: center;
         align-content: center;
         vertical-align: middle;
@@ -1549,6 +1560,16 @@
         box-shadow: 0 11px 11px rgba(0, 0, 0, 0.1);
     }
 
+    .ТекстВЯчейкеТаблицы {
+        width: 100%;
+        height: 80px;
+        vertical-align: middle;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        font-size: 3vw;
+        text-wrap: wrap;
+    }
 
     .ТаблицаАдреса {
         width: 100%;
@@ -1560,6 +1581,28 @@
         font-size: 2vw;
         text-wrap: wrap;
     }
+
+    .ТаблицаАдреса .tabulator-row {
+        vertical-align: middle;
+        text-align: center;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+    }
+
+
+    .ТаблицаАдреса input[type=checkbox] {
+        font-size: 2vw;
+        width: 80px;
+        height: 80px;
+    }
+
+    .ТаблицаАдреса svg {
+        width: 80px;
+        height: 80px;
+    }
+
+
 
     .wraptext {
         text-wrap: wrap;
@@ -1588,17 +1631,52 @@
         height: 25px;
     }
 
+
+    .ТаблицаАдреса .tabulator-editable {
+
+        font-size: 2vw;
+
+    }
+
+
+    .ТаблицаАдреса .tabulator-editing {
+
+
+        font-size: 2vw;
+
+    }
+
+
+
     .ТаблицаАдреса button {
-        width: 45px;
-        height: 45px;
         font-size: 3vw;
         background-color: linear-gradient(to bottom, #fc5e5e, #dfbdbc);
         color: #1a2133;
         border-radius: 7%;
         box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
-
     }
 
+    .ТаблицаАдреса .Плюс {
+        width: 80px;
+        height: 80px;
+        right: 1px;
+        font-size: 3vw;
+    }
+
+    .ТаблицаАдреса .Минус {
+        width: 80px;
+        height: 80px;
+        left: 1px;
+        font-size: 3vw;
+    }
+
+    .ТаблицаАдреса .КоличествоМест {
+        display: flex;
+        justify-content: space-around;
+        flex-flow: row;
+        align-items: stretch;
+        vertical-align: sub;
+    }
 
 
     .textcentre {
@@ -1691,68 +1769,73 @@
 
     }
 
-
-
     .КлавиатураВыборСекций {
         display: grid;
-        height: 100%;
-        grid-template-columns: repeat(7, 1fr);
-        grid-gap: 10px;
+        height: 80%;
+        width: 100%;
+        grid-template-columns: repeat(6, 1fr);
         grid-auto-rows: minmax(10px, auto);
+        padding-right: 1px;
+        grid-template-rows: repeat(3, 30%);
+        grid-auto-columns: minmax(10px, 1fr);
+        grid-gap: 1px;
+        padding-right: 1px;
 
-
-        flex-grow: 1;
+        overflow: scroll;
+        overscroll-behavior-x: contain;
     }
 
+
+
+
     .КлавиатураВыборСекций div {
+        height: 80%;
+        width: 90%;
         border-style: solid;
         border-width: 1px;
-        padding-right: 7px;
+        padding-right: 9px;
         padding-left: 7px;
         margin-left: 7px;
-        margin-right: 7px;
+        margin-right: 9px;
         padding-top: 7px;
         margin-top: 7px;
         border-radius: 5px;
         box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
-        
+
         vertical-align: middle;
         display: flex;
-        align-items: center ;
+        align-items: center;
 
     }
 
     .КлавиатураВыборСекций div>p {
+        text-align: center;
+        width: 100%;
+    }
+
+    .ЗаголовокПовреждения {
         font-size: 4vh;
-        font-weight: bold;
-        text-align: center; 
-        width:100%;   
     }
 
 
     .СтильКнопкиДобавитьСтроку {
         width: 100%;
-        height: 10%;
-        font-size: 4vw;
-        background-color: linear-gradient(to bottom, #fc5e5e, #dfbdbc);
+        height: 11%;
+        font-size: 3vw;
         color: #1a2133;
-        border-radius: 7%;
+        border-radius: 5%;
         box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
-        background-image: linear-gradient(to bottom, #67b27a, #5aad68);
+
     }
 
 
     @keyframes АнимацияОжиданияОтвета {
         0% {
             background-position: -800px 0
-           
-
         }
 
         100% {
             background-position: 800px 0
-            
-
         }
     }
 
@@ -1790,11 +1873,16 @@
 
 
     .ТекстНаВесьЭкран {
-        margin-top: 10%;
+        margin-top: 5%;
         width: 100%;
         height: 100%;
         font-size: 8vw;
         align-self: center;
+        text-align: center;
+        /*align-self: center;*/
+        align-content: center;
+        vertical-align: middle;
+
     }
 
 
@@ -1804,11 +1892,318 @@
         flex-direction: row;
         justify-content: space-between;
         width: 100%;
-        height: 30%;
+        height: 20%;
         align-items: center;
         justify-items: stretch;
 
     }
+
+    .ИнформацияПоНаряду {
+
+        flex-direction: column;
+        flex-grow: 2;
+        margin-top: 3%;
+        width: 100%;
+
+        align-items: stretch;
+        justify-content: flex-end;
+
+    }
+
+    .Наряд {
+        align-content: space-between;
+        width: 100%;
+        font-size: 4vh;
+        flex-grow: 2;
+
+    }
+
+    .Наряд th {
+
+        text-align: start;
+        color: #2ca736;
+        border-bottom: 2px dashed black;
+        margin-bottom: 10px;
+    }
+
+    .ГоризонтальнаяГруппа {
+        width: 100%;
+        height: 60%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        /*flex-flow: row;*/
+        align-items: flex-end;
+        vertical-align: bottom;
+        bottom: 1px;
+    }
+
+
+    .Повреждения {
+        height: 10%;
+        border-style: solid;
+        border-width: 1px;
+        flex-grow: 2;
+        font-size: 4vh;
+        font-weight: bold;
+
+        /*background-color: linear-gradient(to bottom, #fc5e5e, #dfbdbc);
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+        background-image: linear-gradient(to bottom, #67b27a, #5aad68);
+        color: #1a2133;*/
+        border-radius: 2%;
+        /* border-top-right-radius: 5%;
+        border-bottom-left-radius: 5%;*/
+        display: grid;
+        grid-gap: 1px;
+        overflow-y: auto;
+
+    }
+
+    .Повреждения div:nth-child(even) {
+        background-color: lightyellow;
+    }
+
+    .ВертикальнаяГруппа {
+        display: flex;
+        flex-direction: column;
+        margin-right: 5px;
+        margin-left: 5px;
+
+    }
+
+    .Обводка {
+        border-style: solid;
+        border-width: 1px;
+        border-radius: 5%;
+    }
+
+    .НизЦентрЭкрана {
+
+        position: fixed;
+        bottom: 5%;
+    }
+
+    .СтильСправаНиз {
+
+        position: fixed;
+        bottom: 1px;
+        right: 1px;
+    }
+
+
+    .РазмерШрифта2vw {
+
+        font-size: 2vw;
+    }
+
+
+    .РазмерШрифта4vw {
+
+        font-size: 4vw;
+    }
+
+    .СтильКнопкиФото {
+        position: absolute;
+        top: 50%;
+        right: 1%;
+        font-size: 6vw;
+        font-weight: bold;
+        border: none;
+        background-color: transparent;
+        /*border-radius: 35%;
+        border-style: solid;
+        border-width: 2px;*/
+
+    }
+
+    .КоличествоФотоВГалерееФотоаппарат {
+        position: fixed;
+        bottom: 10%;
+        right: 2%;
+        background: none !important;
+        border: none;
+        padding: 0 !important;
+        /*optional*/
+        /*  font-family: arial, sans-serif; */
+        /*input has OS specific font-family*/
+        color: #069;
+        text-decoration: underline;
+        cursor: pointer;
+        font-size: 2vw;
+
+    }
+
+    .КнопкаКакСсылка {
+        background: none !important;
+        border: none;
+        padding: 0 !important;
+        /*optional*/
+        /*  font-family: arial, sans-serif; */
+        /*input has OS specific font-family*/
+        color: #069;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+
+
+    .Видоискатель {
+        position: absolute;
+        left: 0px;
+        right: 10%;
+        width: 90%;
+        height: 100%;
+        object-fit: fill;
+        border-style: solid;
+        border-width: 2px;
+    }
+
+    @keyframes АнимацияСнимкаФото {
+        0% {
+
+            transform: scale(1);
+        }
+
+        100% {
+            left: 100%;
+            top: 100%;
+            transform: scale(0) translateX(200%) translateY(200%);
+        }
+    }
+
+    .АнимированныйСнимокФото {
+        position: absolute;
+        width: 90%;
+        height: 100%;
+        /*object-fit: fill;*/
+        border: none;
+
+        animation-duration: 1s;
+        animation-fill-mode: forwards;
+        animation-iteration-count: 1;
+        animation-name: АнимацияСнимкаФото;
+        animation-timing-function: linear;
+
+    }
+
+
+
+    .ВыборФото {
+        display: grid;
+        height: 100%;
+        width: 100%;
+        grid-template-columns: repeat(2, 45%);
+        grid-gap: 5%;
+
+        grid-auto-rows: minmax(50%, 50%);
+
+        padding-right: 9px;
+        overflow: auto;
+        overscroll-behavior-y: contain;
+
+    }
+
+
+    .ВыборФото div {
+        margin-left: 5%;
+        height: 100%;
+        width: 100%;
+
+        border-style: solid;
+        border-width: 1px;
+
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+
+        vertical-align: middle;
+
+        align-items: center;
+        border-radius: 5%;
+
+    }
+
+    .ВыборФото canvas {
+
+        height: 100%;
+        width: 100%;
+
+        border-radius: 5%;
+
+
+    }
+
+    .ВыборФото button {
+        position: relative;
+
+        height: 10%;
+        width: 10%;
+        left: 80%;
+        bottom: 100%;
+        font-size: 6vw;
+        color: #ca0404;
+        font-weight: bold;
+        border: none;
+        border-radius: 5%;
+        border-width: 1px;
+        background-color: transparent;
+
+    }
+
+    .ПолноэкранноеФото {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+
+    }
+
+    .СтильУказатьПовреждения {
+
+        border-radius: 5%;
+    }
+
+    .СтильПринятьГруз {
+
+        border-radius: 5%;
+    }
+
+    .progressbar {
+        height: 20px;
+        position: relative;
+        background: #555;
+        padding: 3px;
+        box-shadow: inset 0 -1px 1px rgba(255, 255, 255, 0.3);
+    }
+
+    .progressbar>span {
+        display: block;
+        height: 100%;
+        background-color: rgb(43, 194, 83);
+        background-image: linear-gradient(center bottom,
+                rgb(43, 194, 83) 37%,
+                rgb(84, 240, 84) 69%);
+        box-shadow:
+            inset 0 2px 9px rgba(255, 255, 255, 0.3),
+            inset 0 -2px 6px rgba(0, 0, 0, 0.4);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /*
+    <div class="progressbar">
+  <span style="width: 30%"></span>
+</div>*/
+
+    .ПрогрессБар {
+        width: 100%;
+        height: 40px;
+        border-radius: 20px;
+        background:
+            linear-gradient(orange 0 0) 0/0% no-repeat lightblue;
+
+    }
+
+
+  
 </style>
 
 
@@ -1820,12 +2215,79 @@
         <div id="ЛевоеОкноСЗаголовком" class="ЛевоеОкноСЗаголовком">
             <div id="closebuttondiv" class="ЗаголовокОкна">
                 <button class="button close" type="button" id="Назад">⏎</button>
-                <div id="ЗаголовокОкна" class="textcentre width100 grow3" style="align-self: center;">Инвентаризация
+                <div id="ЗаголовокОкна" class="textcentre width100 grow3" style="align-self: center;">Завоз ГГ на CFS
                 </div>
                 <button class="button Записать off" type="button" id="Записать">Записать</button>
             </div>
-            <div id="errortext" class="error-line textcentre off"></div>
+            <div id="errortext" class="error-line textcentre wraptext off"></div>
+
+
+            <div id="ПромежуточнаяГруппа" class="ИнформацияПоНаряду off">
+
+                <table class="Наряд">
+                    <thead>
+                        <tr>
+                            <th width="50%">Информация о наряде</th>
+                            <th width="50%">Грузоотправитель</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div>Экспедитор: <strong id="ЭкспедиторНаряда"></strong> </div>
+                                <div>Номер: <strong id="НомерНаряда"></strong> </div>
+                                <div>Дата: <strong id="ДатаНаряда"></strong> </div>
+                            </td>
+
+                            <td>
+                                <div>ФИО: <strong id="ФИО"></strong> </div>
+                                <div>Документ: <strong id="ДокументГрузополучателя"></strong> </div>
+                                <div>Авто: <strong id="ДанныеАвто"></strong> </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <thead>
+                        <tr>
+                            <th>Информация о завозе</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div>Дата завоза: <strong id="НарядАвтоДатаЗавоза"></strong> </div>
+                            </td>
+                            <td>
+                                <div>Время завоза (план): <strong id="НарядАвтоВремяЗавоза"></strong> </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                            </td>
+                        </tr>
+
+
+                    </tbody>
+                </table>
+                <div class="nextdiv">
+                    <button class="button СмотретьГрузы" type="button" id="СмотретьГрузы">Смотреть грузы</button>
+                </div>
+
+
+
+
+            </div>
+
+
+
+
             <div id="ЛевоеОкно" class="СтильЛевогоОкна">
+
+
+            </div>
+            <div id="Галерея" class="СтильЛевогоОкна off">
+
 
             </div>
 
@@ -1863,9 +2325,9 @@
                     <button class="button key" type="button" id="index_26">9</button>
                 </div>
                 <div class="keyboard-line">
-                    <button class="button key" type="button" id="slashbutton">/</button>
-                    <button class="button key" type="button" id="index_28">0</button>
                     <button class="button clear" type="button" id="clearbutton">Очистить</button>
+                    <button class="button key" type="button" id="index_28">0</button>
+                    <button class="button key off" type="button" id="slashbutton">/</button>
                 </div>
             </section>
 
@@ -1876,13 +2338,13 @@
     </div>
 
     <div id="ВопросПоЦентруЭкрана" class="off">
-        <div id="ТекстНаВесьЭкран" class="ТекстНаВесьЭкран textcentre"></div>
+        <div id="ТекстНаВесьЭкран" class="ТекстНаВесьЭкран"></div>
         <div id="КнопкиВопросаНаВесьЭкран" class="КнопкиВопросаНаВесьЭкран"> </div>
     </div>
 
 
     <script>
-        async  function return1c(element, data1) {
+        function return1c(element, data1) {
 
             Ожидание();
 
@@ -1896,27 +2358,29 @@
         }
 
 
-        //var таймерОжидание = 0;
         function Ожидание() {
             let elem = document.getElementById("closebuttondiv");
             elem.classList.add("АнимированныйФон");
-            //таймерОжидание = setInterval(()=>{console.log(Math.random());elem.style.backgroundPositionX++;  },0.1);//elem.style.backgroundPositionX
+
         }
 
 
         function СнятьОжидание() {
             let elem = document.getElementById("closebuttondiv");
             elem.classList.remove("АнимированныйФон");
-            //clearInterval(таймерОжидание);
+
         }
 
-        function ДобавитьЭлемент(parentid, id, type, attr = "", innerHTML = null) {
+        function ДобавитьЭлемент(parentid, id, type = "div", attr = "", innerHTML = null) {
             let t = document.getElementById(id);
-            if (t != null) return;
-
             let ul = document.getElementById(parentid);
+            if (t != null) ul.removeChild(t);
+
             t = document.createElement(type);
             if (id != "") t.setAttribute("id", id);
+            needAppend = true;
+            ul.appendChild(t);
+
             if (innerHTML != null) t.innerHTML = innerHTML;
             try {
                 let obj = JSON.parse(attr);
@@ -1925,7 +2389,7 @@
                 }
             } catch (err) {
             }
-            ul.appendChild(t);
+            // if(needAppend)ul.appendChild(t);
             return t;
         }
 
@@ -1980,16 +2444,17 @@
             let searchtable = document.getElementById(tableid);
 
             options_ = JSON.parse(options);
+            for (let tabParam in options_) {
+                if (typeof options_[tabParam] === 'string' || options_[tabParam] instanceof String)
+                    if (options_[tabParam].startsWith("function")) {
+                        options_[tabParam] = new Function("return " + options_[tabParam])();
+
+                    }
+                //console.log(options_[tabParam]);
+
+            }
             options_.data = JSON.parse(data);
             window[tableid] = new Tabulator("#" + tableid, options_);
-
-            //            table.on("rowClick", function (e, row) {
-            //              return1c(searchtable, { "type": "ВыбранаСтрокаТаблицы", "row": row._row.data, "id": tableid });
-            //        });
-
-            //            table.on("rowTap", function (e, row) {
-            //              return1c(searchtable, { "type": "ВыбранаСтрокаТаблицы", "row": row._row.data, "id": tableid });
-            //        });
 
             window[tableid].on("cellClick", function (e, cell) {
                 return1c(searchtable, { "type": "ВыбранаЯчейкаТаблицы", "ДанныеСтроки": cell._cell.row.data, "Колонка": cell._cell.column.field, "Значение": cell._cell.value, "id": tableid });
@@ -2003,16 +2468,61 @@
 
         }
 
+        function ПолучитьДанныеТаблицы(tableid) {
+            //console.log(data);
+            return JSON.stringify(window[tableid].getData());
+        }
+
+
+        function ВыстроитьПовреждения(parentid, id, data) {
+            //console.log(data);
+            let Список = JSON.parse(data);
+            let КоличествоСекцийНаЭкран = Список.length;
+            let КоличествоСекцийНаСтроку = Math.floor(Math.sqrt(КоличествоСекцийНаЭкран)) + 2;
+            let процент = Math.round(120 / КоличествоСекцийНаСтроку);
+            //            ДобавитьЭлемент(parentid, id, "div", "{\"class\":\"КлавиатураВыборСекций\",\"style\":\"grid-template-columns: repeat(" + КоличествоСекцийНаСтроку + "," + процент + "%);\"}");
+            ДобавитьЭлемент(parentid, id, "div", "{\"class\":\"КлавиатураВыборСекций\",\"style\":\"grid-template-columns: repeat(" + КоличествоСекцийНаСтроку + ",33%);\"}");
+
+            let НомерЗаписи = 1;
+            for (let ДанныеКнопки of Список) {
+                let КнопкаСекции_id = "ОбластьФлаг_" + НомерЗаписи;
+                ДобавитьЭлемент(id, КнопкаСекции_id, "div", null, null);
+                let Флаг = ДобавитьЭлемент(КнопкаСекции_id, КнопкаСекции_id + "Флаг", "input", "{\"type\":\"checkbox\",\"class\":\"ФлагПовреждения\",\"checked\":\"true\"}", ДанныеКнопки.Представление);
+                Флаг.checked = ДанныеКнопки.Пометка;
+                Флаг.value = ДанныеКнопки.Значение;
+
+                ДобавитьЭлемент(КнопкаСекции_id, КнопкаСекции_id + "Заголовок", "label", "{\"for\":\"" + КнопкаСекции_id + "Флаг\",\"class\":\"ЗаголовокПовреждения\"}", ДанныеКнопки.Представление);
+                //ПриНажатии(КнопкаСекции_id, ДанныеКнопки.ФормаВыбора, ДанныеКнопки.Ссылка);
+                НомерЗаписи++;
+            }
+
+
+
+        }
+
+
+        function ПолучитьВыбранныеПовреждения(id) {
+
+            let elem = document.getElementById(id);
+            if (elem == null) return;
+            const matches = elem.querySelectorAll('div > input[type="checkbox"]:checked');
+            let res = [];
+            for (let ДанныеКнопки of matches) res.push(ДанныеКнопки.value);
+
+            return JSON.stringify(res);
+
+
+        }
+
 
         function ВыстроитьСекции(parentid, id, data) {
-            //console.log(data);
+
             let data_ = JSON.parse(data);
             let КоличествоСекцийНаЭкран = data_.Список.length;
             let КоличествоСекцийНаСтроку = Math.floor(Math.sqrt(КоличествоСекцийНаЭкран)) + 2;
-            //console.log(КоличествоСекцийНаСтроку);
-            //let Максимум = data_.Максимум;
+
             let parent = ДобавитьЭлемент(parentid, id, "div", "{\"class\":\"КлавиатураВыборСекций\",\"style\":\"grid-template-columns: repeat(" + КоличествоСекцийНаСтроку + ",1fr);\"}");
-            //parent.style.grid-template-columns = "repeat(" + КоличествоСекцийНаСтроку + ",1fr);";
+
             let НомерЗаписи = 1;
             for (let ДанныеКнопки of data_.Список) {
                 let Максимум = ДанныеКнопки.Максимум;
@@ -2021,7 +2531,6 @@
                 let КнопкаСекции_id = "КнопкаСекции_" + НомерЗаписи;
                 ДобавитьЭлемент(id, КнопкаСекции_id, "div", СтильКнопки);
                 ДобавитьЭлемент(КнопкаСекции_id, КнопкаСекции_id + "button", "p", "", ДанныеКнопки.Представление);
-                //ДобавитьЭлемент(id, КнопкаСекции_id, "button", СтильКнопки, ДанныеКнопки.Представление);
                 ПриНажатии(КнопкаСекции_id, ДанныеКнопки.ФормаВыбора, ДанныеКнопки.Ссылка);
                 НомерЗаписи++;
             }
@@ -2034,9 +2543,7 @@
 
         function ПриНажатии(id, type, ref) {
             let element = document.getElementById(id);
-            /*            element.addEventListener(type,(e,ee)=>{
-                            return1c(element, { "type": type, "id": id, "ref":ref });
-                        });*/
+
             element.onclick = (ev) => {
                 ev.preventDefault();
                 return1c(element, { "type": type, "id": id, "ref": ref });
@@ -2045,8 +2552,17 @@
         }
 
 
+        function ПодписатьНаСобытие(eventType, id, type, ref) {
+            let element = document.getElementById(id);
+            element.addEventListener(eventType, (ev) => {
+                ev.preventDefault();
+                return1c(element, { "type": type, "id": id, "ref": ref });
+            });
+        }
 
-        function ПодключитьКлавиатуру() {
+
+
+        function ПодключитьКлавиатуру(ТипКлавиатуры = "ВводПинкода", ТипКнопкиОчистки = "ОчиститьПоиск") {
             let errortext = document.getElementById("errortext");
             let keyboard = document.querySelector(".keyboard");
             let key = document.querySelectorAll('.key');
@@ -2063,17 +2579,18 @@
                     errortext.classList.add("off");
                     errortext.innerHTML = "";
                     //if(display.textContent.length>4)
-                    return1c(display, { "type": "ВводТекстаПоискаМарки", "id": k.id, "СтрокаПоиска": display.textContent });
+                    return1c(display, { "type": ТипКлавиатуры, "id": k.id, "СтрокаПоиска": display.textContent });
                 }
             }
 
 
             clearkey.onclick = (evt) => {
                 evt.preventDefault();
-                display.textContent = '';
+
                 errortext.classList.add("off");
                 errortext.innerHTML = "";
-                return1c(display, { "СтрокаПоиска": display.textContent, "id": clearkey.id, "type": "ОчиститьПоиск" });
+                return1c(display, { "ВведенаяСтрока": display.textContent, "id": clearkey.id, "type": ТипКнопкиОчистки });
+                display.textContent = '';
             }
 
 
@@ -2084,75 +2601,389 @@
                 display.textContent = display.textContent.substr(0, display.textContent.length - 1);
                 errortext.classList.add("off");
                 errortext.innerHTML = "";
-                return1c(display, { "type": "ВводТекстаПоискаМарки", "id": backspacekey.id, "СтрокаПоиска": display.textContent });
+                return1c(display, { "type": ТипКлавиатуры, "id": backspacekey.id, "СтрокаПоиска": display.textContent });
             }
 
         }
 
 
-        let test = {
-            "Список": [
-                {
-                    "Максимум": 6,
-                    "ФормаВыбора": "ВыборЯчейки",
-                    "Представление": "Негабарит контейнера",
-                    "Значение": 4,
-                    "ОбратныйПорядокОбходаСекции": false,
-                    "Ссылка": "{\"#\",daea8b98-382f-4504-9dfb-6552e5e37c27,91568:bb71b06ebfceebf111ee6bc6c65cf769}"
-                },
-                {
-                    "Максимум": 1,
-                    "ФормаВыбора": "ВыборАдреса",
-                    "Представление": "Негабарит улица 1",
-                    "Значение": 0,
-                    "ОбратныйПорядокОбходаСекции": false,
-                    "Ссылка": "{\"#\",daea8b98-382f-4504-9dfb-6552e5e37c27,91568:bb71b06ebfceebf111ee6c77b53699da}"
-                },
-                {
-                    "Максимум": 1,
-                    "ФормаВыбора": "ВыборАдреса",
-                    "Представление": "Негабарит улица 2",
-                    "Значение": 0,
-                    "ОбратныйПорядокОбходаСекции": false,
-                    "Ссылка": "{\"#\",daea8b98-382f-4504-9dfb-6552e5e37c27,91568:bb71b06ebfceebf111ee6c77b53699db}"
+
+        function getDevices() {
+            // AFAICT in Safari this only gets default devices until gUM is called :/
+            return navigator.mediaDevices.enumerateDevices();
+        }
+
+        function gotDevices(deviceInfos) {
+            window.deviceInfos = deviceInfos; // make available to console
+            console.log('Available input and output devices:', deviceInfos);
+        }
+
+        function getStream() {
+            if (window.stream) {
+                window.stream.getTracks().forEach(track => {
+                    track.stop();
+                });
+            }
+            const videoSource = window.videoElement.value;
+            const constraints = {
+
+                video: {
+                    facingMode: 'environment'
+                    //minWidth: this.params.dest_width,
+                    //minHeight: this.params.dest_height,
                 }
-            ],
-            "ВложенныхГрупп": 0,
-            "ВложенныхЯчеек": 8,
-            "ЭтоГруппа": true
-        };
+            };
 
-        function ПоказатьДиалогВопросОВыходеИзИнвентаризации() {
+            //if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            return navigator.mediaDevices.getUserMedia(constraints).
+                then(gotStream).catch(handleError);
+        }
 
-            let СтильКнопки = "{\"class\":\"button key next\"}";
-            ОбновитьЭлемент("ТекстНаВесьЭкран", "Инвентаризация не записана. Вы уверены что хотите выйти?");
-            ДобавитьЭлемент("КнопкиВопросаНаВесьЭкран", "КнопкаДа", "button", СтильКнопки, "Да");
-            ПриНажатии("КнопкаДа", "НажатаКнопкаДа", "");
-            ДобавитьЭлемент("КнопкиВопросаНаВесьЭкран", "КнопкаНет", "button", СтильКнопки, "Нет");
-            ПриНажатии("КнопкаНет", "НажатаКнопкаНет", "");
+        function gotStream(stream) {
+            //let videoElement = document.getElementById(Видео);
+            window.stream = stream; // make stream available to console
+            if ('srcObject' in window.videoElement) {
+                window.videoElement.srcObject = stream;
 
-            ОбновитьЭлемент("ВопросПоЦентруЭкрана", null, "{\"class\":\"ВопросПоЦентруЭкрана АнимированныйФон\"}");
+            } else {
+                window.videoElement.src = URL.createObjectURL(stream);
+            }
+            videoElement.play();
+        }
+
+        function handleError(error) {
+
+            return1c(window.videoElement, { "type": "ОшибкаКамеры", "id": window.videoElement.id, "Текст": error });
+            console.error('Error: ', error);
+        }
+
+
+        function ОстановитьФото() {
+            videoElement.pause();
+        }
+
+        function ПолучитьКадрИзВидео(Видео) {
+            let el = window.videoElement;
+            // let el = videoElement;
+            let canvas = document.createElement('canvas');
+            canvas.width = el.videoWidth;
+            canvas.height = el.videoHeight;
+            canvas.style.display = 'none';
+            document.body.appendChild(canvas);
+            canvas.getContext('2d').drawImage(el, 0, 0, canvas.width, canvas.height);
+            let cu = canvas.toDataURL();
+            document.body.removeChild(canvas);
+            ОстановитьФото();
+
+            return1c(el, { "type": "Фото", "id": Видео, "Фото": cu });
+            return cu;
+        }
+
+        function СделатьСнимок() {
+            let el = window.videoElement;
+            // let el = videoElement;
+            let canvas = document.createElement('canvas');
+
+
+            canvas.width = el.videoWidth;
+            canvas.height = el.videoHeight;
+            canvas.style.display = 'none';
+            canvas.id = `Фото${Date.now()}`;
+            document.body.appendChild(canvas);
+            canvas.getContext('2d').drawImage(el, 0, 0, canvas.width, canvas.height);
+            return canvas;
 
         }
 
-        //ПоказатьДиалогВопросОВыходеИзИнвентаризации();
+
+        function ДобавитьФотоВМассив(фото) {
+
+            window.МассивФото.push(фото);
+            let canvas = ДобавитьЭлемент("ЛевоеОкно", "АнимацияСнимка", "canvas", "{\"class\":\"АнимированныйСнимокФото\"}", null);
+            canvas.getContext('2d').drawImage(фото, 0, 0, canvas.width, canvas.height);
+
+        }
+
+        function УдалитьФото(Номерфото) {
+
+            let Найдено = window.МассивФото.findIndex((v, i) => v.id == Номерфото);
+            let фото = window.МассивФото[Найдено];
+            //let i = window.МассивФото.indexOf(фото);
+
+            let УдаляемоеФото = window.МассивФото.splice(Найдено, 1);
+            document.body.removeChild(УдаляемоеФото[0]);
+
+            //УдаляемоеФото[0] = undefined;//GC
+
+        }
+
+        function НовыйМассивФото() {
+            if (window.МассивФото != undefined) {
+                for (let v of window.МассивФото) document.body.removeChild(v);
+            }
+
+            window.МассивФото = [];
+
+        }
+
+        function ОбновитьЗначениеНаКнопкеГалерея() {
+
+            window.КнопкаГалерея.innerHTML = `${window.МассивФото.length} Фото`;
+        }
+
+        function НачатьПолучениеФотоГалереи(НомерФото = 0) {
+            let l = window.МассивФото.length;
+            if (l == 0) return 0;
+            let v = window.МассивФото[НомерФото];
+            if (v == undefined) return 0;
+            let cu = v.toDataURL();
+            let w = 500;
+            if(НомерФото==20)w=1500;
+            setTimeout(() => { return1c(v, { "type": "СписокФото", "id": v.id, "Количество": l, "НомерФото": НомерФото, "Фото": cu }); }, w);
+
+
+            return l;
+
+        }
+
+
+        function ПолучитьВсеФотоГалереи() { //отваливается соединение 
+            let a = [];
+            for (let v of window.МассивФото) {
+                a.push(v.toDataURL());
+            }
+            return JSON.stringify(a);
+        }
+
+
+        function ОткрытьГалерею() {
+            Скрыть("ЛевоеОкно");
+            Показать("Галерея");
+            ВыстроитьГалерею("Галерея", "Фотографии");
+        }
+
+        function ПоказатьФотоПолноэкранно(Номерфото) {
+            let Найдено = window.МассивФото.findIndex((v, i) => v.id == Номерфото);
+            let фото = window.МассивФото[Найдено];
+            //            let Найдено = window.МассивФото.find((v,i)=>v.id==Номерфото);
+            //            let фото = Найдено[0];
+
+            let canvas = ДобавитьЭлемент("ОсновноеОкно", "полноэкранноеФото", "canvas", "{\"class\":\"ПолноэкранноеФото\"}", null);
+            canvas.width = фото.width;
+            canvas.height = фото.height;
+            let ОсновноеОкно = document.getElementById("ОсновноеОкно");
+
+
+
+            canvas.getContext('2d').drawImage(фото, 0, 0, canvas.width, canvas.height);
+            canvas.onclick = (ev) => {
+                ev.preventDefault();
+                ОсновноеОкно.removeChild(canvas);
+            }
+        }
+
+        function ВыстроитьГалерею(parentid, id, data) {
+
+            let КоличествоСекцийНаЭкран = window.МассивФото.length;
+            let КоличествоСекцийНаСтроку = Math.floor(Math.sqrt(КоличествоСекцийНаЭкран)) + 2;
+            let процент = Math.round(120 / КоличествоСекцийНаСтроку);
+            let СписокФото = ДобавитьЭлемент(parentid, id, "div", "{\"class\":\"ВыборФото\"}");
+
+            let НомерЗаписи = 0;
+            for (let ДанныеКнопки of window.МассивФото) {
+                let КнопкаСекции_id = `ОбластьФото_${НомерЗаписи}`;
+                let ОбластьФото = ДобавитьЭлемент(id, КнопкаСекции_id, "div", null, null);
+                let canvas = ДобавитьЭлемент(КнопкаСекции_id, КнопкаСекции_id + "ПревьюФото", "canvas", null, null);
+                canvas.getContext('2d').drawImage(ДанныеКнопки, 0, 0, canvas.width, canvas.height);
+                canvas.НомерЗаписи = ДанныеКнопки.id;
+                canvas.onclick = (ev) => {
+                    ev.preventDefault();
+                    ПоказатьФотоПолноэкранно(canvas.НомерЗаписи);
+                }
+
+                let КнопкаУдалитьФото = ДобавитьЭлемент(КнопкаСекции_id, КнопкаСекции_id + "УдалитьФото", "button", null, "&#x1F5D1;");
+                КнопкаУдалитьФото.onclick = (ev) => {
+                    ev.preventDefault();
+                    УдалитьФото(canvas.НомерЗаписи);
+                    СписокФото.removeChild(ОбластьФото);
+                    if (window.МассивФото.length == 0) setTimeout(() => { return1c(null, { "type": "Назад" }); }, 1);
+                }
+
+                НомерЗаписи++;
+            }
+
+
+
+        }
+
+
+        function ЗапуститьФотоАппарат(Видео, ИДКнопкаСделатьСнимок = "", ИДКнопкаГалерея = "") {
+
+            let videoElement = document.getElementById(Видео);//document.querySelector('video');
+            window.videoElement = videoElement;
+            getStream().then(getDevices).then(gotDevices);
+            let КнопкаСнимок = document.getElementById(ИДКнопкаСделатьСнимок);//document.querySelector('video');
+            let КнопкаГалерея = document.getElementById(ИДКнопкаГалерея);//document.querySelector('video');
+            window.КнопкаГалерея = КнопкаГалерея;
+            ОбновитьЗначениеНаКнопкеГалерея();
+            let Галерея = document.getElementById("Галерея");
+            КнопкаСнимок.onclick = (ev) => {
+                ev.preventDefault();
+                ДобавитьФотоВМассив(СделатьСнимок());
+                ОбновитьЗначениеНаКнопкеГалерея();
+            }
+            КнопкаГалерея.onclick = (ev) => {
+                ev.preventDefault();
+                ОткрытьГалерею();
+
+            }
+
+
+        }
+        screen.lockOrientation("landscape");
+        let wakeLock = null;
 /*
-        Скрыть("errortext");
-        Показать("ЛевоеОкно");
-        ОбновитьЭлемент("ЛевоеОкно", "");
-        Скрыть("Клавиатура");
-        Скрыть("КнопкаОткрытьКлавиатуру");
-        //Показать("Записать");
-
-        ДобавитьЭлемент("ЛевоеОкно", "ВыбораСекций", "div", "{\"style\":\"width:100%; height:100%\"}");
-        ВыстроитьСекции("ВыбораСекций", "КнопкиВыбораСекций", JSON.stringify(test));
-
-        // ПодключитьКлавиатуру();
-        // Показать("Клавиатура");
-        //Показать("errortext");
-        //ОбновитьЭлемент("errortext","<h1>Груза с введенной маркой на складе не обнаружено</h1>");
-        // ОбновитьЭлемент("ЛевоеОкноСЗаголовком", null, "{\"class\":\"ЛевоеОкноСЗаголовком collapsed\"}");
+// create an async function to request a wake lock
+try {
+  wakeLock = await navigator.wakeLock.request("screen");
+ // statusElem.textContent = "Wake Lock is active!";
+} catch (err) {
+  // The Wake Lock request has failed - usually system related, such as battery.
+ // statusElem.textContent = `${err.name}, ${err.message}`;
+}
 */
+
+        let повреждения = [
+            {
+                "Представление": "Несоответствие маркировки",
+                "Значение": "{\"#\",ba3b3627-e62a-4d8f-baf1-2d88e8f880e9,56101:afc94c5262bb1b9f11ecdc92ef482633}",
+                "Пометка": false
+            },
+            {
+                "Представление": "Отсутствие маркировки",
+                "Значение": "{\"#\",ba3b3627-e62a-4d8f-baf1-2d88e8f880e9,56101:afc94c5262bb1b9f11ecdc92f54c57cc}",
+                "Пометка": false
+            },
+            {
+                "Представление": "Принято по наружному осмотру, без доступа к грузу",
+                "Значение": "{\"#\",ba3b3627-e62a-4d8f-baf1-2d88e8f880e9,56101:afc94c5262bb1b9f11ecdc935dc1d9fe}",
+                "Пометка": false
+            },
+            {
+                "Представление": "Несоответствие упаковки",
+                "Значение": "{\"#\",ba3b3627-e62a-4d8f-baf1-2d88e8f880e9,56101:afc94c5262bb1b9f11ecdc93cc4f7a5e}",
+                "Пометка": false
+            },
+            {
+                "Представление": "Повреждение упаковки без доступа к содержимому",
+                "Значение": "{\"#\",ba3b3627-e62a-4d8f-baf1-2d88e8f880e9,56101:afc94c5262bb1b9f11ecdc93d8e263df}",
+                "Пометка": false
+            },
+            {
+                "Представление": "Повреждение упаковки с доступом к содержимому",
+                "Значение": "{\"#\",ba3b3627-e62a-4d8f-baf1-2d88e8f880e9,56101:afc94c5262bb1b9f11ecdc93e0210875}",
+                "Пометка": false
+            },
+            {
+                "Представление": "Несоответствие количества мест",
+                "Значение": "{\"#\",ba3b3627-e62a-4d8f-baf1-2d88e8f880e9,56101:afc94c5262bb1b9f11ecdc93f9908336}",
+                "Пометка": false
+            },
+            {
+                "Представление": "Деформация и пробоины упаковки",
+                "Значение": "{\"#\",ba3b3627-e62a-4d8f-baf1-2d88e8f880e9,56101:84094c5262bb1b9f11eeba424ff49788}",
+                "Пометка": false
+            },
+            {
+                "Представление": "Нарушение геометрии упаковки",
+                "Значение": "{\"#\",ba3b3627-e62a-4d8f-baf1-2d88e8f880e9,56101:84094c5262bb1b9f11eeba4261e62da3}",
+                "Пометка": false
+            },
+            {
+                "Представление": "Сломана/повреждена торцовая стенка",
+                "Значение": "{\"#\",ba3b3627-e62a-4d8f-baf1-2d88e8f880e9,56101:84094c5262bb1b9f11eeba426ddba73a}",
+                "Пометка": false
+            },
+            {
+                "Представление": "Сломана/повреждена боковая стенка",
+                "Значение": "{\"#\",ba3b3627-e62a-4d8f-baf1-2d88e8f880e9,56101:84094c5262bb1b9f11eeba4279dcad2b}",
+                "Пометка": false
+            },
+            {
+                "Представление": "Сломано/повреждено основание ящика",
+                "Значение": "{\"#\",ba3b3627-e62a-4d8f-baf1-2d88e8f880e9,56101:84094c5262bb1b9f11eeba4285d18c37}",
+                "Пометка": false
+            },
+            {
+                "Представление": "Сломана/повреждена крышка ящика",
+                "Значение": "{\"#\",ba3b3627-e62a-4d8f-baf1-2d88e8f880e9,56101:84094c5262bb1b9f11eeba4297c128b9}",
+                "Пометка": false
+            },
+            {
+                "Представление": "Сломаны/отсутствуют полозья на ящике",
+                "Значение": "{\"#\",ba3b3627-e62a-4d8f-baf1-2d88e8f880e9,56101:84094c5262bb1b9f11eeba42a3b655c9}",
+                "Пометка": false
+            },
+            {
+                "Представление": "Повреждены/отсутствуют доски обрешётки",
+                "Значение": "{\"#\",ba3b3627-e62a-4d8f-baf1-2d88e8f880e9,56101:84094c5262bb1b9f11eeba42afa7ddb1}",
+                "Пометка": false
+            },
+            {
+                "Представление": "Отсутствует/ повреждена ножка поддона",
+                "Значение": "{\"#\",ba3b3627-e62a-4d8f-baf1-2d88e8f880e9,56101:84094c5262bb1b9f11eeba42bba124d7}",
+                "Пометка": false
+            },
+            {
+                "Представление": "Следы подмочки груза",
+                "Значение": "{\"#\",ba3b3627-e62a-4d8f-baf1-2d88e8f880e9,56101:84094c5262bb1b9f11eeba42c795904e}",
+                "Пометка": false
+            },
+            {
+                "Представление": "Отсутствует упаковка",
+                "Значение": "{\"#\",ba3b3627-e62a-4d8f-baf1-2d88e8f880e9,56101:84094c5262bb1b9f11eeba42d3d53581}",
+                "Пометка": false
+            }
+        ];
+
+/*
+        НовыйМассивФото();
+        ///////////||||
+        ОбновитьЭлемент("ЗаголовокОкна", "Завоз по пин-коду ");
+
+        ДобавитьЭлемент("ЛевоеОкно", "Видео", "video", "{\"class\":\"Видоискатель\"}", null);
+        ДобавитьЭлемент("ЛевоеОкно", "КнопкаСделатьФото", "button", "{\"class\":\"СтильКнопкиФото\"}", "&#128247;");
+
+        //	ПриНажатии("КнопкаСделатьФото", "КнопкаДействие", "СделатьФото");
+        ДобавитьЭлемент("ЛевоеОкно", "КнопкаГалерея", "button", "{\"class\":\"КоличествоФотоВГалерееФотоаппарат\"}", "4 Фото");
+
+
+        let КнопкаНазад = document.getElementById("Назад");
+        КнопкаНазад.onclick = (ev) => {
+            ev.preventDefault();
+            Скрыть("Галерея");
+            Показать("ЛевоеОкно");
+
+        }
+
+        ЗапуститьФотоАппарат("Видео", "КнопкаСделатьФото", "КнопкаГалерея");
+
+                    ОбновитьЭлемент("ЗаголовокОкна","Укажите повреждения");
+            Список = JSON.stringify(повреждения);
+            ВыстроитьПовреждения("ЛевоеОкно","ВидыПовреждений",Список);
+        */
+/*
+        let СтильКнопки =  "{\"class\":\"button key next\"}";
+	ОбновитьЭлемент("ТекстНаВесьЭкран","Не выбраны виды повреждений. АОФ не будет создан. Фото будут утеряны."); 
+	ОбновитьЭлемент("КнопкиВопросаНаВесьЭкран","","{\"class\":\"КнопкиВопросаНаВесьЭкран\"}");
+		ДобавитьЭлемент("КнопкиВопросаНаВесьЭкран", "КнопкаНеЗавершениеНаряда", "button", СтильКнопки, "Назад");
+		ПриНажатии("КнопкаНеЗавершениеНаряда", "КнопкаДействие", "ДействиеКнопкиНазад"); 
+		ДобавитьЭлемент("КнопкиВопросаНаВесьЭкран", "КнопкаПродолжитьЗавершениеНаряда", "button", СтильКнопки, "Продолжить");
+		ПриНажатии("КнопкаПродолжитьЗавершениеНаряда", "КнопкаДействие", "ДействиеКнопкиПродолжить"); 
+	ОбновитьЭлемент("ВопросПоЦентруЭкрана",null, "{\"class\":\"ВопросПоЦентруЭкрана АнимированныйФон\"}");
+
+*/
+
     </script>
 
 </body>
