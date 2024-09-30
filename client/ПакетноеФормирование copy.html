@@ -12,8 +12,8 @@
     .tabulator {
         position: relative;
         border: 1px solid #999;
-        background-color: #888;
-        font-size: 14px;
+        /*background-color: #f1edab86;*/
+        font-size: 19px;
         text-align: left;
         overflow: hidden;
         -webkit-transform: translateZ(0);
@@ -41,7 +41,7 @@
         width: 100%;
         border-bottom: 1px solid #999;
         background-color: #e6e6e6;
-        color: #555;
+        color: #1d1c1a;
         font-weight: 700;
         white-space: nowrap;
         overflow: hidden;
@@ -362,7 +362,8 @@
         -moz-user-select: none;
         -khtml-user-select: none;
         -webkit-user-select: none;
-        -o-user-select: none
+        -o-user-select: none;
+        border-top: 2px solid #110e0e
     }
 
     .tabulator .tabulator-footer .tabulator-footer-contents {
@@ -370,7 +371,8 @@
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
-        padding: 5px 10px
+        padding: 5px 10px;
+        border-top: 2px solid #110e0e
     }
 
     .tabulator .tabulator-footer .tabulator-footer-contents:empty {
@@ -513,7 +515,8 @@
         position: relative;
         box-sizing: border-box;
         min-height: 22px;
-        background-color: #fff
+        background-color: #fff;
+        border-bottom: 1px solid #110e0e9f
     }
 
     .tabulator-row.tabulator-row-even {
@@ -1230,77 +1233,12 @@
 
     body {
         font-family: Arial;
-        background: linear-gradient(#f5f5d7, #f0f0d2);
+        /* background: linear-gradient(#f5f5d7, #f0f0d2);*/
         overflow-x: hidden;
         overflow-y: hidden;
+        /*background-color: hsl(120, 21%, 93%);*/
     }
 
-    .buttonstable {
-        list-style-type: none;
-        width: 100%;
-        height: 100%;
-        margin-left: 0;
-        margin-right: 0;
-        z-index: 1;
-        border-radius: 10%;
-        align-content: space-around;
-        justify-content: center;
-        align-items: stretch;
-        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
-        overflow-x: hidden;
-        overflow-y: hidden;
-        table-layout: fixed;
-    }
-
-    .buttonstable td {
-        text-align: center;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-    }
-
-    .buttonstable tr {
-        justify-content: center;
-        flex-shrink: 1;
-    }
-
-
-    .buttonstable button {
-        width: 100%;
-        height: 100%;
-        border-color: #ecd341;
-        background: linear-gradient(#f3e17b, #f1f1bd);
-        color: rgb(0, 0, 0);
-        border-radius: 10%;
-        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
-        text-align: center;
-        justify-content: center;
-        align-items: center;
-        font-size: 3vw;
-        flex-grow: 1;
-    }
-
-
-
-    .keyboard {
-        position: absolute;
-        bottom: 25%;
-        width: 58%;
-        height: 60%;
-        align-items: flex-end;
-    }
-
-
-
-    .keyboard-line {
-        display: flex;
-        flex-direction: row;
-        height: 30%;
-        /*justify-content: center;*/
-        padding-top: 7px;
-        padding-bottom: 7px;
-
-    }
 
 
     .button {
@@ -1316,18 +1254,6 @@
         background-image: linear-gradient(to bottom, #4d6398, #334266);
     }
 
-    .button::before {
-        content: "";
-        position: absolute;
-        z-index: -1;
-        padding: 1px;
-        width: 100%;
-        height: 100%;
-        top: -1px;
-        left: -1px;
-        border-radius: 5px;
-        background-image: linear-gradient(to bottom, #1a2133, #222c44);
-    }
 
     .button.next {
 
@@ -1344,49 +1270,42 @@
         font-size: 2vw;
     }
 
-    .button.search {
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' stroke='%23fffff' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'%3E%3C/path%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: contain;
-        fill: #ffffff;
-        stroke: #ffffff;
-        width: 9%;
-        height: 7%;
-        margin-right: 5px;
-        padding-top: 15px;
-        margin-top: -15px;
+    .button.backspace {
+        /*position: relative;
+        top: 8px;
+
+        right: 3px;*/
+        align-content: center;
+        vertical-align: middle;
+        text-align: center;
+        color: #ffffff;
+
+        font-size: 3vw;
+    }
+
+
+
+    .button.close {
+        /* position: fixed;*/
+        /*left: 3px;
+        top:9px;*/
+        color: #ffffff;
+        width: 10%;
+        height: 100%;
+        font-size: 4vw;
+        z-index: 4;
+    }
+
+
+    .button.СмотретьГрузы {
+        position: fixed;
+        bottom: 9px;
+        left: 9px;
+        /*width: 10%;*/
+        height: 10%;
         color: #ffffff;
         font-size: 2vw;
 
-    }
-
-    .button.backspace {
-        text-align: center;
-        align-self: center;
-        align-content: center;
-        vertical-align: middle;
-        /*margin-right: -7%;*/
-        /*right: 0;*/
-        color: #ffffff;
-        /*flex-shrink: 1;*/
-        /*width: 10%;*/
-        height: 10%;
-        font-size: 4vw;
-    }
-
-    .button.close {
-        /* right: -1px;*/
-        color: #ffffff;
-        /*        flex-shrink: 1;*/
-        width: 20%;
-        /*height: 100px;*/
-        font-size: 4vw;
-
-    }
-
-    .button.close.collapsed {
-        width: 5%;
     }
 
     .button.open {
@@ -1411,141 +1330,372 @@
         background-color: #334266;
     }
 
-    .key {
-        margin-right: 5px;
-        margin-bottom: 5px;
-        padding-left: 0;
-        padding-right: 0;
-        color: #ffffff;
-        font-size: 3vw;
+
+
+    .СтильОсновногоОкна {
+        display: flex;
+        flex-direction: row;
+        width: 99%;
+        height: 100%;
     }
 
 
+    .СеткаСЯчейкамиГрузов {
+        display: grid;
+        height: 90%;
+        width: 100%;
+        grid-template-columns: repeat(4, 22%);
+        grid-auto-rows: minmax(30vh, 30vh);
+        grid-row-gap: 9px;
+        grid-gap: 9px;
+        padding-right: 9px;
+        overflow: auto;
+        overscroll-behavior: contain;
+        flex-grow: 10;
+        /* border-style: solid;
+        border-width: 1px;*/
+        margin-left: 9px;
+        margin-right: 9px;
+    }
 
-    .error-line {
-        /*display: flex;*/
-        position: fixed;
-        top:50%;
-        align-self: center;
-        align-content: center;
+    .СеткаСЯчейкамиГрузов div {
+        border-style: solid;
+        border-width: 1px;
+        border-radius: 5px;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+        /*  vertical-align: middle;
+        display: flex;
+        align-items: center;
+*/
+    }
+
+    .КартинкаИнформацияГруза {
+        border-style: solid;
+        border-width: 1px;
+        border-radius: 5px;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
         vertical-align: middle;
-        justify-content: center;
-        text-align: center;
-        flex-shrink: 1;
-        font-size: 3vw;
+        display: flex;
+        /*align-items: center;*/
+        height: 65%;
 
     }
 
 
 
 
-    .lefttables {
+    .СтильЛевогоОкна {
+        transition: 1s;
+        height: 85%;
+        width: 100%;
+        /*align-content: space-between;*/
+    }
+
+    .ЛевоеОкноСЗаголовком {
+        transition: 1s;
+        width: 100%;
+        height: 99%;
         display: flex;
         flex-direction: column;
-        flex-grow: 2;
-        margin-top: 3%;
-        width: 100%;
+        /* align-content: space-between;*/
+        /* display: flex;
+        flex-direction: row;*/
+        border-color: #413d2b;
+    }
 
-        align-items: stretch;
-        justify-content: flex-end;
+
+    .СтильОкнаТаблицаГрузов {
+        height: 50%;
+        min-height: 100px;
+        border-color: #413d2b;
+        border-style: dotted;
+        resize: vertical;
+    }
+
+    #splitter {
+        margin-top: 5px;
+        cursor: row-resize;
+        user-select: none;
+        height: 1px;
+        border-color: #09081a;
+        border-style: solid;
 
     }
 
-    .table {
-        /*flex-grow:3;*/
-        top: 3%;
-        width: 100%;
-        margin-bottom: 7px;
+
+    .СтильОкнаПанельГрузов {
+        display: flex;
+        flex-direction: row;
+        height: 50%;
+        min-height: 100px;
         border-color: #413d2b;
-        background: linear-gradient(#e2d9a3, #f1f1bd);
-        color: rgb(0, 0, 0);
-        border-radius: 3%;
+        border-style: dotted;
+        resize: vertical;
+
+    }
+
+    .СтильОкнаСеткаГрузов {
+        width: 99.9%;
+        /*height: 95%;*/
+        /*border-color: #413d2b;
+        border-style: groove;*/
+        margin-left: 10px;
+
+    }
+
+    .СтильОкнаПанельКнопок {
+        width: 10%;
+        /*border-color: #413d2b;
+        border-style: dotted;*/
+
+        display: grid;
+        grid-template-columns: repeat(1, 99%);
+        grid-auto-rows: 9vh;
+        grid-gap: 20px;
+        margin: 9px;
+
+    }
+
+    .СтильОкнаПанельКнопок div {
+        /*margin: 9px;*/
+        border-style: solid;
+        border-width: 1px;
+        border-radius: 5px;
         box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
 
     }
+
+
+    .КнопкиВыбора {
+
+width: 100%;
+height: 99%;
+cursor: -webkit-grab;
+font-size: 2vh;
+font-weight: bold;
+align-content: center;
+        vertical-align: middle;
+        text-align: center;
+        align-self: center;
+        align-items: center;
+       padding-top: 10%; 
+       margin-bottom: 10%;
+       margin-top: 10%;
+       border-style: solid;
+        border-width: 1px;
+        border-radius: 5px;
+
+}    
+
+
+.КнопкиВыбора:active {
+
+
+    box-shadow: 0 0px 9px 5px #fc894d;
+
+
+}
+
+
+.КнопкиВыбора:hover {
+
+
+    box-shadow: 0 0px 9px 5px #90dd7cd3;
+
+
+}
+
+
+    .ЯчейкаСеткиГрузов {
+        display: flex;
+        flex-direction: column;
+
+        width: 100%;
+        height: 99%;
+        cursor: -webkit-grab;
+
+    }
+
+    .ЯчейкаСеткиГрузов:active {
+
+
+        box-shadow: 0 0px 9px 5px #fc894d;
+
+
+    }
+
+    .ЯчейкаСеткиГрузов[dragover] {
+
+        border-color: blue;
+        box-shadow: 0 0px 9px 5px #b5c74cd3;
+
+
+    }
+
+    .ЯчейкаСеткиГрузов:hover {
+
+
+        box-shadow: 0 0px 9px 5px #90dd7cd3;
+
+
+    }
+
+    .ЯчейкаСеткиГрузов[selected] {
+
+
+        box-shadow: inset 0 0px 9px 5px #182bd7;
+
+    }
+
+    .ПанельКнопокСнизу{
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        height: 15%;
+        border-style:none;
+    }
+
+    .ПанельКнопокСнизу button{
+        width: 100%;
+    }
+
+    .ОбластьКартинкиГруза {
+        width: 95%;
+        height: 97%;
+        border-color: #413d2b;
+        border-style: solid;
+        margin-left: 2px;
+
+    }
+
+    .ОбластьИнформацииГруза {
+        width: 25%;
+        height: 97%;
+        margin-left: 2px;
+        margin-right: 2px;
+        /*border-color: #413d2b;
+        border-style: solid;*/
+
+
+    }
+
+
+
+
+    .ПанельБольшихКнопок {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 1px;
+        grid-auto-rows: minmax(1px, auto);
+
+        height: 100%;
+        text-align: center;
+
+        font-size: 4vh;
+        font-weight: bold;
+
+    }
+
+    .ПанельБольшихКнопок button {
+        margin: 0px 3px 3px 0;
+        padding: 1px;
+        float: left;
+        background: linear-gradient(#f1f397, #f5f5f3);
+        color: black;
+        border-radius: 10%;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+        font-size: 3vw;
+    }
+
+    .ПанельБольшихКнопок button:active {
+        padding: 2px;
+        background: linear-gradient(#ccce63, #a8a89c);
+        border-radius: 15%;
+        box-shadow: 0 11px 11px rgba(0, 0, 0, 0.1);
+    }
+
+
+    .ТаблицаАдреса {
+        width: 100%;
+        height: 95%;
+        border-color: #413d2b;
+        /*background: linear-gradient(#e2d9a3, #f1f1bd);*/
+        color: rgb(0, 0, 0);
+        /*border-radius: 3%;*/
+        /*box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);*/
+        font-size: 3vh;
+        text-wrap: wrap;
+    }
+
+    .ТаблицаАдреса .tabulator-row {
+        vertical-align: middle;
+        text-align: left;
+    }
+
+
+    .ТаблицаАдреса input[type=checkbox] {
+        font-size: 2vw;
+        width: 80px;
+        height: 80px;
+    }
+
+    .ТаблицаАдреса svg {
+        width: 80px;
+        height: 80px;
+    }
+
 
     .wraptext {
         text-wrap: wrap;
     }
 
-    .table.search {
 
-        font-size: 3vw;
+    .ТаблицаАдреса .tabulator-header {
+        font-size: 2vh;
     }
 
-    .table.result {
+
+
+    .ТаблицаАдреса .tabulator-editable {
+
         font-size: 2vw;
+
     }
 
-    .table .tabulator-header {
+
+    .ТаблицаАдреса .tabulator-editing {
+
+
+        font-size: 1vw;
+
+    }
+
+
+
+    .ТаблицаАдреса .tabulator-row button {
         font-size: 2vw;
-    }
-
-
-    .searcharea {
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-        height: 100%;
-    }
-
-    .search-block-left {
-        display: flex;
-        flex-direction: column;
-        flex-grow: 3;
-        width: 60%;
-
-    }
-
-    .search-block-right {
-        flex-grow: 2;
-        width: 40%;
-        align-content: space-between;
-    }
-
-    .search-block-middle {
-        flex-grow: 0;
-        width: 6%;
-        align-content: space-between;
-        margin-right: 10px;
-    }
-
-    .search-block-right.collapsed {
-        transition: 1s;
-        flex-grow: 0;
-        align-content: flex-end;
-        width: 0px;
-        margin-right: -2%;
-    }
-
-    .search-block-right.expanded {
-        margin-right: 0;
-        transition: 1s;
-        flex-grow: 2;
-        width: 40%;
-        align-content: space-between;
-        margin-right: 0%;
-    }
-
-    .input-search {
-        vertical-align: middle;
-        width: 84.5%;
-        border-style: none;
-        margin-right: 1px;
-        /*border-color: #413d2b;*/
-        background: linear-gradient(#e2d9a3, #f1f1bd);
-        color: rgb(0, 0, 0);
-        border-radius: 5%;
+        background-color: #f1ed0991;
+        color: #0f0caf;
+        border-radius: 7%;
         /*box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);*/
-        font-size: 5vw;
-        resize: none;
-        z-index: 2;
+        box-shadow: inset 1px -7px 10px rgba(0, 0, 0, 0.2);
+    }
 
+    .ТаблицаАдреса .tabulator-row button:hover {
+        box-shadow: inset 10px -17px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .ТаблицаАдреса .tabulator-row button:active {
+        box-shadow: inset 10px -17px 10px rgba(0, 0, 0, 0.2);
+        background-color: #f1ed09c0;
     }
 
     .textcentre {
         text-align: center;
-        align-self: center;
+        /*align-self: center;*/
         align-content: center;
         vertical-align: middle;
 
@@ -1553,258 +1703,380 @@
     }
 
 
-    .width100 {
-        width: 100%;
-    }
-
-    .search-header {
-
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-        border-color: #413d2b;
-        background: linear-gradient(#e2d9a3, #f1f1bd);
-        color: rgb(0, 0, 0);
-        border-radius: 4%;
-        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
-        font-size: 3vw;
-        resize: none;
-        z-index: 2;
-        font-weight: bold;
-    }
-
-    .nextdiv {
-        margin-top: 3%;
-        position: relative;
-        display: block;
-
-        bottom: 2%;
-        width: 100%;
-        height: 20%;
-        align-self: start;
-        z-index: 2;
-        font-weight: bold;
-       /* text-align: center;*/
-        font-size: 2vw;
-        color: #ffffff;
-        /*border-style: double;*/
-
-    }
-
-    .sverka {
-
-        flex-grow: 2;
-        margin-top: 3%;
-        align-content: space-between;
-        align-items: stretch;
-        justify-content: space-between;
-
-
-        display: flex;
-        flex-direction: column;
-
-
-       /* text-align: center;*/
-
-        width: 100%;
-        height: 100%;
-    }
-
-    .leftwindow {
-        display: flex;
-        flex-direction: column;
-        transition: 1s;
-        width: 90%;
-        height: 92%;
-        align-content: space-between;
-
-    }
-
-    .leftwindow.expanded {
-        transition: 1s;
-        width: 98.9%;
-        align-content: space-between;
-    }
-
-
-    .leftwindow.expanded .button.close {
-        width: 7%;
-    }
 
     .off {
         display: none;
     }
 
-    .grow3 {
-        flex-grow: 3;
-    }
 
-    .grow2 {
-        flex-grow: 2;
-    }
 
-    .infotable {
-        align-content: space-between;
+
+    .СтильОкнаПанельКомандГруза {
+        /*display: flex;*/
         width: 100%;
+        justify-items: right;
+        /* border-color: #413d2b;
+        border-style: solid;*/
+        justify-content: space-between;
+        align-items: end;
+        align-content: end;
+
+    }
+
+
+    .РазмерШрифта2vw {
+
+        font-size: 2vw;
+    }
+
+
+    .РазмерШрифта4vw {
+
+        font-size: 4vw;
+    }
+
+    .ЗаголовокТаблицыАдреса {
+        font-size: 1vw;
+        text-align: center;
+
+    }
+
+
+    .ЗаголовокПовреждения {
+        /*font-size: 1rem;*/
+        text-align: end;
+        max-height: 2vh;
+    }
+
+
+    .ШапкаГруза {
+        height: 51px;
+        /*max-height: 2rem;*/
+        width: 100%;
+        display: flex;
+        text-align: center;
+        font-weight: bolder;
+
+    }
+
+    .НаименованиеГруза {
+        font-size: 2vh;
+        /*height: 51px;*/
+        /*max-height: 2rem;*/
+        width: 90%;
+        /*display: flex; */
+        height: 100%;
+        text-align: center;
+        font-weight: bolder;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+    }
+
+    .крестикУдаление {
+        float: right;
+        align-self: self-end;
+        vertical-align: bottom;
+        align-content: end;
+        width: 50px;
+        height: 50px;
+    }
+
+    .крестикУдаление:hover {
+        border-radius: 7%;
+        box-shadow: inset 10px -17px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    #ПанельКомандГруза button {
+        margin: 9px;
+        top: 0;
+        vertical-align: bottom;
+        align-content: end;
+        border-radius: 7%;
+        box-shadow: inset 1px -7px 10px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        font-weight: bolder;
+        border-color: #413d2b;
+        border-style: solid;
+        height: 30px;
+        background-color: #e5eb9565;
+    }
+
+    #ПанельКомандГруза button:hover {
+        border-radius: 7%;
+        box-shadow: inset 10px -17px 10px rgba(0, 0, 0, 0.2);
+        background-color: #d6dd6d83;
+    }
+
+    #ПанельКомандГруза button:active {
+        border-radius: 7%;
+        box-shadow: inset 10px -17px 10px rgba(0, 0, 0, 0.2);
+        background-color: #e7f70ba1;
+    }
+
+    .КомандаОККоманднойПанели {
+        right: 50px;
+        float: right;
+        align-self: self-end;
+        width: 70px;
+        margin: 9px;
+        top: 0;
+        vertical-align: bottom;
+        align-content: end;
+        border-radius: 7%;
+        box-shadow: inset 1px -7px 10px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        font-weight: bolder;
+        border-color: #413d2b;
+        border-style: solid;
+        height: 30px;
+        background-color: #edf10991;
+        color: #0f0caf;
+    }
+
+    .КомандаОККоманднойПанели:hover {
+        box-shadow: inset 1px -17px 10px rgba(0, 0, 0, 0.2);
+        background-color: #edf109a2;
+    }
+
+    .КомандаОККоманднойПанели:active {
+        box-shadow: inset 1px -2px 10px rgba(0, 0, 0, 0.2);
+        background-color: #f6fa1fc7;
+    }
+
+    .ОткрытьЗначение {
+        align-self: self-end;
+        vertical-align: bottom;
+        align-content: end;
+        width: 3vw;
+        height: 3vw;
+        bottom: 0;
+        offset-position: bottom;
         font-size: 3vh;
-        flex-grow: 2;
+        text-align: center;
+        align-self: center;
+        align-content: center;
+        align-items: center;
+        align-self: center;
+        vertical-align: middle;
+        justify-content: center;
+        justify-items: center;
+        cursor: pointer;
+    }
+
+    .ОткрытьЗначение:hover {
+        box-shadow: inset 1px -17px 10px rgba(0, 0, 0, 0.2);
+    }
+
+
+
+
+    .modalActive {
+        position: absolute;
+        top: 50%;
+        left: 10%;
+        background: rgba(249, 250, 244, 0.966);
+        border-radius: 3px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #2b2b28;
+
 
     }
 
-    .infotable th {
 
-        text-align: start;
-        color: #2ca736;
-        border-bottom: 2px dashed black;
-        margin-bottom: 10px;
+    @keyframes АнимацияРаскрытияСпискаВыбора {
+        0% {
+            margin-left: -500px;
+        }
+
+        100% {
+            margin-left: 0;
+        }
     }
+
+    .modalWindow {
+        position: relative;
+
+        animation-duration: 100ms;
+        animation-fill-mode: forwards;
+        animation-iteration-count: 1;
+        animation-name: АнимацияРаскрытияСпискаВыбора;
+        animation-timing-function: linear;
+    }
+
+    .modalClose {
+        float: right;
+        cursor: pointer;
+        position: relative;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center
+    }
+
+    .modalClose::before,
+    .modalClose::after {
+        position: absolute;
+        content: '';
+        width: 100%;
+        height: 2px;
+        background-color: #000;
+    }
+
+    .modalClose::before {
+        transform: rotate(45deg);
+    }
+
+    .modalClose::after {
+        transform: rotate(-45deg)
+    }
+
+
+    .modalWindow div {
+        font-size: 3vh;
+        margin-top: 5px;
+    }
+
+    .modalWindow button {
+        border-radius: 1px;
+        font-size: 3vh;
+        font-weight: bold;
+        margin-top: 5px;
+        width: 100%;
+    }
+    
+    .ДиалогВыбораТипаГруза_Ячейка:hover {
+    	box-shadow: 0 0px 9px 5px #90dd7cd3;
+	}
+
+.Тусклый{
+/*    box-shadow: inset 1px -17px 10px rgba(0, 0, 0, 0.2);*/
+    filter:brightness(25%);
+    opacity: 0.25; /* Полупрозрачный фон */
+    filter: alpha(Opacity=25); /* Прозрачность в IE */
+}
+
 </style>
 
+<style>
+    .Добавить_Груз {
+        font-size: 3vh;
+        font-weight: bolder;
+
+        background: rgba(169, 209, 142, 0.822);
+
+    }
+
+    .Крестик_УдалитьГруз {
+        background-image: url('data:image/PNG;base64,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');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        cursor: pointer;
+    }
+
+    .Лупа {
+        background-image: url('data:image/PNG;base64,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');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        cursor: pointer;
+    }
+</style>
 
 <body>
     <a id="lnk" hidden=true></a>
 
-    <div id="searcharea">
-        <div class="searcharea">
-            <div class="search-block-left" id="leftsearch">
-                <div id="leftwindow" class="leftwindow">
-                    <div id="leftheader" class="search-header">
-                        <button class="button close" type="button" id="closesearch">⏎</button>
-                        <div id="ЗаголовокОкна" class="textcentre width100 grow3">Вывоз по пин-коду</div>
-                    </div>
+    <div id="ОсновноеОкно" class="СтильОсновногоОкна">
+        <div id="ЛевоеОкноСЗаголовком" class="ЛевоеОкноСЗаголовком">
 
-
-                    <div id="ПромежуточнаяГруппа" class="lefttables off">
-
-                        <table class="infotable">
-                            <thead>
-                                <tr>
-                                    <th width="50%">Информация о наряде</th>
-                                    <th width="50%">Грузополучатель</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <div id="Экспедитор"><strong>Экспедитор:</strong> </div>
-                                        <div id="Номер"><strong>Номер:</strong> </div>
-                                        <div id="ДатаДок"><strong>Дата:</strong> </div>
-                                    </td>
-
-                                    <td>
-                                        <div id="СообщениеОДоверенности" style="color: #d00;">Выдача представителю
-                                            экспедитора по доверенности</div>
-                                        <div id="ГруппаГрузополучательВнутренняя">
-                                            <div id="Грузополучатель"><strong>ФИО:</strong> </div>
-                                            <div id="ДокументГрузополучателя"><strong>Документ:</strong> </div>
-                                            <div id="ДанныеАвто"><strong>Авто:</strong> </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                            <thead>
-                                <tr>
-                                    <th>Информация о вывозе</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <div id="НарядАвтоДатаВывоза"><strong>Дата вывоза:</strong> </div>
-                                    </td>
-                                    <td>
-                                        <div id="НарядАвтоВременнойСлот"><strong>Временной слот:</strong> </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <div class="off" style="color: rgb(0, 0, 0); font-size: 2vw; background-color: #ad4141;"
-                            id="ТекстПредупржденияОтгрузки">Текущее время
-                            находится вне запланированного времени слота! Отгрузка осуществляется на Ваше усмотрение!
-                        </div>
-                        <div class="nextdiv">
-                            <button class="button" type="button " id="КнопкаДалее">&rightarrow; Далее</button>
-                        </div>
-                    </div>
-
-                    <div id="errortext" class="error-line textcentre wraptext off"></div>
-
-                    <div id="ГруппаСверкаИнформации" class="sverka off">
-
-                        <div id="тзСписокПорученийНаОтгрузку" class="table result"></div>
-
-                        <div id="ГруппаОтменаПродолжение" class="nextdiv">
-                            <button class="button off" type="button" id="ВзятьВРаботу">Взять в работу</button>
-                            <button class="button " type="button" id="НачатьПогрузкуНаАвто">&#x1F69A; Начать погрузку</button>
-                        </div>
-                    </div>
-                </div>
+            <div id="ОкноТаблицаГрузов" class="СтильОкнаТаблицаГрузов" ondragover="allowDrop(event)">
+                *Информация о контейнере*
             </div>
+            <div id="splitter"></div>
+            <div id="ПанельСеткИКнопки" class="СтильОкнаПанельГрузов" ondragover="allowDrop(event)" ondrop="Drop(event)"
+                ondragstart="dragStart(event)">
 
-            <div class="search-block-middle off" id="middlesearch">
-                <button class="button open " type="button" id="openkeypad">&leftarrow;</button>
-            </div>
-
-            <div class="search-block-right " id="rightsearch">
-                <div id="rightheader" class="search-header">
-                    <textarea id="input-search" class="input-search textcentre" rows="1" readonly></textarea>
-                    <button class="button backspace" type="button" id="erasebutton">⌫</button>
+                <div id="ПанельКнопок" class="СтильОкнаПанельКнопок">
                 </div>
 
-                <section class="keyboard" id="Клавиатура">
-                    <div class="keyboard-line">
-                        <button class="button key" type="button" id="index_0">1</button>
-                        <button class="button key" type="button" id="index_1">2</button>
-                        <button class="button key" type="button" id="index_2">3</button>
-                    </div>
-                    <div class="keyboard-line">
-                        <button class="button key" type="button" id="index_12">4</button>
-                        <button class="button key" type="button" id="index_13">5</button>
-                        <button class="button key" type="button" id="index_14">6</button>
-                    </div>
-                    <div class="keyboard-line">
-                        <button class="button key" type="button" id="index_24">7</button>
-                        <button class="button key" type="button" id="index_25">8</button>
-                        <button class="button key" type="button" id="index_26">9</button>
-                    </div>
-                    <div class="keyboard-line">
-                        <button class="button key" type="button" id="slashbutton" disabled style="opacity: 0;"></button>
-                        <button class="button key" type="button" id="index_28">0</button>
-                        <button class="button clear" type="button" id="clearbutton">Очистить</button>
-                    </div>
-                </section>
 
-
+                <div id="ОкноСеткаГрузов" class="СтильОкнаСеткаГрузов" >
+                </div>
 
             </div>
-
         </div>
+
+        <div class="modalActive off">
+            <div id="ДиалогВыбора" class="modalWindow">
+            </div>
+        </div>
+
+
     </div>
 
     <script>
         function return1c(element, data1) {
-            let lnk = document.getElementById("lnk");
-            let evt = document.createEvent("MouseEvent");
-            evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, null);
-
-            //let lnk = document.getElementById("lnk");
-            evt.data = JSON.stringify(data1);
-
-            //console.log(data1);
-            lnk.dispatchEvent(evt);
+            //element - думал сначала посылать на него нажатие , но оказалось что не всегда есть элемент от которого шлем;
+            try {
+                let lnk = document.getElementById("lnk");//эта невидимая ссылка создана на странице нужна чтобы в 1С возвращать как бы нажатие на нее
+                let evt = document.createEvent("MouseEvent");
+                evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, null);
+                evt.data = JSON.stringify(data1);// но в реквизит data мы "пихаем" овер дофига инфы
+                lnk.dispatchEvent(evt);//без этой строки эвент не полетит в 1С
+            } catch (e) { }
         }
 
+        function ShowModalDialog() {//показать "модальный" выпадающий список , который закрывается если нажать мимо него
+            const modalActive = document.getElementsByClassName("modalActive")[0];
+            modalActive.classList.remove("off");
 
-        function addElement(parentid, id, type, attr = "") {
+            let documentClick = () => { Close(); }
+
+            let Close = () => {
+                modalActive.classList.add("off");
+                document.removeEventListener('click', documentClick);
+            }
+
+            //modalClose.addEventListener('click', (e) => { Close(); });
+            document.addEventListener('click', documentClick);//если нажимаем мимо , то ...
+
+        }
+
+        function CallMethod(id, methodName, attr = "") {//вызвать метод у элемента  , пока не используется нигде
 
             let t = document.getElementById(id);
-            if (t != null) return;
+            if (t == null) return;
+            let obj = undefined;
+            try {
+                let obj = JSON.parse(attr);
 
+            } catch (err) {
+            }
+            t[methodName](obj);
+
+        }
+
+        function AddElement(parentid, id, type = "div", attr = "", innerHTML = null) {//добавить элемент формы
+            //parentid - внутрь чего мы его помеещаем,
+            // id - новый ИД нового элемента,если "" то элемент будет создан без ИД
+            // type = тэг элемента, div button да что угодно  
+            // attr = JSON строка с атрибутами тэга,
+            // innerHTML = содержимое тэга
+            let t = document.getElementById(id);
+            if (t != null) return t;
             let ul = document.getElementById(parentid);
             t = document.createElement(type);
-            t.setAttribute("id", id);
+            if (id != "") t.setAttribute("id", id);
+            if (innerHTML != null) t.innerHTML = innerHTML;
             try {
                 let obj = JSON.parse(attr);
                 for (let prop in obj) {
@@ -1813,10 +2085,10 @@
             } catch (err) {
             }
             ul.appendChild(t);
-
+            return t;
         }
 
-        function updateStyle(id, styleattr) {
+        function UpdateStyle(id, styleattr) {// обновляет атрибуты стиля тэга
             let e = document.getElementById(id);
             if (e == null) return;
 
@@ -1828,11 +2100,9 @@
             } catch (err) {
             }
 
-
-
         }
 
-        function updateElement(id, innerHTML, attr = "") {
+        function UpdateElement(id, innerHTML, attr = "") {// обновляет содержимое и атрибуты тэга
             let e = document.getElementById(id);
             if (e == null) return;
             if (innerHTML != null) e.innerHTML = innerHTML;
@@ -1845,172 +2115,695 @@
             }
         }
 
-
-        function enableElement(id) {
+        function ShowElement(id) {// видимость элементов сделана через отдельный css класс ".off" 
+        //это делалось на случай если нужно будет "анимировать" на странице все появления и исчезновения элементов на странице
             let elem = document.getElementById(id);
             if (elem == null) return;
-            elem.classList.remove("off");
+            elem.classList.remove("off");//удалим у элемента класс .off чтобы он появился
         }
 
-        function disableElement(id) {
+        function HideElement(id) {//добавим элементу css класс .off чтобы он исчез
+
             let elem = document.getElementById(id);
             if (elem == null) return;
             elem.classList.add("off");
         }
 
-        function addTable(parentid, tableid, attr = "") {
-            addElement(parentid, tableid, "div", attr);
+        function addCSSClass(data) {//добавим новый css класс в коллекцию css 
+            //таким образом мы можем загрузить картинки в стиль и много кратно ссылаясь на этот стиль использовать подготовленную картинку, не передавая ее каждый раз как она нужна
+            let innerHTML = JSON.parse(data);
+            let style = document.createElement('style');
+            style.type = 'text/css';
+            style.innerHTML = innerHTML;
+            document.getElementsByTagName('head')[0].appendChild(style);
         }
 
-        function updateTable(tableid, data, options) {
-            let searchtable = document.getElementById(tableid);
-
-            options_ = JSON.parse(options);
-            options_.data = JSON.parse(data);
-            let table = new Tabulator("#" + tableid, options_);
-
-            table.on("rowClick", function (e, row) {
-                return1c(searchtable, { "type": "tablerow", "row": row._row.data, "id": tableid });
-            });
-
-            table.on("rowTap", function (e, row) {
-
-            });
-
-
-        }
-
-
-        function addClickListen(id,type,ref){
+        function OnClick(id, type, ref) {//добавим обработку события нажатие на элемент , с отправкой резульата в 1С
             let element = document.getElementById(id);
-/*            element.addEventListener(type,(e,ee)=>{
-                return1c(element, { "type": type, "id": id, "ref":ref });
-            });*/
+
             element.onclick = (ev) => {
-                return1c(element, { "type": type, "id": id, "ref":ref });
+                ev.preventDefault();
+                ev.stopPropagation();
+                return1c(element, { "type": type, "id": id, "ref": ref });
             }
 
         }
 
+        function OnEvent(eventType, id, type, ref) {//добавим обработку события элемента , с отправкой резульата в 1С
+            let element = document.getElementById(id);
+            element.addEventListener(eventType, (ev) => {
+                ev.preventDefault();
+                ev.stopPropagation();
+                return1c(element, { "type": type, "id": id, "ref": ref });
+            });
+        }
+//-----------------------------------------------------------------------------------
+        function FindCargoString(Грузы, Элемент) {//найдем строку в таблице грузов по элементу на экране
+            for (i in Грузы)
+                if (Грузы[i].Элемент.id == Элемент.id) return Грузы[i];
+            return undefined;
+
+        }
+
+        function FindUpperDataElementHierarchy(target) {//найдем "грузовой" элемент в иерархии элемента , 
+        //когда мы кликаем на элемент например "картинку груза" то в иерархии ищем элемент родитель что соответствует нужному грузу в таблице
+        let parentEl = target;
+            for (let i = 0; i < 5; i++) {
+                if (parentEl.hasOwnProperty("Данные")) return parentEl;
+                parentEl = parentEl.parentElement;
+
+            }
+            return null;
+        }
+
+        function DrawTable(tableid, ОбластьЯчейки, options) {//отрисуем табличку грузов (верхний блок)
+            let tableparentid = "ОкноТаблицаГрузов";
+            UpdateElement(tableparentid, "");// очистим подложку
+            AddElement(tableparentid, tableid + "Заголовок", "div", "{\"class\":\"ЗаголовокТаблицыАдреса\"}", "Содержимое груза:");
+            //AddElement(tableparentid, tableid+"Таблица", "div");
+            AddElement(tableparentid, tableid, "div", "{\"class\":\"ТаблицаАдреса\"}");//добавим элемент что станет таблицей
+            let Элемент = FindCargoString(window.Грузы, ОбластьЯчейки);//найдем строку с грузом
+            let data = Элемент.Вложения;//получим содержимое таблицы
+            UpdateElement(tableid + "Заголовок", "Содержимое: " + Элемент.Текст);
+            options.data = data;
+            options.movableRows = true;
+            options.autoResize = true;
+            options.movableRowsConnectedElements = "#ПанельСеткИКнопки";
+            let table = new Tabulator("#" + tableid, options);
+            window.table = table;
+            table.on("movableRowsElementDrop", function (e, element, row) {//событие перетаскивания строки таблицы
+                let str = row.getData();
+                console.log(str);
+                console.log(e);
+                if (str.Мест == 0 || str.Вес == 0 || str.ВесНачально == 0 || str.МестНачально == 0) { console.log("empty cargo"); return; }
+                if (e.target.id == "ОбластьЯчейки_СвободнаяЯчейка") {
+
+                    return1c(this, { type: "Извлечение", id: null, Груз: str.Груз, ОписаниеГруза: str.ОписаниеГруза, Мест: str.Мест, Вес: str.Вес, НомерСтроки: -1 });
+                    return;
+                }
+
+                let UpperElement = FindUpperDataElementHierarchy(e.target);
+                if (UpperElement != null) {
+
+                    let Данные = UpperElement.Данные;
+                    console.log(Данные);
+                    return1c(this, { type: "Комплектация", id: null, ГрузИсточник: str.Груз, ОписаниеГруза: str.ОписаниеГруза, Мест: str.Мест, Вес: str.Вес, ГрузПриемник: Данные.Груз, НомерСтроки: Данные.НомерСтроки });
+                    return;
+
+                } else {
+
+                    console.log("data not found");
+
+                }
+            });
 
 
-        function enableKeyPad() {
-            let rightsearch = document.getElementById("rightsearch");
-            let errortext = document.getElementById("errortext");
-            let keyboard = document.querySelector(".keyboard");
-            let key = document.querySelectorAll('.key');
-            let display = document.getElementById('input-search');
-            let clearkey = document.getElementById('clearbutton');
-            let backspacekey = document.getElementById('erasebutton');
-            let closesearch = document.getElementById('closesearch');
-            let searcharea = document.getElementById('searcharea');
-            let ВзятьВРаботу = document.getElementById("ВзятьВРаботу");
-            let НачатьПогрузкуНаАвто = document.getElementById("НачатьПогрузкуНаАвто");
-            let openkeypad = document.getElementById("openkeypad");
-            let КнопкаДалее = document.getElementById("КнопкаДалее");
-            searcharea.classList.remove("off");
-            display.textContent = '';
-            //            errortext.classList.add("off");
-            //          errortext.innerHTML = "";
-            //buttons.classList.add("off");
-            //            openkeypad.classList.add("off");
-            //rightsearch.classList.remove("collapsed");
-            //rightsearch.classList.add("expanded");
+        }
 
-            keyboard.classList.remove("off");
+        function DrawCargoGrid(id, tableid, data, options) {//отрисуем сетку с иконочными грузами (нижний блок)
 
-            for (let k of key) {
-                k.onclick = (ev) => {
+            let parentid = "ОкноСеткаГрузов";
+            let tableparentid = "ОкноТаблицаГрузов";
+            let gridandbuttonsid = "ПанельКнопок";
+            UpdateElement(tableparentid, ""); // почистим блок
+            let ДобавитьПустуюЯчейку = false;
+            let Список = JSON.parse(data);//получим данные
+
+            AddElement(parentid, id, "div", "{\"class\":\"СеткаСЯчейкамиГрузов\"}");// добавим тип блока grid в котором заданы размеры ячеек и сколько столбцов
+            UpdateElement(id, "");// зачем то почистим блок , хотя только что его добавили , но всеже AddElement ничего не делает если блок уже существует и создан раенее , хз карочи
+            //UpdateElement(gridandbuttonsid, "");
+            let НомерЗаписи = 1;
+            Список.sort((a, b) => { return a.Порядок - b.Порядок });// сортируем ячейки по порядку от 1С
+            console.log(data);//для отладки
+            //console.log(options);
+            for (let ДанныеКнопки of Список) {
+
+                let КнопкаСекции_id = "ОбластьЯчейки_" + НомерЗаписи;
+                let ОбластьЯчейки = AddElement(id, КнопкаСекции_id, "div", "{\"class\":\"ЯчейкаСеткиГрузов\",\"draggable\":\"true\"}", null);// добавим подложку ячейки 
+
+                ДанныеКнопки.Элемент = ОбластьЯчейки;
+                ОбластьЯчейки.Данные = ДанныеКнопки;//сомнительно но ок , сохраним табличку с вложениями прямо в элемент 
+
+                if (ДанныеКнопки.Груз == window.ВыбранГруз && ДанныеКнопки.Порядок == window.ВыбранПорядок) {
+                    try {
+                        DrawTable(tableid, ОбластьЯчейки, JSON.parse(options));
+                        ВыбратьГруз(ОбластьЯчейки, ДанныеКнопки);
+                    } catch (e) { }
+                }
+
+                //сформируем формочку ячейки груза
+                let ШапкаГруза = КнопкаСекции_id + "ШапкаГруза";
+                AddElement(КнопкаСекции_id, КнопкаСекции_id + "ШапкаГруза", "div", "{\"class\":\"ШапкаГруза\"}");
+
+                AddElement(ШапкаГруза, КнопкаСекции_id + "Наименование", "div", "{\"class\":\"НаименованиеГруза\"}", ДанныеКнопки.Наименование);
+                let Удаление = AddElement(ШапкаГруза, КнопкаСекции_id + "Удаление", "div", "{\"class\":\"Крестик_УдалитьГруз крестикУдаление\"}");
+
+                let КартинкаИИнформация = КнопкаСекции_id + "КартинкаИИнформация";
+
+                AddElement(КнопкаСекции_id, КартинкаИИнформация, "div", "{\"class\":\"КартинкаИнформацияГруза\"}", null);
+                let КартинкаИД = КнопкаСекции_id + "Картинка";
+                let Картинка = AddElement(КартинкаИИнформация, КартинкаИД, "div", '{"class":"ОбластьКартинкиГруза ' + ДанныеКнопки.Картинка + '"}', null);//картинки созданы в виде классов
+
+                let НадписьИнформация = КнопкаСекции_id + "Информация";
+                AddElement(КартинкаИИнформация, НадписьИнформация, "div", "{\"class\":\"ОбластьИнформацииГруза\"}", null);
+
+                AddElement(НадписьИнформация, КнопкаСекции_id + "Заголовок1", "label", "{\"class\":\"ЗаголовокПовреждения\"}", ДанныеКнопки.Информация);//тип контейнера
+                AddElement(НадписьИнформация, КнопкаСекции_id + "Заголовок2", "div", "{\"class\":\"ЗаголовокПовреждения\"}", ДанныеКнопки.Мест);
+                let textBlock = AddElement(НадписьИнформация, КнопкаСекции_id + "Заголовок3", "div", "{\"class\":\"ЗаголовокПовреждения\"}", ДанныеКнопки.Вес);
+                
+                scaleText(textBlock, ДанныеКнопки.Вес);
+
+                let КнопкиСнизу = КнопкаСекции_id + "КнопкиСнизу";
+                AddElement(КнопкаСекции_id, КнопкиСнизу, "div", "{\"class\":\"ПанельКнопокСнизу\"}", null);
+                
+                //нарисуем кнопочки ячейки груза присланные из 1С
+                if (ДанныеКнопки.Команды != null) {
+                    for (let command of ДанныеКнопки.Команды) {
+
+                        let Команда = AddElement(КнопкиСнизу, "", "button", "{\"class\":\"" + command.Стиль + "\",\"title\":\""+command.Подсказка+"\" }", command.Текст);
+                        if(command.Доступность == true)
+                        Команда.onclick = (ev) => {
+                            ev.preventDefault();
+                            return1c(Команда, { "type": command.Команда, "id": 0, "Груз": ДанныеКнопки.Груз, "НомерСтроки": ДанныеКнопки.НомерСтроки, Мест: ДанныеКнопки.Мест, Вес: ДанныеКнопки.Вес, ОписаниеГруза: ДанныеКнопки.ОписаниеГруза });
+                        }
+
+
+                    }
+
+                }
+                //события формочки ячейки груза
+                Удаление.onclick = (ev) => {
                     ev.preventDefault();
-                    display.textContent += k.textContent;
-                    errortext.classList.add("off");
-                    errortext.innerHTML = "";
-                    if(display.textContent.length>4)
-                    return1c(display, { "type": "searchtexttyping", "id": k.id, "search": display.textContent });
+                    return1c(Удаление, { "type": "УдалениеГруза", "id": 0, "Груз": ДанныеКнопки.Груз, "НомерСтроки": ДанныеКнопки.НомерСтроки });
+                }
+                Картинка.addEventListener("dblclick", (ev) => {
+                    //console.log(11);
+                    ev.preventDefault();
+                    return1c(Картинка, { "type": "ОткрытьЗначение", "id": 0, "Ссылка": ДанныеКнопки.Ссылка });
+                });
+                ОбластьЯчейки.onclick = (ev) => {
+                    ev.preventDefault();
+                    DrawTable(tableid, ОбластьЯчейки, JSON.parse(options));
+                    ВыбратьГруз(ОбластьЯчейки, ДанныеКнопки);
+                }
+                НомерЗаписи++;
+                ДобавитьПустуюЯчейку = true;
+
+
+
+            }
+
+            window.Грузы = Список;
+        }
+
+
+
+
+        function scaleText(Block, text) {//рамер текста в строке с весом
+            let textLength = text.toString().length;
+            //let Block.document.getElementById().getBoundingClientRect().width
+
+            let fontSize = Math.max(12, (Block.getBoundingClientRect().width / textLength) * 0.35);
+            Block.style['font-size'] = fontSize + 'px';
+            //console.log(fontSize+'px');
+        }
+
+
+
+
+        function ВыбратьГруз(ОбластьЯчейки, ДанныеКнопки) { 
+
+            if (window.ВыбранЭлементГруз != undefined) window.ВыбранЭлементГруз.removeAttribute('selected');
+            ОбластьЯчейки.setAttribute('selected', '1');
+
+            window.ВыбранГруз = ДанныеКнопки.Груз;
+            window.ВыбранЭлементГруз = ОбластьЯчейки;
+            window.ВыбранПорядок = ДанныеКнопки.Порядок;
+
+        }
+
+
+        function dragStart(ev) {
+            let UpperElement = FindUpperDataElementHierarchy(ev.target);
+            if (UpperElement != null) {
+                let Данные = UpperElement.Данные;
+                window.dragData = Данные;
+            }
+
+        }
+
+        function Drop(ev) {
+            try {
+                window.dragoverElement.removeAttribute('dragover');//подсветка ячейки
+            } catch (e) { }
+
+            if (ev.target.id == "ОбластьЯчейки_ДобавленияГруза") return;
+            if (ev.target.id == "ОкноСеткаГрузов") return;
+            if (ev.target.id == "ОкноТаблицаГрузов") return;
+            if (ev.target.id == "ПанельСеткИКнопки") return;
+            ev.preventDefault();
+            let str = window.dragData;
+            window.dragData = null;
+            //console.log(ev)
+            let UpperElement = FindUpperDataElementHierarchy(ev.target);
+            if (UpperElement != null) {
+
+                //console.log(str);
+                let Данные = UpperElement.Данные;
+                return1c(this, { type: "Комплектация", id: null, ГрузИсточник: str.ГрузИсточникОписания == "" ? str.Груз : str.ГрузИсточникОписания, ОписаниеГруза: str.ОписаниеГруза, Мест: str.Мест, Вес: str.Вес, ГрузПриемник: Данные.Груз, НомерСтроки: str.НомерСтроки });
+                //return;
+
+            }
+            if (ev.target.id == "ОбластьЯчейки_СвободнаяЯчейка") {
+
+                return1c(this, { type: "Извлечение", id: null, Груз: str.Груз, ОписаниеГруза: str.ОписаниеГруза, Мест: str.Мест, Вес: str.Вес, НомерСтроки: str.НомерСтроки });
+                //return;
+            }
+
+        }
+
+        function allowDrop(ev) {
+            // console.log(ev);
+            try {
+                window.dragoverElement.removeAttribute('dragover');
+                //window.dragoverElement.classList.remove("off");
+            } catch (e) { }
+
+            if (window.dragData == null) return;
+            if (window.dragData.Вес == 0) return;
+            if (ev.target.id == "ОбластьЯчейки_ДобавленияГруза") return;
+            if (ev.target.id == "ОкноСеткаГрузов") return;
+            if (ev.target.id == "ОкноТаблицаГрузов") return;
+            if (ev.target.id == "ПанельСеткИКнопки") return;
+            ev.preventDefault();
+            let UpperElement = FindUpperDataElementHierarchy(ev.target);
+            if (UpperElement != null) {
+                window.dragoverElement = UpperElement;
+                //modalActive.classList.add("off");
+                window.dragoverElement.setAttribute('dragover', '1');
+            }
+
+
+        }
+
+
+
+        function dragElement(element, first, second, additional) {
+            var md; // remember mouse down info
+            element.onmousedown = onMouseDown;
+
+            function onMouseDown(e) {
+                //console.log("mouse down: " + e.clientX);
+                md = {
+                    e,
+                    offsetLeft: element.offsetLeft,
+                    offsetTop: element.offsetTop,
+                    firstHeight: first.offsetHeight,
+                    secondHeight: second.offsetHeight,
+                    additionaloffsetLeft: additional.offsetLeft,
+                    additionaloffsetTop: additional.offsetTop,
+                    
+                };
+
+                document.onmousemove = onMouseMove;
+                document.onmouseup = () => {
+                    //console.log("mouse up");
+                    document.onmousemove = document.onmouseup = null;
                 }
             }
 
+            function onMouseMove(e) {
+                //console.log("mouse move: " + e.clientX);
+                var delta = {
+                    x: e.clientX - md.e.clientX,
+                    y: e.clientY - md.e.clientY
+                };
 
-            clearkey.onclick = (evt) => {
-                evt.preventDefault();
-                display.textContent = '';
-                errortext.classList.add("off");
-                errortext.innerHTML = "";
-                return1c(display, { "search": display.textContent, "id": clearkey.id, "type": "clearsearch" });
+                delta.y = Math.min(Math.max(delta.y, -md.firstHeight),
+                    md.secondHeight);
+                try {
+
+                } catch (e) { }
+                element.style.top = md.offsetTop + delta.y + "px";
+                additional.style.top = md.offsetTop + delta.y + "px";
+                first.style.height = (md.firstHeight + delta.y) + "px";
+                second.style.height = (md.secondHeight - delta.y) + "px";
+
             }
-
-            display.onclick = (ev) => {
-
-                keyboard.classList.remove("off");
-                //searchtable.classList.add("off");
-                errortext.classList.add("off");
-                errortext.innerHTML = "";
-            }
-
-
-            backspacekey.onclick = (ev) => {
-                ev.preventDefault();
-
-                display.textContent = display.textContent.substr(0, display.textContent.length - 1);
-                errortext.classList.add("off");
-                errortext.innerHTML = "";
-                return1c(display, { "type": "searchtexttyping", "id": backspacekey.id, "search": display.textContent });
-            }
-
-            openkeypad.onclick = (ev) => {
-                ev.preventDefault();
-                return1c(display, { "type": "openkeypad", "id": openkeypad.id });
-            }
-
-
-            closesearch.onclick = (ev) => {
-                return1c(display, { "type": "closesearch", "id": closesearch.id });
-            }
-
-
-
-            ВзятьВРаботу.onclick = (ev) => {
-                return1c(display, { "type": "ВзятьВРаботу", "id": ВзятьВРаботу.id });
-            }
-
-
-            КнопкаДалее.onclick = (ev) => {
-                return1c(КнопкаДалее, { "type": "КнопкаДалее", "id": КнопкаДалее.id });
-            }
-
-            НачатьПогрузкуНаАвто.onclick = (ev) => {
-                return1c(display, { "type": "НачатьПогрузкуНаАвто", "id": НачатьПогрузкуНаАвто.id });
-            }
-
         }
 
-        enableKeyPad();
-        /*
-        //document.getElementById("errortext").classList.remove("off");
 
-        document.getElementById("middlesearch").classList.remove("off");
-        document.getElementById("rightsearch").classList.add("collapsed");
-        document.getElementById("ПромежуточнаяГруппа").classList.remove("off");
-        document.getElementById("ТекстПредупржденияОтгрузки").classList.remove("off");
+        dragElement(document.getElementById("splitter"), document.getElementById("ОкноТаблицаГрузов"), document.getElementById("ПанельСеткИКнопки"), document.getElementsByClassName("modalActive")[0]);//двигаем разделитель
 
-        //document.getElementById("ГруппаСверкаИнформации").classList.remove("off");
+//тестирование данные для теста и тд
+        let data = [
+{
+"Груз": "798c746d-1e51-11ef-840b-4c5262bb1b9f",
+"Вес": 31.5,
+"Мест": 2,
+"НомерСтроки": -1,
+"ОписаниеГруза": "a906f532-1cc2-11ef-840b-4c5262bb1b9f",
+"ГрузИсточникОписания": "798c746d-1e51-11ef-840b-4c5262bb1b9f",
+"Порядок": 1,
+"Информация": null,
+"Наименование": "запчасти",
+"Картинка": "ГенГруз",
+"Текст": "запчасти [041434029979]",
+"Вложения": [
+{
+"Источник": "",
+"НомерСтроки": 1,
+"Груз": "798c746d-1e51-11ef-840b-4c5262bb1b9f",
+"ОписаниеГруза": "a906f532-1cc2-11ef-840b-4c5262bb1b9f",
+"Вес": 31.5,
+"Мест": 2,
+"ВесНачально": 31.5,
+"МестНачально": 2,
+"Наименование": "запчасти [041434029979]",
+"ГрузИсточникОписания": "798c746d-1e51-11ef-840b-4c5262bb1b9f",
+"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"798c746d-1e51-11ef-840b-4c5262bb1b9f\" , ОписаниеГруза:\"a906f532-1cc2-11ef-840b-4c5262bb1b9f\" , Мест:\"2\", Вес:\"31,5\", НомерСтроки: -1  })'>Извлечь</button>"
+}
+],
+"Команды": [
+{
+"Подсказка": "Переместить всё на склад",
+"Текст": "",
+"Доступность": false,
+"Команда": "Недоступно",
+"Стиль": "ИзвлечьНаСклад Тусклый"
+},
+{
+"Подсказка": "Переместить всё в КТК",
+"Текст": "",
+"Доступность": true,
+"Команда": "РазделитьГруз",
+"Стиль": "ИзвлечьВКонтейнер"
+}
+],
+"Ссылка": "{\"#\",2e2282a7-eada-4329-b569-8234e8d09040,460:840b4c5262bb1b9f11ef1e51798c746d}"
+},
+{
+"Груз": "3d7b9a2f-20be-11ef-840b-4c5262bb1b9f",
+"Вес": 406,
+"Мест": 13,
+"НомерСтроки": -1,
+"ОписаниеГруза": "d142a50f-1cd6-11ef-840b-4c5262bb1b9f",
+"ГрузИсточникОписания": "3d7b9a2f-20be-11ef-840b-4c5262bb1b9f",
+"Порядок": 2,
+"Информация": null,
+"Наименование": "одежда",
+"Картинка": "ГенГруз",
+"Текст": "одежда [041434030780]",
+"Вложения": [
+{
+"Источник": "",
+"НомерСтроки": 1,
+"Груз": "3d7b9a2f-20be-11ef-840b-4c5262bb1b9f",
+"ОписаниеГруза": "d142a50f-1cd6-11ef-840b-4c5262bb1b9f",
+"Вес": 406,
+"Мест": 13,
+"ВесНачально": 406,
+"МестНачально": 13,
+"Наименование": "одежда [041434030780]",
+"ГрузИсточникОписания": "3d7b9a2f-20be-11ef-840b-4c5262bb1b9f",
+"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"3d7b9a2f-20be-11ef-840b-4c5262bb1b9f\" , ОписаниеГруза:\"d142a50f-1cd6-11ef-840b-4c5262bb1b9f\" , Мест:\"13\", Вес:\"406\", НомерСтроки: -1  })'>Извлечь</button>"
+}
+],
+"Команды": [
+{
+"Подсказка": "Переместить всё на склад",
+"Текст": "",
+"Доступность": false,
+"Команда": "Недоступно",
+"Стиль": "ИзвлечьНаСклад Тусклый"
+},
+{
+"Подсказка": "Переместить всё в КТК",
+"Текст": "",
+"Доступность": true,
+"Команда": "РазделитьГруз",
+"Стиль": "ИзвлечьВКонтейнер"
+}
+],
+"Ссылка": "{\"#\",2e2282a7-eada-4329-b569-8234e8d09040,460:840b4c5262bb1b9f11ef20be3d7b9a2f}"
+},
+{
+"Груз": "e0e0c7b9-1be6-11ef-840b-4c5262bb1b9f",
+"Вес": 22445.67,
+"Мест": 1211,
+"НомерСтроки": -1,
+"ОписаниеГруза": "",
+"ГрузИсточникОписания": "",
+"Порядок": 3,
+"Информация": "45G1",
+"Наименование": "MAGU5462536 (ГР)",
+"Картинка": "Контейнер",
+"Текст": "MAGU5462536 (ГР)",
+"Вложения": [
+{
+"Источник": "",
+"НомерСтроки": 1,
+"Груз": "e0e0c7b9-1be6-11ef-840b-4c5262bb1b9f",
+"ОписаниеГруза": "e0e0c7b8-1be6-11ef-840b-4c5262bb1b9f",
+"Вес": 22445.67,
+"Мест": 1211,
+"ВесНачально": 22445.67,
+"МестНачально": 1211,
+"Наименование": "ПРОГРАММИРУЕМЫЙ ЛОГИЧЕСКИЙ КОНТРОЛЛЕР, ДРАЙВЕР ДВИГАТЕЛЯ, СУХОЙ ТРАНСФОРМАТОР, ИНДИКАТОР, КОНДЕНСАТО [041434027011]",
+"ГрузИсточникОписания": "e0e0c7b9-1be6-11ef-840b-4c5262bb1b9f",
+"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"e0e0c7b9-1be6-11ef-840b-4c5262bb1b9f\" , ОписаниеГруза:\"e0e0c7b8-1be6-11ef-840b-4c5262bb1b9f\" , Мест:\"1211\", Вес:\"22445,67\", НомерСтроки: -1  })'>Извлечь</button>"
+}
+],
+"Команды": [
+{
+"Подсказка": "Переместить всё на склад",
+"Текст": "",
+"Доступность": true,
+"Команда": "ИзвлечВесьГрузНаСклад",
+"Стиль": "ИзвлечьНаСклад"
+},
+{
+"Подсказка": "Переместить всё в КТК",
+"Текст": "",
+"Доступность": true,
+"Команда": "ПереместитьГрузВКТК",
+"Стиль": "ИзвлечьВКонтейнер"
+}
+],
+"Ссылка": "{\"#\",2e2282a7-eada-4329-b569-8234e8d09040,460:840b4c5262bb1b9f11ef1be6e0e0c7b9}"
+},
+{
+"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"Вес": 22519.98,
+"Мест": 247,
+"НомерСтроки": -1,
+"ОписаниеГруза": "",
+"ГрузИсточникОписания": "",
+"Порядок": 4,
+"Информация": "45G1",
+"Наименование": "HALU5650870 (ГР)",
+"Картинка": "Контейнер",
+"Текст": "HALU5650870 (ГР)",
+"Вложения": [
+{
+"Источник": "",
+"НомерСтроки": 1,
+"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"ОписаниеГруза": "16b89634-167c-11ef-840b-4c5262bb1b9f",
+"Вес": 577.8,
+"Мест": 1,
+"ВесНачально": 577.8,
+"МестНачально": 1,
+"Наименование": "запчасти [041434013660]",
+"ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"16b89634-167c-11ef-840b-4c5262bb1b9f\" , Мест:\"1\", Вес:\"577,8\", НомерСтроки: -1  })'>Извлечь</button>"
+},
+{
+"Источник": "",
+"НомерСтроки": 2,
+"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"ОписаниеГруза": "89148ec2-1738-11ef-840b-4c5262bb1b9f",
+"Вес": 7994,
+"Мест": 10,
+"ВесНачально": 7994,
+"МестНачально": 10,
+"Наименование": "запчасти [041434017027]",
+"ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"89148ec2-1738-11ef-840b-4c5262bb1b9f\" , Мест:\"10\", Вес:\"7994\", НомерСтроки: -1  })'>Извлечь</button>"
+},
+{
+"Источник": "",
+"НомерСтроки": 3,
+"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"ОписаниеГруза": "7e9c4028-1a66-11ef-840b-4c5262bb1b9f",
+"Вес": 1386,
+"Мест": 170,
+"ВесНачально": 1386,
+"МестНачально": 170,
+"Наименование": "УМНАЯ КАПЕЛЬНИЦА. [041434023554]",
+"ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"7e9c4028-1a66-11ef-840b-4c5262bb1b9f\" , Мест:\"170\", Вес:\"1386\", НомерСтроки: -1  })'>Извлечь</button>"
+},
+{
+"Источник": "",
+"НомерСтроки": 4,
+"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"ОписаниеГруза": "7e9c402a-1a66-11ef-840b-4c5262bb1b9f",
+"Вес": 6558,
+"Мест": 7,
+"ВесНачально": 6558,
+"МестНачально": 7,
+"Наименование": "МОНОБЛОК НАПРАВЛЕННЫЙРЕГУЛИРУЮЩИЙ ВЕНТИЛЬИ ЗАПАСНЫЕ ЧАСТИ,СЕКЦИОННЫЙ НАПРАВЛЕННЫЙРЕГУЛИРУЮЩИЙ ВЕНТИЛ [041434023556]",
+"ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"7e9c402a-1a66-11ef-840b-4c5262bb1b9f\" , Мест:\"7\", Вес:\"6558\", НомерСтроки: -1  })'>Извлечь</button>"
+},
+{
+"Источник": "",
+"НомерСтроки": 5,
+"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"ОписаниеГруза": "021c2df0-1cce-11ef-840b-4c5262bb1b9f",
+"Вес": 1066,
+"Мест": 4,
+"ВесНачально": 1066,
+"МестНачально": 4,
+"Наименование": "запчасти [041434030713]",
+"ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"021c2df0-1cce-11ef-840b-4c5262bb1b9f\" , Мест:\"4\", Вес:\"1066\", НомерСтроки: -1  })'>Извлечь</button>"
+},
+{
+"Источник": "",
+"НомерСтроки": 6,
+"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"ОписаниеГруза": "021c2dfb-1cce-11ef-840b-4c5262bb1b9f",
+"Вес": 648,
+"Мест": 24,
+"ВесНачально": 648,
+"МестНачально": 24,
+"Наименование": "ЭФИРНОЕ МАСЛО [041434030724]",
+"ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"021c2dfb-1cce-11ef-840b-4c5262bb1b9f\" , Мест:\"24\", Вес:\"648\", НомерСтроки: -1  })'>Извлечь</button>"
+},
+{
+"Источник": "",
+"НомерСтроки": 7,
+"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"ОписаниеГруза": "08144f02-1cce-11ef-840b-4c5262bb1b9f",
+"Вес": 345.08,
+"Мест": 23,
+"ВесНачально": 345.08,
+"МестНачально": 23,
+"Наименование": "лампы [041434030729]",
+"ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"08144f02-1cce-11ef-840b-4c5262bb1b9f\" , Мест:\"23\", Вес:\"345,08\", НомерСтроки: -1  })'>Извлечь</button>"
+},
+{
+"Источник": "",
+"НомерСтроки": 8,
+"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"ОписаниеГруза": "3242e137-1cce-11ef-840b-4c5262bb1b9f",
+"Вес": 1450.1,
+"Мест": 3,
+"ВесНачально": 1450.1,
+"МестНачально": 3,
+"Наименование": "оборудование [041434030743]",
+"ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"3242e137-1cce-11ef-840b-4c5262bb1b9f\" , Мест:\"3\", Вес:\"1450,1\", НомерСтроки: -1  })'>Извлечь</button>"
+},
+{
+"Источник": "",
+"НомерСтроки": 9,
+"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"ОписаниеГруза": "b1b10221-1cd6-11ef-840b-4c5262bb1b9f",
+"Вес": 2495,
+"Мест": 5,
+"ВесНачально": 2495,
+"МестНачально": 5,
+"Наименование": "запчасти [041434030766]",
+"ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"b1b10221-1cd6-11ef-840b-4c5262bb1b9f\" , Мест:\"5\", Вес:\"2495\", НомерСтроки: -1  })'>Извлечь</button>"
+}
+],
+"Команды": [
+{
+"Подсказка": "Переместить всё на склад",
+"Текст": "",
+"Доступность": true,
+"Команда": "ИзвлечВесьГрузНаСклад",
+"Стиль": "ИзвлечьНаСклад"
+},
+{
+"Подсказка": "Переместить всё в КТК",
+"Текст": "",
+"Доступность": true,
+"Команда": "ПереместитьГрузВКТК",
+"Стиль": "ИзвлечьВКонтейнер"
+}
+],
+"Ссылка": "{\"#\",2e2282a7-eada-4329-b569-8234e8d09040,460:840c4c5262bb1b9f11ef231368a8d7a2}"
+}
+];
+
+        let options = {
+            "layout": "fitColumns",
+            "index": "ОписаниеГруза",
+            "selectable": 1,
+            "resizableColumnFit": true,
+            "maxHeight": "99%",
+            "columns": [
+                {
+                    "title": "Описание груза",
+                    "field": "Наименование",
+                    "widthGrow": 6
+                },
+                {
+                    "title": "Мест начально",
+                    "field": "МестНачально",
+                    "hozAlign": "right",
+                    "widthGrow": 1
+                },
+                {
+                    "title": "Мест факт",
+                    "field": "Мест",
+                    "hozAlign": "right",
+                    "widthGrow": 1
+                },
+                {
+                    "title": "Вес начальный",
+                    "field": "ВесНачально",
+                    "hozAlign": "right",
+                    "widthGrow": 1
+                },
+                {
+                    "title": "Вес факт",
+                    "field": "Вес",
+                    "hozAlign": "right",
+                    "widthGrow": 1
+                },
+                {
+                    "title": "",
+                    "field": "Действия",
+                    "hozAlign": "right",
+                    "widthGrow": 1,
+                    "formatter": "html"
+                },
+                {
+                    "field": "Груз",
+                    "visible": false
+                },
+                {
+                    "field": "ОписаниеГруза",
+                    "visible": false
+                },
+                {
+                    "field": "ГрузИсточникОписания",
+                    "visible": false
+                }
+            ]
+        };
+
+        DrawCargoGrid("Грузы", "Вложения", JSON.stringify(data), JSON.stringify(options));
 
 
-        var tabledata = [
-            { id: 1, name: "Oli Bob", progress: 12, gender: "male", rating: 1, col: "red", dob: "19/02/1984", car: 1 },
-            { id: 2, name: "Mary May", progress: 1, gender: "female", rating: 2, col: "blue", dob: "14/05/1982", car: true },
-            { id: 3, name: "Christine Lobowski", progress: 42, gender: "female", rating: 0, col: "green", dob: "22/05/1982", car: "true" },
-            { id: 4, name: "Brendon Philips", progress: 100, gender: "male", rating: 1, col: "orange", dob: "01/08/1980" },
-            { id: 5, name: "Margret Marmajuke", progress: 16, gender: "female", rating: 5, col: "yellow", dob: "31/01/1999" },
-            { id: 6, name: "Frank Harbours", progress: 38, gender: "male", rating: 4, col: "red", dob: "12/05/1966", car: 1 },
-        ];
-
-        //initialize table
-        var table = new Tabulator("#тзСписокПорученийНаОтгрузку", {
-            data: tabledata, //assign data to table
-            autoColumns: true, //create columns from data field names
-        });
-*/
 
     </script>
 
