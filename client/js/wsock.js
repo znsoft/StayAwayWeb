@@ -80,22 +80,25 @@ function startWS() {
                 break;
             case 'confirmStart':
                 //console.log(message);
-                let modal = document.querySelector('dialog');
+                
+                //let modal = document.querySelector('dialog');
                 let modalBox = document.getElementById('modalBoxText');
                 document.getElementById('Yes-modal-btn').hidden = false;
-                closeModalBtn.hidden = false;
+                //closeModalBtn.hidden = false;
                 let loosetime = (message.timestamp - message.startConfirm);
                 let duration = message.waitFor * 1000 - loosetime;
                 let startshow = Date.now();
                 let estim = (duration - (Date.now() - startshow)) / 1000;
                 modalBox.innerText = "Начало через:\n" + Math.round(estim) + " секунд\nВы готовы?";
-                modal.showModal();
+                //modal.showModal();
+                ShowModalDialog();
                 let timerId =  setInterval(() => {
                     let estim = (duration - (Date.now() - startshow)) / 1000;
                     modalBox.innerText = "Начало через:\n" + Math.round(estim) + " секунд\nВы готовы?";
                 }, 500);
 
-                setTimeout(() => { modal.close();
+                setTimeout(() => { //modal.close();
+                    ShowModalDialog.Close();
                     clearInterval(timerId);
                 }, duration);
                 break;
@@ -105,6 +108,22 @@ function startWS() {
 
     };
     autoping();
+
+}
+
+function ShowModalDialog() {
+    const modalActive = document.getElementsByClassName("modalActive")[0];
+    modalActive.classList.remove("off");
+
+    let documentClick = () => { Close(); }
+
+    let Close = () => {
+        modalActive.classList.add("off");
+        document.removeEventListener('click', documentClick);
+    }
+
+    //modalClose.addEventListener('click', (e) => { Close(); });
+    document.addEventListener('click', documentClick);//если нажимаем мимо , то ...
 
 }
 
@@ -507,7 +526,7 @@ function confirmStart(btn) {
 
     websocket.senddata(p);
     btn.hidden = true;
-    closeModalBtn.hidden = true;
+    //closeModalBtn.hidden = true;
     //modal.close();
 }
 
