@@ -527,6 +527,7 @@ function confirmStart(btn) {
 
     websocket.senddata(p);
     btn.hidden = true;
+    document.getElementById("startgamebutton").hidden = true;
     //closeModalBtn.hidden = true;
     //modal.close();
 }
