@@ -79,8 +79,6 @@ function startWS() {
                 game.parseYouBurned(message);
                 break;
             case 'confirmStart':
-                //console.log(message);
-                
                 //let modal = document.querySelector('dialog');
                 let modalBox = document.getElementById('modalBoxText');
                 document.getElementById('Yes-modal-btn').hidden = false;
