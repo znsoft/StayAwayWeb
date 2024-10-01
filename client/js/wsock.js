@@ -28,7 +28,7 @@ function startWS() {
     websocket.onclose = function (evt) {
         //console.log(evt);
         document.getElementById("loginbutton").hidden = false;
-        document.getElementById("room").hidden = false;
+        //document.getElementById("room").hidden = false;
         document.getElementById("login").hidden = false;
         document.getElementById("startgamebutton").hidden = true;
         console.error(evt.reason);
@@ -111,12 +111,14 @@ function startWS() {
 
 function ShowModalDialog() {
     const modalActive = document.getElementsByClassName("modalActive")[0];
-    modalActive.classList.remove("off");
+    //modalActive.classList.remove("off");
+    modalActive.hidden = false;
 
     let documentClick = () => { Close(); }
 
     let Close = () => {
-        modalActive.classList.add("off");
+        //modalActive.classList.add("off");
+        modalActive.hidden = true;
         document.removeEventListener('click', documentClick);
     }
 
@@ -124,6 +126,7 @@ function ShowModalDialog() {
     document.addEventListener('click', documentClick);//если нажимаем мимо , то ...
 
 }
+
 
 function autoping() {
     window.setTimeout(() => {

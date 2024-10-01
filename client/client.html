@@ -111,6 +111,91 @@
     *[data-tooltip]:hover::after {
         opacity: 1;
     }
+
+
+    .modalActive {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background: rgba(249, 250, 244, 0.966);
+        border-radius: 3px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #2b2b28;
+
+
+    }
+
+
+    @keyframes АнимацияРаскрытияСпискаВыбора {
+        0% {
+            margin-left: -500px;
+        }
+
+        100% {
+            margin-left: 0;
+        }
+    }
+
+    .modalWindow {
+        position: relative;
+
+        animation-duration: 100ms;
+        animation-fill-mode: forwards;
+        animation-iteration-count: 1;
+        animation-name: АнимацияРаскрытияСпискаВыбора;
+        animation-timing-function: linear;
+    }
+
+    .modalClose {
+        float: right;
+        cursor: pointer;
+        position: relative;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center
+    }
+
+    .modalClose::before,
+    .modalClose::after {
+        position: absolute;
+        content: '';
+        width: 100%;
+        height: 2px;
+        background-color: #000;
+    }
+
+    .modalClose::before {
+        transform: rotate(45deg);
+    }
+
+    .modalClose::after {
+        transform: rotate(-45deg)
+    }
+
+
+    .modalWindow div {
+        font-size: 3vh;
+        margin-top: 5px;
+    }
+
+    .modalWindow button {
+        border-radius: 1px;
+        font-size: 3vh;
+        font-weight: bold;
+        margin-top: 5px;
+        width: 100%;
+    }
+    .off {
+        display: none;
+    }
+
 </style>
 
 <body>
@@ -180,7 +265,7 @@
             onclick="sendChat()">Отправить</button>
         <div id="logindiv">
             <br><br>
-            Комната:<input id="room" value="1"></input>
+            <input id="room" value="1" hidden = "true"></input>
             Ваше имя:<input id="login"></input>
             <button id="loginbutton" onclick="sendLogin()">Войти</button>
 
@@ -190,13 +275,15 @@
         <button id="logoutbutton" onclick="LogoutGame()" width="10" data-tooltip="Ваши карты сбросятся">Выйти</button>
     </div>
 
-    <dialog style="padding: 0">
-        <div id="modal-box" style="padding: 1rem">
+
+    <div class="modalActive" hidden="true">
+        <div id="DialogBox" class="modalWindow">
             <div id="modalBoxText"></div>
             <button id="Yes-modal-btn" onclick="confirmStart(this)">Да</button>
-            <button id="close-modal-btn" onclick="document.querySelector('dialog').close()">Нет</button>
         </div>
-    </dialog>
+    </div>
+
+
 
 
     <canvas id="canvas" width="2000" height="2000">
@@ -220,14 +307,7 @@
 <script src="js/game.js"></script>
 
 <script>
-    const modal = document.querySelector('dialog');
-    const modalBox = document.getElementById('modalBoxText');
 
-    const closeModalBtn = document.getElementById('close-modal-btn');
-    const yesModalBtn = document.getElementById('Yes-modal-btn')
-    yesModalBtn.addEventListener('click', () => { confirmStart(yesModalBtn) });
-
-    closeModalBtn.addEventListener('click', () => { modal.close() });
 
 
     var canvas = document.getElementById("canvas");
@@ -244,6 +324,8 @@
         callback();
         window.setTimeout(callback, 200);
     };
+
+
 
 
     let game = new Game(123);
