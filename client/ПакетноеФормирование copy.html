@@ -1231,6 +1231,11 @@
         user-select: none;
     }
 
+    :root {
+        --MouseX: 0;
+        --MouseY: 0;
+    }
+
     body {
         font-family: Arial;
         /* background: linear-gradient(#f5f5d7, #f0f0d2);*/
@@ -1468,42 +1473,42 @@
 
     .КнопкиВыбора {
 
-width: 100%;
-height: 99%;
-cursor: -webkit-grab;
-font-size: 2vh;
-font-weight: bold;
-align-content: center;
+        width: 100%;
+        height: 99%;
+        cursor: -webkit-grab;
+        font-size: 2vh;
+        font-weight: bold;
+        align-content: center;
         vertical-align: middle;
         text-align: center;
         align-self: center;
         align-items: center;
-       padding-top: 10%; 
-       margin-bottom: 10%;
-       margin-top: 10%;
-       border-style: solid;
+        padding-top: 10%;
+        margin-bottom: 10%;
+        margin-top: 10%;
+        border-style: solid;
         border-width: 1px;
         border-radius: 5px;
 
-}    
+    }
 
 
-.КнопкиВыбора:active {
+    .КнопкиВыбора:active {
 
 
-    box-shadow: 0 0px 9px 5px #fc894d;
+        box-shadow: 0 0px 9px 5px #fc894d;
 
 
-}
+    }
 
 
-.КнопкиВыбора:hover {
+    .КнопкиВыбора:hover {
 
 
-    box-shadow: 0 0px 9px 5px #90dd7cd3;
+        box-shadow: 0 0px 9px 5px #90dd7cd3;
 
 
-}
+    }
 
 
     .ЯчейкаСеткиГрузов {
@@ -1547,15 +1552,15 @@ align-content: center;
 
     }
 
-    .ПанельКнопокСнизу{
+    .ПанельКнопокСнизу {
         display: flex;
         flex-direction: row;
         width: 100%;
         height: 15%;
-        border-style:none;
+        border-style: none;
     }
 
-    .ПанельКнопокСнизу button{
+    .ПанельКнопокСнизу button {
         width: 100%;
     }
 
@@ -1676,7 +1681,7 @@ align-content: center;
 
 
     .ТаблицаАдреса .tabulator-row button {
-        font-size: 2vw;
+        font-size: 1.2vw;
         background-color: #f1ed0991;
         color: #0f0caf;
         border-radius: 7%;
@@ -1782,6 +1787,7 @@ align-content: center;
         align-content: end;
         width: 50px;
         height: 50px;
+        background-size: 80%;
     }
 
     .крестикУдаление:hover {
@@ -1803,6 +1809,12 @@ align-content: center;
         height: 30px;
         background-color: #e5eb9565;
     }
+
+    .КнопкаГруза:hover {
+        box-shadow: inset 7px -7px 10px rgba(0, 0, 0, 0.2);
+        background-color: #f9fc5736;
+    }
+
 
     #ПанельКомандГруза button:hover {
         border-radius: 7%;
@@ -1887,86 +1899,90 @@ align-content: center;
         border-width: 1px;
         border-color: #2b2b28;
 
+        animation-duration: 200ms;
+        animation-fill-mode: forwards;
+        animation-iteration-count: 1;
+        animation-name: АнимацияРаскрытияСпискаВыбора;
+        animation-timing-function: linear;
+
 
     }
 
 
     @keyframes АнимацияРаскрытияСпискаВыбора {
         0% {
-            margin-left: -500px;
+            transform: translate(0px, -60px) rotateX(85deg);
+            -webkit-transform: translate(0px, -60px) rotateX(85deg);
+            -o-transform: translate(0px, -60px) rotateX(85deg);
+            -moz-transform: translate(0px, -60px) rotateX(85deg);
         }
+
+        60% {
+            transform: translate(0px, 0px) rotateX(0deg);
+            -webkit-transform: translate(0px, 0px) rotateX(0deg);
+            -o-transform: translate(0px, 0px) rotateX(0deg);
+            -moz-transform: translate(0px, 0px) rotateX(0deg);
+
+        }
+
+        80% {
+            transform: translate(0px, -19px) rotateX(-45deg);
+            -webkit-transform: translate(0px, -19px) rotateX(-45deg);
+            -o-transform: translate(0px, -19px) rotateX(-45deg);
+            -moz-transform: translate(0px, -19px) rotateX(-45deg);
+
+        }
+
 
         100% {
             margin-left: 0;
+            transform: translate(0px, 0px) rotateX(0deg);
+            -webkit-transform: translate(0px, 0px) rotateX(0deg);
+            -o-transform: translate(0px, 0px) rotateX(0deg);
+            -moz-transform: translate(0px, 0px) rotateX(0deg);
+
         }
     }
 
     .modalWindow {
         position: relative;
 
-        animation-duration: 100ms;
-        animation-fill-mode: forwards;
-        animation-iteration-count: 1;
-        animation-name: АнимацияРаскрытияСпискаВыбора;
-        animation-timing-function: linear;
-    }
 
-    .modalClose {
-        float: right;
-        cursor: pointer;
-        position: relative;
-        width: 20px;
-        height: 20px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center
-    }
-
-    .modalClose::before,
-    .modalClose::after {
-        position: absolute;
-        content: '';
-        width: 100%;
-        height: 2px;
-        background-color: #000;
-    }
-
-    .modalClose::before {
-        transform: rotate(45deg);
-    }
-
-    .modalClose::after {
-        transform: rotate(-45deg)
     }
 
 
-    .modalWindow div {
+    .modalActive div {
         font-size: 3vh;
         margin-top: 5px;
     }
 
-    .modalWindow button {
+    .modalActive button {
         border-radius: 1px;
         font-size: 3vh;
         font-weight: bold;
         margin-top: 5px;
         width: 100%;
     }
-    
+
     .ДиалогВыбораТипаГруза_Ячейка:hover {
-    	box-shadow: 0 0px 9px 5px #90dd7cd3;
-	}
+        box-shadow: 0 0px 9px 5px #90dd7cd3;
+    }
 
-.Тусклый{
-/*    box-shadow: inset 1px -17px 10px rgba(0, 0, 0, 0.2);*/
-    filter:brightness(25%);
-    opacity: 0.25; /* Полупрозрачный фон */
-    filter: alpha(Opacity=25); /* Прозрачность в IE */
-}
+    .Тусклый {
+        /*    box-shadow: inset 1px -17px 10px rgba(0, 0, 0, 0.2);*/
+        filter: brightness(25%);
+        opacity: 0.25;
+        /* Полупрозрачный фон */
+        filter: alpha(Opacity=25);
+        /* Прозрачность в IE */
+    }
 
-</style>
+    .РазмерШрифтаМестВес {
 
-<style>
+        font-size: 10px;
+    }
+
+
     .Добавить_Груз {
         font-size: 3vh;
         font-weight: bolder;
@@ -1979,20 +1995,36 @@ align-content: center;
         background-image: url('data:image/PNG;base64,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');
         background-repeat: no-repeat;
         background-position: center;
-        background-size: contain;
         cursor: pointer;
     }
 
-    .Лупа {
-        background-image: url('data:image/PNG;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAv1QTFRFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////5iEdCQAAAP10Uk5TAAUVLlGOuM7h7fb6/v358ujbx612QCIMAQ0qaKvN5fTu3L+TSBwJgcP79VYZAxRbt/fWMgd01aOFbmViY3iSs8ze6T8IEm/SqkEpFwQCER5QxTgGToQdDytar+b8IZzwoWrL1OSGL7qfIBCH7+uMT8KxOWngZEeVmpiQeTomp/jzgj22MVOZ7NG0fTcTZ0LaiBpgst+ePL0km+NSJ5TX2N0WCkl6wVQYRpc7ojZyoLuoZjTQROp7yX/xcUszHwukxNltiRvGXCW8z3Nh0yNwj6ZdLL4O4pZFX1WKyChDjaWDSsDnay1sd51NkX61TLkwXj6wWDWLWXxXynWArlnBBtwAAAABYktHRP7SAMJTAAAACXBIWXMAAAAuAAAALgHcxHvOAAAOcklEQVR42u1beVhTxxZPRKuQhK0VLiCrgoatUigKYgWUUiEBLbIJCijF4gOhbthWCuKCWlBRQUWqhkpxqVoXVFrFuhfrrmh9aLVa6mtrsXS1771835szc29CIsvchPi9Pzp/zYR75vzmzJnfObMgEHRfhL2Mevd5rm8/YxORWGJqZm5h+fwL/a2sGQpR/QtjY2s3wN7BUaLUKCInZ5eBg1yFhlbvZjR4iLlU2Ulxtxjg4ellwMF7vzjUXKLssvi8NNDXz0DqPV+2N+H0iE3M/YcMGx4QOCLIbuQro4JDnESqP4UOGD3GAPrDXg3ndDg6v2Y3NiLSWsZ6ndwvKtp33PDxqrkxHvC6rIfVx0wYYko6NwmP7R/XkZGZ+ITEiUnJ5CvzgZN6dE1YTU5hzZs6KFLe+XduEWlTfPCXkqkv9tw8yMaFY9cTp7+R0Z2DMb3GTSOe4vhmZg/pn/6PLNxj9gxbqpmdnpOLvUUcPFZO8313ZdLzuDvTt2bG0Ir0mhWCITsEUot0XnzHi6Gv2XPiNX5mrF0z5qYNz5v39jvvJs7P99bUJE94rwCkChdY66u/aCp2qYWL2lvTL3PxklznYh9CSmKRmcPSZcvfL2n/iU2pA7Zb3nT99K9YiSl2Va92oytbvWatz1MUKHbq+8rMduOVF02Bn6XlYfror8D6s0vVK0pmO+Olgk5oWGy8LrGduvVvgYWSN8TroJgtvtj+lRtV8UVe9UGlKhhIC0P7WWzavMXByUfM/WZi+aKNSlzxJlCjtE+1rvonjcfu96GK08K2hrDqTR1qBn9UkZBZVuvput53W2Dq1CwWhPvQIhXeqO2AwOdlHXl5+vPQYbpKv3zHOhINktN39s630aBaoeLjXZaFLA3HenM/x88DanZarJN+4RugLnsjp6h6lwNJPcIDqjqMBWH9d2eTudnjq7LZJ2AYi0W6ABjnBAYt5eypmIcZVuK/t6zTMOO3r5zEjJXjuCXpug7aQ3t1r0+7TNoP6lZx/p+5Bsc549jMLqPcmAM1+Lu6Ui45y9gEk3aQd54UMw/6Wahgm+vXgSnFhw60S/q8rGvXG+Vr073iMFhOWf8px43jjFEztIIvgM+gm9lHuPFjQ4rKj6r+3hAReOzzzelOzz3FtcIJxzELn2B9X3gSbDI0ip/+sBokVLCXNbdiDY6vy7klLj+Vti6JpD+nbZ4W9sXLN+sMKx35OfS1mh+ANMh/RrE8Xj0PVr9ZAOv7jOvgTaoMsCMAgrNf4Fi4gm3OLUatpXF89Nc2wgrcwY73HPi/YwA7qdVfnk/m1EskNR2Guwsu8Ne+60krZjL44UU+AF6FEV5iHa4C1r9oOTv+C5fdWdYNee7wlZzXO3bvCHv4ZBhrHtu1qPHSUQrFbPGGQOZwlTRKrkFfk6+zaIIx5UqabtyMru5iRRY1AQl/xdrwJBJK3ksP4BbY/J9kbMxB8LbmaNKYgFMdcb93z3azCWOCHNGHm8+S1lkQa6ZmozHLgEpY+ry9BTWK75DGhEps/PKE7nnFLRU+/ZrglH8ArDqXFkACTPpdwoGyGzDie2RNF+HxJwVRxdf8zUBALJMcCUWNctoMcTlM3zekfhXGfJ4k2BewZx2/SZnrnoClvIQodRsKvHaBTtD6Pvp4ahmx3SVYAXNwveEy6N9MTaolzejzB0akMQKtK9ONdIIRSUhwFfFwVwgljQTMHFh/Dgdo9QsEqyF3O0jqmTB7b9IdHwQht3dnvW4EMqPkW1yNPg/+N4LHlk/RF0mEe+K6Hzj28TIaMdl76NMthDXweqisgipzDwhgMq/8bjD4Pmuyi4jO6+fTSGEWmkjWgNVsMBz2oziYjLW2fPQLWh4gmRnEZxehgCD+kkbqajqS+o7UPdAsmubg6gk0MeKH/PbcDUCijYR/FDCD/6JJT79HuaUJsRsDUaQSs5k19DU7n5d+gWABkBhhtBiYzWCarOAkmqxQYmobiOQuON7ZgjV/4JtfV9SjFJXNiX9AHfSbRCG0EH24qRZX44CGf8RVu2T10qAvcc6og8OkfgbNodMRCiGgu/Ekji5C6ZwUs4cXkJBzNF8A1kOQ2CPi0DPNEL/epBACx79MGOMztAc1w0vHBrKsR258AcgGQF5C9osR5igke1AIwebiJKkGIHcwj4Ba2XE1qfEpA4FTXHE1GrKSORQyQLifkupJ8Hxs93xEz5JE/gBGAnuTzKwWiGQXhQzEMDZ5eRvoE1NpBqIR05/4AwhCvhuagKve4WqH7LJAxhlEqkAD/pFQu91qaVnzPn8AiSgIZpOAWAKJ7nAKGal6qjZALokBeFnb2NjosMu+gnqrayEAYK8XSyEDMXQWqUIiZXGKv1p1SVO5sUABpx1bKWTq1f5+GJjYSh8A91APTYT+ylaqY0yXBdKRPBLBViMDFj/WQz9TrqZVK5TciX+mEIJcciEhrzaUWpusoJDprMQ8Qp1Zki1FBiIYUQ6FELCnPYlaESgCib/SA0AY5ES7ifMeQATjWEQhBAnRWpIQYb9ZoscdTBUk+Gmk/inKqOquUghBNp21D1f9IDLu96YQ6qR8VKDKLeSptElhkSoECgSxcCpDE0I7LvJyVUIjaIATh2sNFFKZsFxWkXpFCnKCNJ0B9ALu2UM28EchL19AI2UNxzHN5GxCsRTV7+t83jwXZXdiktQLDjhSLgKB4GvY0xH6lMNRVcoOHfUL78IxB7vJfQd6pfFBhBXhTr5C6qPhsuSGjvehCbCvHEpmIP40MAKdLcuAin4h2c/1XNjfZeik3wsGbforafxWTBkJUJF9Antw1lpBkB7k6XTz0tIPzqbYhfc7HHPR0BCUjSbId9iwoQiGldimg36/3XA0xS4hBSQDwbRHJLWwiZnCHpIGQnhu1YGMcuDYuJHkg4I/4IrlZVpRBibPpzdpRMGJm/QF3nycCel9wRnSsJ4Gx/hG1MKPYRu0h91GbQP3qRvEU3/DTthM/8Je1wwCa6TS36r7vQb7apY1hJegq/MtvPTL/oSZq9zHGgBiSv1YHvKjYdRDWJ/xhKWodOFzESsPAv7wKWU30x5wl/KWDY8OxsCORmTHtl6HLYX4Ef3GTJ5YBxI32NATeQgMwONsB3SCFziThF7A/ApH/uLW9ZTCsiDQr2xlKUB+DzL9Y/zuzmSQECvvslaTXYRjT7Hlx1TnEw1/4nubKRFsuw0G82AfL/0ohYRkyCeQbcVsxSfUWxIpKPHoTnytup+7uKoFF5Lwv7O5AoOu5A4F/V7Ad3JmS7o7YYj53l6Cx8/p98uD9niq8zGN4gZMqmzmdgUxc0LxKfnUOV1FNC/bcvzWQLyHsz+TBgNx0iW1tsIHsxM5/vb60B9fE/jkPgnrxBWEEX364cP8gu2qAYcNwdc3dJmIVrkDW5TkyaoR25KXDEr3v7befvqoQu59c1gTtr6yslSd+jFtENyVTT+p7l/pX1XI7WDepQOvcz/E24WQC+Lk9GkH3y+r5vyKiYk6m7Nhvxm5SSlYs0/D4Yo0EAgDAunTGz98eSvarjpbkye8bczdFmUdv/9Jn10/3/p17+ENo4LTuQcFyUuvaF/Xt0cgPGdWP4t+l22zBChEesxTjWnmzmzVXT1yNqlIlKxuKkXnv3NVOYhXlFwbgfAc2vqm8EAQlgqzKmlNUP/k5hu76en3ExiN8bTEU+oZ9ptVwx0Nswg+w/r5IfAuxwOc+lM7ES/XD/OmZiVrKvdxuBbg2z7c1OY5Kv1naiCYnUreA/FCEPUKfrBRPFwjnZJF7nsS27p0bVJdcXZo5fFDdwNuaj4okFfgS2wtBKrJ44OgYSRmdmnuHS3vZdy84/JbHhvZWnnGazu2YvADokkLAaTmf/FFIPQgr5Kyl1RRLuGGxc2qN4/aCFzW5+fyRcDs24MnXBISa0URUhq2PSJvObJSnkbggkJ6FW8EyKLFZJE7X3rc9Rs5xtujlTyikJy+szhdhcDLCyNwwTtlHRDIRn9BaFhsvuxMdGcxmbl+5GQj++jS/E9PATMOvzrxny8Q7nqIyHt0KnvfoAMCQckcf3bhFTj/8q2Rt7bbyavjVvQ5nU2CgbLw7m/QOYeg7ZyZz/Ix6BtuoeiCgDn675Xc2pfW7V8zw+PjqjhFSVSYt+eklrEnyl22FHKrrHDUTTYasQgcUJgw+bF9Vq4LAoE8c1ZwOw4UpSSF+O+3tw8/3lTnLlFTUt3dFWpCYnIcuD8s1HhUphMCAaP45lilSNlFKez7MEMjVDM5leQv17RSWt0QIIY/63HXolDckXJR3aEf23ppc8WYYR3q1x0Bys5cKwKPNVamFHB2F0vdsy1q3ujdEvU0UwnPpXSsXx8E0G/Yhd8G/VE6cvjvJ/9z8cuNo1tOWXdIk7JzZkqWf3oYAVe63inIduH463K24z9X1fQAgi7RBeDxW3a6pTI0AmYWjgrNnT9cMDQCITHBtc53lX8j+BvB3wj+XxDkYwRZqw31r0q0NkgabSAA1AhyI58lAkYjgEbA8yEpj0eHeiNgNp7QyPH7w24qWK+ral4ImMVJJiPbJ6pe8Nyi8HuDAdBCwNxKUirdNRDgM/IfDAdAE8GYY1DXQIDf3Gw2IABNBEcXaiOQQ/5ab0gA3SHArycNCkALAbzzVDpuP8OdY8NrL1PDAujIBmjXRvYyXnBx72RgAB3ZQGlyGCOYDvcKjYYGoIVgGd7dGG+Dxg5jtMmhut/uQQSRD5c+SDr9FWxn/eCqOYv3iz19EcgVt/OjcBR+ApsYl5JnAECFQOOBZhs8XvT56Fno5xCImytUh15+T0C/8r/X9emWvw2S3mlpQOaXx88/hjeRm/jdTuqHAGuUJNXsnnHpcrMxPnFo2vbM9CMEQebaJxybtz2b/15ni9eK8Rr/Q+4zseWZ6kel1s7ekT3sEafcv6XH/yXqWphTOTdWFiZLs5bG3lGt//8Bb+C6NMOtWtUAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTctMDItMDJUMTY6MTE6NDcrMDE6MDAGQ59ZAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE3LTAyLTAyVDE2OjExOjQ3KzAxOjAwdx4n5QAAAEZ0RVh0c29mdHdhcmUASW1hZ2VNYWdpY2sgNi43LjgtOSAyMDE2LTA2LTE2IFExNiBodHRwOi8vd3d3LmltYWdlbWFnaWNrLm9yZ+a/NLYAAAAYdEVYdFRodW1iOjpEb2N1bWVudDo6UGFnZXMAMaf/uy8AAAAYdEVYdFRodW1iOjpJbWFnZTo6aGVpZ2h0ADUxMsDQUFEAAAAXdEVYdFRodW1iOjpJbWFnZTo6V2lkdGgANTEyHHwD3AAAABl0RVh0VGh1bWI6Ok1pbWV0eXBlAGltYWdlL3BuZz+yVk4AAAAXdEVYdFRodW1iOjpNVGltZQAxNDg2MDQ4MzA3MNrcvwAAABN0RVh0VGh1bWI6OlNpemUAMjAuMktCQgmMGK8AAABEdEVYdFRodW1iOjpVUkkAZmlsZTovLy4vdXBsb2Fkcy9jYXJsb3NwcmV2aS92aFh4VjBMLzExMTEvbG91cGVfNzkyNTcucG5nLHJOoAAAAABJRU5ErkJggg==');
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: contain;
-        cursor: pointer;
+
+
+    .НаименованиеГруза .Текст {
+        width: 100%;
+        height: 60%;
+        overflow: hidden;
+        text-overflow: clip;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .КнопкаПереходаКДопУслугам {
+        background: rgba(255, 230, 46, 0.822);
+    }
+
+    .МодальноеОкноРаспределения {
+        top: 83%;
+    }
+
+    .MousePosition {
+        position: absolute;
+        top: var(--MouseY);
+        left: var(--MouseX);
     }
 </style>
 
-<body>
+<body onkeydown="ОкноСеткаГрузов_onkeydown(event)">
     <a id="lnk" hidden=true></a>
 
     <div id="ОсновноеОкно" class="СтильОсновногоОкна">
@@ -2009,46 +2041,106 @@ align-content: center;
                 </div>
 
 
-                <div id="ОкноСеткаГрузов" class="СтильОкнаСеткаГрузов" >
+                <div id="ОкноСеткаГрузов" class="СтильОкнаСеткаГрузов">
                 </div>
 
             </div>
         </div>
 
-        <div class="modalActive off">
-            <div id="ДиалогВыбора" class="modalWindow">
-            </div>
+        <div id="ВыпадающиеСписки"></div>
+
+        <div id="ДиалогВыбора" class="modalActive off">
+
         </div>
 
 
     </div>
 
     <script>
-        function return1c(element, data1) {
-            //element - думал сначала посылать на него нажатие , но оказалось что не всегда есть элемент от которого шлем;
-            try {
+        window.Panel = {
+            Down: 0,
+            Up: 1,
+            Control: 2
+        };
+        window.lastMouse = { x: 0, y: 0 };
+
+        window.currentKeybpardControll = {
+            panel: window.Panel.Down,
+            x: 0,
+            y: 0
+        };
+
+
+
+        function return1c(ev, data1) {
+            //element - думал сначала посылать на него нажатие , но оказалось что не всегда есть элемент от которого шлем; заменил на ev
+            //try {
                 let lnk = document.getElementById("lnk");//эта невидимая ссылка создана на странице нужна чтобы в 1С возвращать как бы нажатие на нее
                 let evt = document.createEvent("MouseEvent");
                 evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, null);
+
+                // console.log(ev);
+                if (ev != null && 'clientX' in ev && 'clientY' in ev) {
+                    data1.КоординатаX = ev.clientX + 'px';
+                    data1.КоординатаY = ev.clientY + 'px';
+                    window.lastMouse.x = ev.clientX;
+                    window.lastMouse.y = ev.clientY;
+                }
+
+
                 evt.data = JSON.stringify(data1);// но в реквизит data мы "пихаем" овер дофига инфы
+
+                //evt.clientX = 
                 lnk.dispatchEvent(evt);//без этой строки эвент не полетит в 1С
-            } catch (e) { }
+            //} catch (e) { }
         }
 
-        function ShowModalDialog() {//показать "модальный" выпадающий список , который закрывается если нажать мимо него
-            const modalActive = document.getElementsByClassName("modalActive")[0];
-            modalActive.classList.remove("off");
+        function CreateModal() {
+            const id = "modal" + Date.now();
+            UpdateElement("ВыпадающиеСписки", "");
+            const modalActive_ = AddElement("ВыпадающиеСписки", id, "div");
+            modalActive_.classList.add("modalActive");
+            return id;
+        }
 
-            let documentClick = () => { Close(); }
 
-            let Close = () => {
-                modalActive.classList.add("off");
-                document.removeEventListener('click', documentClick);
+        function ShowModalDialog(id, subClass = "", x = null, y = null) {//показать "модальный" выпадающий список , который закрывается если нажать мимо него
+
+            const modalActive = document.getElementById(id);
+
+            //const modalActive = document.getElementsByClassName("modalActive")[0];
+            //console.log("Open " + id);
+
+            //modalActive.classList.remove("off");
+            if (subClass != "") {
+                modalActive.classList.add(subClass);
             }
+            let Close = () => {
 
-            //modalClose.addEventListener('click', (e) => { Close(); });
-            document.addEventListener('click', documentClick);//если нажимаем мимо , то ...
+                //  console.log("Close " + id);
+                //if (subClass != "") {                    modalActive.classList.remove(subClass);                }
+                document.removeEventListener('click', Close);
+                //UpdateElement("ВыпадающиеСписки", "");
+                modalActive.classList.add("off");
+            }
+            document.removeEventListener('click', Close);
 
+            if (window.lastMouse.x > 0) modalActive.style.left = window.lastMouse.x + 'px';
+            if (window.lastMouse.y > 0) modalActive.style.top = window.lastMouse.y + 'px';
+            if (x != null) modalActive.style.left = x;
+            if (y != null) modalActive.style.top = y;
+
+            setTimeout(() => {//задержка нужна т.к на некоторых браузерах событие прилетает раньше и окно не успевает появиться как тут же закрывается
+                //console.log(modalActive.getBoundingClientRect());
+                let yh = modalActive.getBoundingClientRect().y;
+
+                let height = 200;
+                if (yh + height >= window.innerHeight) modalActive.style.top = (window.innerHeight - height) + 'px';
+                //console.log(yh+height);
+                //let documentClick = () => { Close(); }
+                //modalClose.addEventListener('click', (e) => { Close(); });
+                document.addEventListener('click', Close);//если нажимаем мимо , то ...
+            }, 1);
         }
 
         function CallMethod(id, methodName, attr = "") {//вызвать метод у элемента  , пока не используется нигде
@@ -2116,7 +2208,7 @@ align-content: center;
         }
 
         function ShowElement(id) {// видимость элементов сделана через отдельный css класс ".off" 
-        //это делалось на случай если нужно будет "анимировать" на странице все появления и исчезновения элементов на странице
+            //это делалось на случай если нужно будет "анимировать" на странице все появления и исчезновения элементов (т.к не все браузеры перезапускают анимацию после hidden)
             let elem = document.getElementById(id);
             if (elem == null) return;
             elem.classList.remove("off");//удалим у элемента класс .off чтобы он появился
@@ -2130,7 +2222,7 @@ align-content: center;
         }
 
         function addCSSClass(data) {//добавим новый css класс в коллекцию css 
-            //таким образом мы можем загрузить картинки в стиль и много кратно ссылаясь на этот стиль использовать подготовленную картинку, не передавая ее каждый раз как она нужна
+            //таким образом мы можем загрузить картинки в стиль и многократно ссылаясь на этот стиль использовать подготовленную картинку, не передавая ее каждый раз как она нужна
             let innerHTML = JSON.parse(data);
             let style = document.createElement('style');
             style.type = 'text/css';
@@ -2144,7 +2236,8 @@ align-content: center;
             element.onclick = (ev) => {
                 ev.preventDefault();
                 ev.stopPropagation();
-                return1c(element, { "type": type, "id": id, "ref": ref });
+                ev.stopImmediatePropagation();
+                return1c(ev, { "type": type, "id": id, "ref": ref });
             }
 
         }
@@ -2154,10 +2247,10 @@ align-content: center;
             element.addEventListener(eventType, (ev) => {
                 ev.preventDefault();
                 ev.stopPropagation();
-                return1c(element, { "type": type, "id": id, "ref": ref });
+                return1c(ev, { "type": type, "id": id, "ref": ref });
             });
         }
-//-----------------------------------------------------------------------------------
+        //-----------------------------------------------------------------------------------
         function FindCargoString(Грузы, Элемент) {//найдем строку в таблице грузов по элементу на экране
             for (i in Грузы)
                 if (Грузы[i].Элемент.id == Элемент.id) return Грузы[i];
@@ -2166,8 +2259,8 @@ align-content: center;
         }
 
         function FindUpperDataElementHierarchy(target) {//найдем "грузовой" элемент в иерархии элемента , 
-        //когда мы кликаем на элемент например "картинку груза" то в иерархии ищем элемент родитель что соответствует нужному грузу в таблице
-        let parentEl = target;
+            //когда мы кликаем на элемент например "картинку груза" то в иерархии ищем элемент родитель что соответствует нужному грузу в таблице
+            let parentEl = target;
             for (let i = 0; i < 5; i++) {
                 if (parentEl.hasOwnProperty("Данные")) return parentEl;
                 parentEl = parentEl.parentElement;
@@ -2179,12 +2272,12 @@ align-content: center;
         function DrawTable(tableid, ОбластьЯчейки, options) {//отрисуем табличку грузов (верхний блок)
             let tableparentid = "ОкноТаблицаГрузов";
             UpdateElement(tableparentid, "");// очистим подложку
-            AddElement(tableparentid, tableid + "Заголовок", "div", "{\"class\":\"ЗаголовокТаблицыАдреса\"}", "Содержимое груза:");
+            //AddElement(tableparentid, tableid + "Заголовок", "div", "{\"class\":\"ЗаголовокТаблицыАдреса\"}", "Содержимое груза:");
             //AddElement(tableparentid, tableid+"Таблица", "div");
             AddElement(tableparentid, tableid, "div", "{\"class\":\"ТаблицаАдреса\"}");//добавим элемент что станет таблицей
             let Элемент = FindCargoString(window.Грузы, ОбластьЯчейки);//найдем строку с грузом
             let data = Элемент.Вложения;//получим содержимое таблицы
-            UpdateElement(tableid + "Заголовок", "Содержимое: " + Элемент.Текст);
+            //UpdateElement(tableid + "Заголовок", "Содержимое: " + Элемент.Текст);
             options.data = data;
             options.movableRows = true;
             options.autoResize = true;
@@ -2198,7 +2291,7 @@ align-content: center;
                 if (str.Мест == 0 || str.Вес == 0 || str.ВесНачально == 0 || str.МестНачально == 0) { console.log("empty cargo"); return; }
                 if (e.target.id == "ОбластьЯчейки_СвободнаяЯчейка") {
 
-                    return1c(this, { type: "Извлечение", id: null, Груз: str.Груз, ОписаниеГруза: str.ОписаниеГруза, Мест: str.Мест, Вес: str.Вес, НомерСтроки: -1 });
+                    return1c(e, { type: "Извлечение", id: null, Груз: str.Груз, ОписаниеГруза: str.ОписаниеГруза, Мест: str.Мест, Вес: str.Вес, НомерСтроки: -1 });
                     return;
                 }
 
@@ -2206,8 +2299,8 @@ align-content: center;
                 if (UpperElement != null) {
 
                     let Данные = UpperElement.Данные;
-                    console.log(Данные);
-                    return1c(this, { type: "Комплектация", id: null, ГрузИсточник: str.Груз, ОписаниеГруза: str.ОписаниеГруза, Мест: str.Мест, Вес: str.Вес, ГрузПриемник: Данные.Груз, НомерСтроки: Данные.НомерСтроки });
+
+                    return1c(e, { type: "Комплектация", id: null, ГрузИсточник: str.Груз, ОписаниеГруза: str.ОписаниеГруза, Мест: str.Мест, Вес: str.Вес, ГрузПриемник: Данные.Груз, НомерСтроки: Данные.НомерСтроки });
                     return;
 
                 } else {
@@ -2220,6 +2313,9 @@ align-content: center;
 
         }
 
+
+
+
         function DrawCargoGrid(id, tableid, data, options) {//отрисуем сетку с иконочными грузами (нижний блок)
 
             let parentid = "ОкноСеткаГрузов";
@@ -2229,13 +2325,15 @@ align-content: center;
             let ДобавитьПустуюЯчейку = false;
             let Список = JSON.parse(data);//получим данные
 
-            AddElement(parentid, id, "div", "{\"class\":\"СеткаСЯчейкамиГрузов\"}");// добавим тип блока grid в котором заданы размеры ячеек и сколько столбцов
+            let СеткаСГрузами = AddElement(parentid, id, "div", "{\"class\":\"СеткаСЯчейкамиГрузов\"}");// добавим тип блока grid в котором заданы размеры ячеек и сколько столбцов
+            //СеткаСГрузами.onkeydown = ОкноСеткаГрузов_onkeydown;
             UpdateElement(id, "");// зачем то почистим блок , хотя только что его добавили , но всеже AddElement ничего не делает если блок уже существует и создан раенее , хз карочи
             //UpdateElement(gridandbuttonsid, "");
             let НомерЗаписи = 1;
             Список.sort((a, b) => { return a.Порядок - b.Порядок });// сортируем ячейки по порядку от 1С
-            console.log(data);//для отладки
+            //console.log(data);//для отладки
             //console.log(options);
+            window.Грузы = Список;
             for (let ДанныеКнопки of Список) {
 
                 let КнопкаСекции_id = "ОбластьЯчейки_" + НомерЗаписи;
@@ -2243,19 +2341,29 @@ align-content: center;
 
                 ДанныеКнопки.Элемент = ОбластьЯчейки;
                 ОбластьЯчейки.Данные = ДанныеКнопки;//сомнительно но ок , сохраним табличку с вложениями прямо в элемент 
+                //ОбластьЯчейки.onkeydown = ОкноСеткаГрузов_onkeydown;
+                ОбластьЯчейки.Выбрать = () => {
+                    DrawTable(tableid, ОбластьЯчейки, JSON.parse(options));
+                    ВыбратьГруз(ОбластьЯчейки, ДанныеКнопки);
+                    ОбластьЯчейки.focus();
+                    ОбластьЯчейки.scrollIntoView();
+                    СеткаСГрузами.scrollIntoView();
+                }
 
-                if (ДанныеКнопки.Груз == window.ВыбранГруз && ДанныеКнопки.Порядок == window.ВыбранПорядок) {
+                if (ДанныеКнопки.Груз == window.ВыбранГруз && ДанныеКнопки.Порядок == window.ВыбранПорядок || window.ВыбранГруз == undefined || window.ВыбранГруз == null) {
                     try {
-                        DrawTable(tableid, ОбластьЯчейки, JSON.parse(options));
-                        ВыбратьГруз(ОбластьЯчейки, ДанныеКнопки);
-                    } catch (e) { }
+                        ОбластьЯчейки.Выбрать();
+
+                    } catch (e) { console.log(e) }
                 }
 
                 //сформируем формочку ячейки груза
                 let ШапкаГруза = КнопкаСекции_id + "ШапкаГруза";
                 AddElement(КнопкаСекции_id, КнопкаСекции_id + "ШапкаГруза", "div", "{\"class\":\"ШапкаГруза\"}");
 
-                AddElement(ШапкаГруза, КнопкаСекции_id + "Наименование", "div", "{\"class\":\"НаименованиеГруза\"}", ДанныеКнопки.Наименование);
+                AddElement(ШапкаГруза, КнопкаСекции_id + "Наименование", "div", "{\"class\":\"НаименованиеГруза\"}");
+                AddElement(КнопкаСекции_id + "Наименование", "", "div", "{\"class\":\"Текст\"}", ДанныеКнопки.Наименование);
+
                 let Удаление = AddElement(ШапкаГруза, КнопкаСекции_id + "Удаление", "div", "{\"class\":\"Крестик_УдалитьГруз крестикУдаление\"}");
 
                 let КартинкаИИнформация = КнопкаСекции_id + "КартинкаИИнформация";
@@ -2268,43 +2376,51 @@ align-content: center;
                 AddElement(КартинкаИИнформация, НадписьИнформация, "div", "{\"class\":\"ОбластьИнформацииГруза\"}", null);
 
                 AddElement(НадписьИнформация, КнопкаСекции_id + "Заголовок1", "label", "{\"class\":\"ЗаголовокПовреждения\"}", ДанныеКнопки.Информация);//тип контейнера
-                AddElement(НадписьИнформация, КнопкаСекции_id + "Заголовок2", "div", "{\"class\":\"ЗаголовокПовреждения\"}", ДанныеКнопки.Мест);
-                let textBlock = AddElement(НадписьИнформация, КнопкаСекции_id + "Заголовок3", "div", "{\"class\":\"ЗаголовокПовреждения\"}", ДанныеКнопки.Вес);
-                
-                scaleText(textBlock, ДанныеКнопки.Вес);
+                AddElement(НадписьИнформация, КнопкаСекции_id + "Заголовок2", "div", "{\"class\":\"ЗаголовокПовреждения РазмерШрифтаМестВес\"}", ДанныеКнопки.Мест);
+                let textBlock = AddElement(НадписьИнформация, КнопкаСекции_id + "Заголовок3", "div", "{\"class\":\"ЗаголовокПовреждения РазмерШрифтаМестВес\"}", ДанныеКнопки.Вес);
+
+                //scaleText(textBlock, ДанныеКнопки.Вес);
 
                 let КнопкиСнизу = КнопкаСекции_id + "КнопкиСнизу";
                 AddElement(КнопкаСекции_id, КнопкиСнизу, "div", "{\"class\":\"ПанельКнопокСнизу\"}", null);
-                
+
                 //нарисуем кнопочки ячейки груза присланные из 1С
                 if (ДанныеКнопки.Команды != null) {
                     for (let command of ДанныеКнопки.Команды) {
 
-                        let Команда = AddElement(КнопкиСнизу, "", "button", "{\"class\":\"" + command.Стиль + "\",\"title\":\""+command.Подсказка+"\" }", command.Текст);
-                        if(command.Доступность == true)
-                        Команда.onclick = (ev) => {
-                            ev.preventDefault();
-                            return1c(Команда, { "type": command.Команда, "id": 0, "Груз": ДанныеКнопки.Груз, "НомерСтроки": ДанныеКнопки.НомерСтроки, Мест: ДанныеКнопки.Мест, Вес: ДанныеКнопки.Вес, ОписаниеГруза: ДанныеКнопки.ОписаниеГруза });
-                        }
+                        let Команда = AddElement(КнопкиСнизу, "", "button", "{\"class\":\"КнопкаГруза " + command.Стиль + "\",\"title\":\"" + command.Подсказка + "\" }", command.Текст);
+                        if (command.Доступность == true)
+                            Команда.onclick = (ev) => {
+                                ev.preventDefault();
+                                ev.stopPropagation();
+                                ev.stopImmediatePropagation();
+                                return1c(ev, { "type": command.Команда, "id": 0, "Груз": ДанныеКнопки.Груз, "НомерСтроки": ДанныеКнопки.НомерСтроки, Мест: ДанныеКнопки.Мест, Вес: ДанныеКнопки.Вес, ОписаниеГруза: ДанныеКнопки.ОписаниеГруза, КоординатаX: ev.clientX + 'px', КоординатаY: ev.clientY + 'px' });
+                            }
 
 
                     }
 
                 }
                 //события формочки ячейки груза
+
+
                 Удаление.onclick = (ev) => {
                     ev.preventDefault();
-                    return1c(Удаление, { "type": "УдалениеГруза", "id": 0, "Груз": ДанныеКнопки.Груз, "НомерСтроки": ДанныеКнопки.НомерСтроки });
+                    ev.stopPropagation();
+                    ev.stopImmediatePropagation();
+                    return1c(ev, { "type": "УдалениеГруза", "id": 0, "Груз": ДанныеКнопки.Груз, "НомерСтроки": ДанныеКнопки.НомерСтроки });
                 }
                 Картинка.addEventListener("dblclick", (ev) => {
-                    //console.log(11);
                     ev.preventDefault();
-                    return1c(Картинка, { "type": "ОткрытьЗначение", "id": 0, "Ссылка": ДанныеКнопки.Ссылка });
+                    ev.stopPropagation();
+                    ev.stopImmediatePropagation();
+                    return1c(ev, { "type": "ОткрытьЗначение", "id": 0, "Ссылка": ДанныеКнопки.Ссылка });
                 });
                 ОбластьЯчейки.onclick = (ev) => {
                     ev.preventDefault();
-                    DrawTable(tableid, ОбластьЯчейки, JSON.parse(options));
-                    ВыбратьГруз(ОбластьЯчейки, ДанныеКнопки);
+                    ev.stopPropagation();
+                    ev.stopImmediatePropagation();
+                    ОбластьЯчейки.Выбрать();
                 }
                 НомерЗаписи++;
                 ДобавитьПустуюЯчейку = true;
@@ -2331,7 +2447,7 @@ align-content: center;
 
 
 
-        function ВыбратьГруз(ОбластьЯчейки, ДанныеКнопки) { 
+        function ВыбратьГруз(ОбластьЯчейки, ДанныеКнопки) {
 
             if (window.ВыбранЭлементГруз != undefined) window.ВыбранЭлементГруз.removeAttribute('selected');
             ОбластьЯчейки.setAttribute('selected', '1');
@@ -2368,15 +2484,18 @@ align-content: center;
             let UpperElement = FindUpperDataElementHierarchy(ev.target);
             if (UpperElement != null) {
 
-                //console.log(str);
                 let Данные = UpperElement.Данные;
-                return1c(this, { type: "Комплектация", id: null, ГрузИсточник: str.ГрузИсточникОписания == "" ? str.Груз : str.ГрузИсточникОписания, ОписаниеГруза: str.ОписаниеГруза, Мест: str.Мест, Вес: str.Вес, ГрузПриемник: Данные.Груз, НомерСтроки: str.НомерСтроки });
+                //console.log(str);
+                //console.log(Данные);
+                if (Данные.ЭтоКонтейнерныйГруз == false) return;
+
+                return1c(ev, { type: "Комплектация", id: null, ГрузИсточник: str.ГрузИсточникОписания == "" ? str.Груз : str.ГрузИсточникОписания, ОписаниеГруза: str.ОписаниеГруза, Мест: str.Мест, Вес: str.Вес, ГрузПриемник: Данные.Груз, НомерСтроки: str.НомерСтроки });
                 //return;
 
             }
             if (ev.target.id == "ОбластьЯчейки_СвободнаяЯчейка") {
 
-                return1c(this, { type: "Извлечение", id: null, Груз: str.Груз, ОписаниеГруза: str.ОписаниеГруза, Мест: str.Мест, Вес: str.Вес, НомерСтроки: str.НомерСтроки });
+                return1c(ev, { type: "Извлечение", id: null, Груз: str.Груз, ОписаниеГруза: str.ОписаниеГруза, Мест: str.Мест, Вес: str.Вес, НомерСтроки: str.НомерСтроки });
                 //return;
             }
 
@@ -2395,13 +2514,15 @@ align-content: center;
             if (ev.target.id == "ОкноСеткаГрузов") return;
             if (ev.target.id == "ОкноТаблицаГрузов") return;
             if (ev.target.id == "ПанельСеткИКнопки") return;
-            ev.preventDefault();
             let UpperElement = FindUpperDataElementHierarchy(ev.target);
             if (UpperElement != null) {
+                //if(Данные.ЭтоКонтейнерныйГруз == false)return;
                 window.dragoverElement = UpperElement;
                 //modalActive.classList.add("off");
                 window.dragoverElement.setAttribute('dragover', '1');
             }
+            ev.preventDefault();
+
 
 
         }
@@ -2422,7 +2543,7 @@ align-content: center;
                     secondHeight: second.offsetHeight,
                     additionaloffsetLeft: additional.offsetLeft,
                     additionaloffsetTop: additional.offsetTop,
-                    
+
                 };
 
                 document.onmousemove = onMouseMove;
@@ -2453,295 +2574,423 @@ align-content: center;
         }
 
 
-        dragElement(document.getElementById("splitter"), document.getElementById("ОкноТаблицаГрузов"), document.getElementById("ПанельСеткИКнопки"), document.getElementsByClassName("modalActive")[0]);//двигаем разделитель
 
-//тестирование данные для теста и тд
+        let ОкноТаблицаГрузов_ = document.getElementById("ОкноТаблицаГрузов");
+        let ПанельСеткИКнопки_ = document.getElementById("ПанельСеткИКнопки");
+        let ПанельКнопок_ = document.getElementById("ПанельКнопок");
+        let ОкноСеткаГрузов_ = document.getElementById("ОкноСеткаГрузов");
+
+        dragElement(document.getElementById("splitter"), ОкноТаблицаГрузов_, ПанельСеткИКнопки_, document.getElementsByClassName("modalActive")[0]);//двигаем разделитель
+
+
+        function ВыбратьСледующийГруз(Следующий = 0) {
+            let next = window.ВыбранЭлементГруз;
+            for (let i = 0; i < Math.abs(Следующий); i++) {
+                if (Следующий > 0) next = next.nextElementSibling;
+                if (Следующий < 0) next = next.previousElementSibling;
+                if (next == null) return false;
+            }
+            let ДанныеКнопки = next.Данные;
+            next.Выбрать();
+            return true;
+        }
+
+        function ArrowUp() {
+
+            switch (window.currentKeybpardControll.panel) {
+                case 0:
+                    ВыбратьСледующийГруз(-4);
+                    break;
+                case 1:
+
+                    break;
+            }
+        }
+
+        function ArrowDown() {
+            switch (window.currentKeybpardControll.panel) {
+                case 0:
+            ВыбратьСледующийГруз(4);
+            break;
+                case 1:
+
+
+                    break;
+            }
+        }
+
+        function ArrowRight() {
+
+            ВыбратьСледующийГруз(1);
+
+        }
+
+        function ArrowLeft() {
+
+            ВыбратьСледующийГруз(-1);
+        }
+
+        //        keyCode: 37  webkit
+        //          keyIdentifier: "Left" webkit
+        // ОкноСеткаГрузов_.focus();
+        function ОкноСеткаГрузов_onkeydown(ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            // console.log(ev);
+            // console.log(ev.keyCode);
+            switch (ev.keyCode) {
+                case 9: //'Tab':
+                    if (ev.shiftKey == true) {
+                        window.currentKeybpardControll.panel--;
+                        //ВыбратьСледующийГруз(-1);
+                    }
+                    else {
+                        window.currentKeybpardControll.panel++;
+                        //ВыбратьСледующийГруз(1);
+                    }
+                    window.currentKeybpardControll.panel = window.currentKeybpardControll.panel % 3;
+
+                    break;
+                case 39: //'ArrowRight':
+                    //window.currentKeybpardControll.x++;
+                    //ВыбратьСледующийГруз(1);
+                    ArrowRight();
+                    break;
+                case 37://'ArrowLeft':
+                    //window.currentKeybpardControll.x--;
+                    //ВыбратьСледующийГруз(-1);
+                    ArrowLeft();
+                    break;
+                case 38: //'ArrowUp':
+                    //window.currentKeybpardControll.y--;
+                    //ВыбратьСледующийГруз(-4);
+                    ArrowUp();
+                    break;
+                case 40: //'ArrowDown':
+                    //window.currentKeybpardControll.y++;
+                    //ВыбратьСледующийГруз(4);
+                    ArrowDown();
+                    break;
+                case 13://'Enter':
+
+                    break;
+                case 32://'Space':
+
+                    break;
+                case 46://'Delete':
+
+                    break;
+                case 45://'Insert':
+
+                    break;
+                case 107://'+':
+
+                    break;
+
+            }
+
+
+
+        }
+
+
+
+
+
+
+        /*
+                document.onmouseover = function(event) { 
+                    document.documentElement.style.setProperty('--MouseX', event.clientX + 'px');
+                    document.documentElement.style.setProperty('--MouseY', event.clientY + 'px');
+                }; 
+        */
+        //тестирование данные для теста и тд
         let data = [
-{
-"Груз": "798c746d-1e51-11ef-840b-4c5262bb1b9f",
-"Вес": 31.5,
-"Мест": 2,
-"НомерСтроки": -1,
-"ОписаниеГруза": "a906f532-1cc2-11ef-840b-4c5262bb1b9f",
-"ГрузИсточникОписания": "798c746d-1e51-11ef-840b-4c5262bb1b9f",
-"Порядок": 1,
-"Информация": null,
-"Наименование": "запчасти",
-"Картинка": "ГенГруз",
-"Текст": "запчасти [041434029979]",
-"Вложения": [
-{
-"Источник": "",
-"НомерСтроки": 1,
-"Груз": "798c746d-1e51-11ef-840b-4c5262bb1b9f",
-"ОписаниеГруза": "a906f532-1cc2-11ef-840b-4c5262bb1b9f",
-"Вес": 31.5,
-"Мест": 2,
-"ВесНачально": 31.5,
-"МестНачально": 2,
-"Наименование": "запчасти [041434029979]",
-"ГрузИсточникОписания": "798c746d-1e51-11ef-840b-4c5262bb1b9f",
-"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"798c746d-1e51-11ef-840b-4c5262bb1b9f\" , ОписаниеГруза:\"a906f532-1cc2-11ef-840b-4c5262bb1b9f\" , Мест:\"2\", Вес:\"31,5\", НомерСтроки: -1  })'>Извлечь</button>"
-}
-],
-"Команды": [
-{
-"Подсказка": "Переместить всё на склад",
-"Текст": "",
-"Доступность": false,
-"Команда": "Недоступно",
-"Стиль": "ИзвлечьНаСклад Тусклый"
-},
-{
-"Подсказка": "Переместить всё в КТК",
-"Текст": "",
-"Доступность": true,
-"Команда": "РазделитьГруз",
-"Стиль": "ИзвлечьВКонтейнер"
-}
-],
-"Ссылка": "{\"#\",2e2282a7-eada-4329-b569-8234e8d09040,460:840b4c5262bb1b9f11ef1e51798c746d}"
-},
-{
-"Груз": "3d7b9a2f-20be-11ef-840b-4c5262bb1b9f",
-"Вес": 406,
-"Мест": 13,
-"НомерСтроки": -1,
-"ОписаниеГруза": "d142a50f-1cd6-11ef-840b-4c5262bb1b9f",
-"ГрузИсточникОписания": "3d7b9a2f-20be-11ef-840b-4c5262bb1b9f",
-"Порядок": 2,
-"Информация": null,
-"Наименование": "одежда",
-"Картинка": "ГенГруз",
-"Текст": "одежда [041434030780]",
-"Вложения": [
-{
-"Источник": "",
-"НомерСтроки": 1,
-"Груз": "3d7b9a2f-20be-11ef-840b-4c5262bb1b9f",
-"ОписаниеГруза": "d142a50f-1cd6-11ef-840b-4c5262bb1b9f",
-"Вес": 406,
-"Мест": 13,
-"ВесНачально": 406,
-"МестНачально": 13,
-"Наименование": "одежда [041434030780]",
-"ГрузИсточникОписания": "3d7b9a2f-20be-11ef-840b-4c5262bb1b9f",
-"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"3d7b9a2f-20be-11ef-840b-4c5262bb1b9f\" , ОписаниеГруза:\"d142a50f-1cd6-11ef-840b-4c5262bb1b9f\" , Мест:\"13\", Вес:\"406\", НомерСтроки: -1  })'>Извлечь</button>"
-}
-],
-"Команды": [
-{
-"Подсказка": "Переместить всё на склад",
-"Текст": "",
-"Доступность": false,
-"Команда": "Недоступно",
-"Стиль": "ИзвлечьНаСклад Тусклый"
-},
-{
-"Подсказка": "Переместить всё в КТК",
-"Текст": "",
-"Доступность": true,
-"Команда": "РазделитьГруз",
-"Стиль": "ИзвлечьВКонтейнер"
-}
-],
-"Ссылка": "{\"#\",2e2282a7-eada-4329-b569-8234e8d09040,460:840b4c5262bb1b9f11ef20be3d7b9a2f}"
-},
-{
-"Груз": "e0e0c7b9-1be6-11ef-840b-4c5262bb1b9f",
-"Вес": 22445.67,
-"Мест": 1211,
-"НомерСтроки": -1,
-"ОписаниеГруза": "",
-"ГрузИсточникОписания": "",
-"Порядок": 3,
-"Информация": "45G1",
-"Наименование": "MAGU5462536 (ГР)",
-"Картинка": "Контейнер",
-"Текст": "MAGU5462536 (ГР)",
-"Вложения": [
-{
-"Источник": "",
-"НомерСтроки": 1,
-"Груз": "e0e0c7b9-1be6-11ef-840b-4c5262bb1b9f",
-"ОписаниеГруза": "e0e0c7b8-1be6-11ef-840b-4c5262bb1b9f",
-"Вес": 22445.67,
-"Мест": 1211,
-"ВесНачально": 22445.67,
-"МестНачально": 1211,
-"Наименование": "ПРОГРАММИРУЕМЫЙ ЛОГИЧЕСКИЙ КОНТРОЛЛЕР, ДРАЙВЕР ДВИГАТЕЛЯ, СУХОЙ ТРАНСФОРМАТОР, ИНДИКАТОР, КОНДЕНСАТО [041434027011]",
-"ГрузИсточникОписания": "e0e0c7b9-1be6-11ef-840b-4c5262bb1b9f",
-"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"e0e0c7b9-1be6-11ef-840b-4c5262bb1b9f\" , ОписаниеГруза:\"e0e0c7b8-1be6-11ef-840b-4c5262bb1b9f\" , Мест:\"1211\", Вес:\"22445,67\", НомерСтроки: -1  })'>Извлечь</button>"
-}
-],
-"Команды": [
-{
-"Подсказка": "Переместить всё на склад",
-"Текст": "",
-"Доступность": true,
-"Команда": "ИзвлечВесьГрузНаСклад",
-"Стиль": "ИзвлечьНаСклад"
-},
-{
-"Подсказка": "Переместить всё в КТК",
-"Текст": "",
-"Доступность": true,
-"Команда": "ПереместитьГрузВКТК",
-"Стиль": "ИзвлечьВКонтейнер"
-}
-],
-"Ссылка": "{\"#\",2e2282a7-eada-4329-b569-8234e8d09040,460:840b4c5262bb1b9f11ef1be6e0e0c7b9}"
-},
-{
-"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"Вес": 22519.98,
-"Мест": 247,
-"НомерСтроки": -1,
-"ОписаниеГруза": "",
-"ГрузИсточникОписания": "",
-"Порядок": 4,
-"Информация": "45G1",
-"Наименование": "HALU5650870 (ГР)",
-"Картинка": "Контейнер",
-"Текст": "HALU5650870 (ГР)",
-"Вложения": [
-{
-"Источник": "",
-"НомерСтроки": 1,
-"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"ОписаниеГруза": "16b89634-167c-11ef-840b-4c5262bb1b9f",
-"Вес": 577.8,
-"Мест": 1,
-"ВесНачально": 577.8,
-"МестНачально": 1,
-"Наименование": "запчасти [041434013660]",
-"ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"16b89634-167c-11ef-840b-4c5262bb1b9f\" , Мест:\"1\", Вес:\"577,8\", НомерСтроки: -1  })'>Извлечь</button>"
-},
-{
-"Источник": "",
-"НомерСтроки": 2,
-"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"ОписаниеГруза": "89148ec2-1738-11ef-840b-4c5262bb1b9f",
-"Вес": 7994,
-"Мест": 10,
-"ВесНачально": 7994,
-"МестНачально": 10,
-"Наименование": "запчасти [041434017027]",
-"ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"89148ec2-1738-11ef-840b-4c5262bb1b9f\" , Мест:\"10\", Вес:\"7994\", НомерСтроки: -1  })'>Извлечь</button>"
-},
-{
-"Источник": "",
-"НомерСтроки": 3,
-"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"ОписаниеГруза": "7e9c4028-1a66-11ef-840b-4c5262bb1b9f",
-"Вес": 1386,
-"Мест": 170,
-"ВесНачально": 1386,
-"МестНачально": 170,
-"Наименование": "УМНАЯ КАПЕЛЬНИЦА. [041434023554]",
-"ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"7e9c4028-1a66-11ef-840b-4c5262bb1b9f\" , Мест:\"170\", Вес:\"1386\", НомерСтроки: -1  })'>Извлечь</button>"
-},
-{
-"Источник": "",
-"НомерСтроки": 4,
-"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"ОписаниеГруза": "7e9c402a-1a66-11ef-840b-4c5262bb1b9f",
-"Вес": 6558,
-"Мест": 7,
-"ВесНачально": 6558,
-"МестНачально": 7,
-"Наименование": "МОНОБЛОК НАПРАВЛЕННЫЙРЕГУЛИРУЮЩИЙ ВЕНТИЛЬИ ЗАПАСНЫЕ ЧАСТИ,СЕКЦИОННЫЙ НАПРАВЛЕННЫЙРЕГУЛИРУЮЩИЙ ВЕНТИЛ [041434023556]",
-"ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"7e9c402a-1a66-11ef-840b-4c5262bb1b9f\" , Мест:\"7\", Вес:\"6558\", НомерСтроки: -1  })'>Извлечь</button>"
-},
-{
-"Источник": "",
-"НомерСтроки": 5,
-"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"ОписаниеГруза": "021c2df0-1cce-11ef-840b-4c5262bb1b9f",
-"Вес": 1066,
-"Мест": 4,
-"ВесНачально": 1066,
-"МестНачально": 4,
-"Наименование": "запчасти [041434030713]",
-"ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"021c2df0-1cce-11ef-840b-4c5262bb1b9f\" , Мест:\"4\", Вес:\"1066\", НомерСтроки: -1  })'>Извлечь</button>"
-},
-{
-"Источник": "",
-"НомерСтроки": 6,
-"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"ОписаниеГруза": "021c2dfb-1cce-11ef-840b-4c5262bb1b9f",
-"Вес": 648,
-"Мест": 24,
-"ВесНачально": 648,
-"МестНачально": 24,
-"Наименование": "ЭФИРНОЕ МАСЛО [041434030724]",
-"ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"021c2dfb-1cce-11ef-840b-4c5262bb1b9f\" , Мест:\"24\", Вес:\"648\", НомерСтроки: -1  })'>Извлечь</button>"
-},
-{
-"Источник": "",
-"НомерСтроки": 7,
-"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"ОписаниеГруза": "08144f02-1cce-11ef-840b-4c5262bb1b9f",
-"Вес": 345.08,
-"Мест": 23,
-"ВесНачально": 345.08,
-"МестНачально": 23,
-"Наименование": "лампы [041434030729]",
-"ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"08144f02-1cce-11ef-840b-4c5262bb1b9f\" , Мест:\"23\", Вес:\"345,08\", НомерСтроки: -1  })'>Извлечь</button>"
-},
-{
-"Источник": "",
-"НомерСтроки": 8,
-"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"ОписаниеГруза": "3242e137-1cce-11ef-840b-4c5262bb1b9f",
-"Вес": 1450.1,
-"Мест": 3,
-"ВесНачально": 1450.1,
-"МестНачально": 3,
-"Наименование": "оборудование [041434030743]",
-"ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"3242e137-1cce-11ef-840b-4c5262bb1b9f\" , Мест:\"3\", Вес:\"1450,1\", НомерСтроки: -1  })'>Извлечь</button>"
-},
-{
-"Источник": "",
-"НомерСтроки": 9,
-"Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"ОписаниеГруза": "b1b10221-1cd6-11ef-840b-4c5262bb1b9f",
-"Вес": 2495,
-"Мест": 5,
-"ВесНачально": 2495,
-"МестНачально": 5,
-"Наименование": "запчасти [041434030766]",
-"ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
-"Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"b1b10221-1cd6-11ef-840b-4c5262bb1b9f\" , Мест:\"5\", Вес:\"2495\", НомерСтроки: -1  })'>Извлечь</button>"
-}
-],
-"Команды": [
-{
-"Подсказка": "Переместить всё на склад",
-"Текст": "",
-"Доступность": true,
-"Команда": "ИзвлечВесьГрузНаСклад",
-"Стиль": "ИзвлечьНаСклад"
-},
-{
-"Подсказка": "Переместить всё в КТК",
-"Текст": "",
-"Доступность": true,
-"Команда": "ПереместитьГрузВКТК",
-"Стиль": "ИзвлечьВКонтейнер"
-}
-],
-"Ссылка": "{\"#\",2e2282a7-eada-4329-b569-8234e8d09040,460:840c4c5262bb1b9f11ef231368a8d7a2}"
-}
-];
+            {
+                "Груз": "798c746d-1e51-11ef-840b-4c5262bb1b9f",
+                "Вес": 31.5,
+                "Мест": 2,
+                "НомерСтроки": -1,
+                "ОписаниеГруза": "a906f532-1cc2-11ef-840b-4c5262bb1b9f",
+                "ГрузИсточникОписания": "798c746d-1e51-11ef-840b-4c5262bb1b9f",
+                "Порядок": 1,
+                "Информация": null,
+                "Наименование": "запчасти",
+                "Картинка": "ГенГруз",
+                "Текст": "запчасти [041434029979]",
+                "Вложения": [
+                    {
+                        "Источник": "",
+                        "НомерСтроки": 1,
+                        "Груз": "798c746d-1e51-11ef-840b-4c5262bb1b9f",
+                        "ОписаниеГруза": "a906f532-1cc2-11ef-840b-4c5262bb1b9f",
+                        "Вес": 31.5,
+                        "Мест": 2,
+                        "ВесНачально": 31.5,
+                        "МестНачально": 2,
+                        "Наименование": "запчасти [041434029979]",
+                        "ГрузИсточникОписания": "798c746d-1e51-11ef-840b-4c5262bb1b9f",
+                        "Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"798c746d-1e51-11ef-840b-4c5262bb1b9f\" , ОписаниеГруза:\"a906f532-1cc2-11ef-840b-4c5262bb1b9f\" , Мест:\"2\", Вес:\"31,5\", НомерСтроки: -1  })'>Извлечь</button>"
+                    }
+                ],
+                "Команды": [
+                    {
+                        "Подсказка": "Переместить всё на склад",
+                        "Текст": "",
+                        "Доступность": false,
+                        "Команда": "Недоступно",
+                        "Стиль": "ИзвлечьНаСклад Тусклый"
+                    },
+                    {
+                        "Подсказка": "Переместить всё в КТК",
+                        "Текст": "",
+                        "Доступность": true,
+                        "Команда": "РазделитьГруз",
+                        "Стиль": "ИзвлечьВКонтейнер"
+                    }
+                ],
+                "Ссылка": "{\"#\",2e2282a7-eada-4329-b569-8234e8d09040,460:840b4c5262bb1b9f11ef1e51798c746d}"
+            },
+            {
+                "Груз": "3d7b9a2f-20be-11ef-840b-4c5262bb1b9f",
+                "Вес": 406,
+                "Мест": 13,
+                "НомерСтроки": -1,
+                "ОписаниеГруза": "d142a50f-1cd6-11ef-840b-4c5262bb1b9f",
+                "ГрузИсточникОписания": "3d7b9a2f-20be-11ef-840b-4c5262bb1b9f",
+                "Порядок": 2,
+                "Информация": null,
+                "Наименование": "одежда",
+                "Картинка": "ГенГруз",
+                "Текст": "одежда [041434030780]",
+                "Вложения": [
+                    {
+                        "Источник": "",
+                        "НомерСтроки": 1,
+                        "Груз": "3d7b9a2f-20be-11ef-840b-4c5262bb1b9f",
+                        "ОписаниеГруза": "d142a50f-1cd6-11ef-840b-4c5262bb1b9f",
+                        "Вес": 406,
+                        "Мест": 13,
+                        "ВесНачально": 406,
+                        "МестНачально": 13,
+                        "Наименование": "одежда [041434030780]",
+                        "ГрузИсточникОписания": "3d7b9a2f-20be-11ef-840b-4c5262bb1b9f",
+                        "Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"3d7b9a2f-20be-11ef-840b-4c5262bb1b9f\" , ОписаниеГруза:\"d142a50f-1cd6-11ef-840b-4c5262bb1b9f\" , Мест:\"13\", Вес:\"406\", НомерСтроки: -1  })'>Извлечь</button>"
+                    }
+                ],
+                "Команды": [
+                    {
+                        "Подсказка": "Переместить всё на склад",
+                        "Текст": "",
+                        "Доступность": false,
+                        "Команда": "Недоступно",
+                        "Стиль": "ИзвлечьНаСклад Тусклый"
+                    },
+                    {
+                        "Подсказка": "Переместить всё в КТК",
+                        "Текст": "",
+                        "Доступность": true,
+                        "Команда": "РазделитьГруз",
+                        "Стиль": "ИзвлечьВКонтейнер"
+                    }
+                ],
+                "Ссылка": "{\"#\",2e2282a7-eada-4329-b569-8234e8d09040,460:840b4c5262bb1b9f11ef20be3d7b9a2f}"
+            },
+            {
+                "Груз": "e0e0c7b9-1be6-11ef-840b-4c5262bb1b9f",
+                "Вес": 22445.67,
+                "Мест": 1211,
+                "НомерСтроки": -1,
+                "ОписаниеГруза": "",
+                "ГрузИсточникОписания": "",
+                "Порядок": 3,
+                "Информация": "45G1",
+                "Наименование": "MAGU5462536 (ГР)",
+                "Картинка": "Контейнер",
+                "Текст": "MAGU5462536 (ГР)",
+                "Вложения": [
+                    {
+                        "Источник": "",
+                        "НомерСтроки": 1,
+                        "Груз": "e0e0c7b9-1be6-11ef-840b-4c5262bb1b9f",
+                        "ОписаниеГруза": "e0e0c7b8-1be6-11ef-840b-4c5262bb1b9f",
+                        "Вес": 22445.67,
+                        "Мест": 1211,
+                        "ВесНачально": 22445.67,
+                        "МестНачально": 1211,
+                        "Наименование": "ПРОГРАММИРУЕМЫЙ ЛОГИЧЕСКИЙ КОНТРОЛЛЕР, ДРАЙВЕР ДВИГАТЕЛЯ, СУХОЙ ТРАНСФОРМАТОР, ИНДИКАТОР, КОНДЕНСАТО [041434027011]",
+                        "ГрузИсточникОписания": "e0e0c7b9-1be6-11ef-840b-4c5262bb1b9f",
+                        "Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"e0e0c7b9-1be6-11ef-840b-4c5262bb1b9f\" , ОписаниеГруза:\"e0e0c7b8-1be6-11ef-840b-4c5262bb1b9f\" , Мест:\"1211\", Вес:\"22445,67\", НомерСтроки: -1  })'>Извлечь</button>"
+                    }
+                ],
+                "Команды": [
+                    {
+                        "Подсказка": "Переместить всё на склад",
+                        "Текст": "",
+                        "Доступность": true,
+                        "Команда": "ИзвлечВесьГрузНаСклад",
+                        "Стиль": "ИзвлечьНаСклад"
+                    },
+                    {
+                        "Подсказка": "Переместить всё в КТК",
+                        "Текст": "",
+                        "Доступность": true,
+                        "Команда": "ПереместитьГрузВКТК",
+                        "Стиль": "ИзвлечьВКонтейнер"
+                    }
+                ],
+                "Ссылка": "{\"#\",2e2282a7-eada-4329-b569-8234e8d09040,460:840b4c5262bb1b9f11ef1be6e0e0c7b9}"
+            },
+            {
+                "Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                "Вес": 22519.98,
+                "Мест": 247,
+                "НомерСтроки": -1,
+                "ОписаниеГруза": "",
+                "ГрузИсточникОписания": "",
+                "Порядок": 4,
+                "Информация": "45G1",
+                "Наименование": "HALU5650870 (ГР)",
+                "Картинка": "Контейнер",
+                "Текст": "HALU5650870 (ГР)",
+                "Вложения": [
+                    {
+                        "Источник": "",
+                        "НомерСтроки": 1,
+                        "Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                        "ОписаниеГруза": "16b89634-167c-11ef-840b-4c5262bb1b9f",
+                        "Вес": 577.8,
+                        "Мест": 1,
+                        "ВесНачально": 577.8,
+                        "МестНачально": 1,
+                        "Наименование": "запчасти [041434013660]",
+                        "ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                        "Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"16b89634-167c-11ef-840b-4c5262bb1b9f\" , Мест:\"1\", Вес:\"577,8\", НомерСтроки: -1  })'>Извлечь</button>"
+                    },
+                    {
+                        "Источник": "",
+                        "НомерСтроки": 2,
+                        "Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                        "ОписаниеГруза": "89148ec2-1738-11ef-840b-4c5262bb1b9f",
+                        "Вес": 7994,
+                        "Мест": 10,
+                        "ВесНачально": 7994,
+                        "МестНачально": 10,
+                        "Наименование": "запчасти [041434017027]",
+                        "ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                        "Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"89148ec2-1738-11ef-840b-4c5262bb1b9f\" , Мест:\"10\", Вес:\"7994\", НомерСтроки: -1  })'>Извлечь</button>"
+                    },
+                    {
+                        "Источник": "",
+                        "НомерСтроки": 3,
+                        "Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                        "ОписаниеГруза": "7e9c4028-1a66-11ef-840b-4c5262bb1b9f",
+                        "Вес": 1386,
+                        "Мест": 170,
+                        "ВесНачально": 1386,
+                        "МестНачально": 170,
+                        "Наименование": "УМНАЯ КАПЕЛЬНИЦА. [041434023554]",
+                        "ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                        "Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"7e9c4028-1a66-11ef-840b-4c5262bb1b9f\" , Мест:\"170\", Вес:\"1386\", НомерСтроки: -1  })'>Извлечь</button>"
+                    },
+                    {
+                        "Источник": "",
+                        "НомерСтроки": 4,
+                        "Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                        "ОписаниеГруза": "7e9c402a-1a66-11ef-840b-4c5262bb1b9f",
+                        "Вес": 6558,
+                        "Мест": 7,
+                        "ВесНачально": 6558,
+                        "МестНачально": 7,
+                        "Наименование": "МОНОБЛОК НАПРАВЛЕННЫЙРЕГУЛИРУЮЩИЙ ВЕНТИЛЬИ ЗАПАСНЫЕ ЧАСТИ,СЕКЦИОННЫЙ НАПРАВЛЕННЫЙРЕГУЛИРУЮЩИЙ ВЕНТИЛ [041434023556]",
+                        "ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                        "Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"7e9c402a-1a66-11ef-840b-4c5262bb1b9f\" , Мест:\"7\", Вес:\"6558\", НомерСтроки: -1  })'>Извлечь</button>"
+                    },
+                    {
+                        "Источник": "",
+                        "НомерСтроки": 5,
+                        "Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                        "ОписаниеГруза": "021c2df0-1cce-11ef-840b-4c5262bb1b9f",
+                        "Вес": 1066,
+                        "Мест": 4,
+                        "ВесНачально": 1066,
+                        "МестНачально": 4,
+                        "Наименование": "запчасти [041434030713]",
+                        "ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                        "Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"021c2df0-1cce-11ef-840b-4c5262bb1b9f\" , Мест:\"4\", Вес:\"1066\", НомерСтроки: -1  })'>Извлечь</button>"
+                    },
+                    {
+                        "Источник": "",
+                        "НомерСтроки": 6,
+                        "Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                        "ОписаниеГруза": "021c2dfb-1cce-11ef-840b-4c5262bb1b9f",
+                        "Вес": 648,
+                        "Мест": 24,
+                        "ВесНачально": 648,
+                        "МестНачально": 24,
+                        "Наименование": "ЭФИРНОЕ МАСЛО [041434030724]",
+                        "ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                        "Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"021c2dfb-1cce-11ef-840b-4c5262bb1b9f\" , Мест:\"24\", Вес:\"648\", НомерСтроки: -1  })'>Извлечь</button>"
+                    },
+                    {
+                        "Источник": "",
+                        "НомерСтроки": 7,
+                        "Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                        "ОписаниеГруза": "08144f02-1cce-11ef-840b-4c5262bb1b9f",
+                        "Вес": 345.08,
+                        "Мест": 23,
+                        "ВесНачально": 345.08,
+                        "МестНачально": 23,
+                        "Наименование": "лампы [041434030729]",
+                        "ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                        "Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"08144f02-1cce-11ef-840b-4c5262bb1b9f\" , Мест:\"23\", Вес:\"345,08\", НомерСтроки: -1  })'>Извлечь</button>"
+                    },
+                    {
+                        "Источник": "",
+                        "НомерСтроки": 8,
+                        "Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                        "ОписаниеГруза": "3242e137-1cce-11ef-840b-4c5262bb1b9f",
+                        "Вес": 1450.1,
+                        "Мест": 3,
+                        "ВесНачально": 1450.1,
+                        "МестНачально": 3,
+                        "Наименование": "оборудование [041434030743]",
+                        "ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                        "Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"3242e137-1cce-11ef-840b-4c5262bb1b9f\" , Мест:\"3\", Вес:\"1450,1\", НомерСтроки: -1  })'>Извлечь</button>"
+                    },
+                    {
+                        "Источник": "",
+                        "НомерСтроки": 9,
+                        "Груз": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                        "ОписаниеГруза": "b1b10221-1cd6-11ef-840b-4c5262bb1b9f",
+                        "Вес": 2495,
+                        "Мест": 5,
+                        "ВесНачально": 2495,
+                        "МестНачально": 5,
+                        "Наименование": "запчасти [041434030766]",
+                        "ГрузИсточникОписания": "68a8d7a2-2313-11ef-840c-4c5262bb1b9f",
+                        "Действия": "<button type='button' onclick='return1c(this, {type:\"Извлечение\", id:null, Груз:\"68a8d7a2-2313-11ef-840c-4c5262bb1b9f\" , ОписаниеГруза:\"b1b10221-1cd6-11ef-840b-4c5262bb1b9f\" , Мест:\"5\", Вес:\"2495\", НомерСтроки: -1  })'>Извлечь</button>"
+                    }
+                ],
+                "Команды": [
+                    {
+                        "Подсказка": "Переместить всё на склад",
+                        "Текст": "",
+                        "Доступность": true,
+                        "Команда": "ИзвлечВесьГрузНаСклад",
+                        "Стиль": "ИзвлечьНаСклад"
+                    },
+                    {
+                        "Подсказка": "Переместить всё в КТК",
+                        "Текст": "",
+                        "Доступность": true,
+                        "Команда": "ПереместитьГрузВКТК",
+                        "Стиль": "ИзвлечьВКонтейнер"
+                    }
+                ],
+                "Ссылка": "{\"#\",2e2282a7-eada-4329-b569-8234e8d09040,460:840c4c5262bb1b9f11ef231368a8d7a2}"
+            }
+        ];
 
         let options = {
             "layout": "fitColumns",
@@ -2800,11 +3049,26 @@ align-content: center;
                 }
             ]
         };
+ /*
+        DrawCargoGrid("ГрузыЯчейками", "Вложения", JSON.stringify(data), JSON.stringify(options));
 
-        DrawCargoGrid("Грузы", "Вложения", JSON.stringify(data), JSON.stringify(options));
+        let ДобавитьГруз_ = AddElement("ПанельКнопок", "ОбластьЯчейки_ДобавленияГруза", "div", "", "Выбрать груз");
 
+        ДобавитьГруз_.onclick = (ev) => {
+            window.lastMouse.x = ev.clientX;
+            window.lastMouse.y = ev.clientY;
+            ev.preventDefault();
+            ev.stopPropagation();
+            AddElement("ДиалогВыбора", "ДиалогВыбораТипаГруза_ГруженныйКТК", "div");
+            AddElement("ДиалогВыбораТипаГруза_ГруженныйКТК", "ДиалогВыбораТипаГруза_КнопкаГруженныйКТК", "button", "{'class':'ДиалогВыбораТипаГруза_Ячейка'}", "Груженный контейнер");
+            AddElement("ДиалогВыбора", "ДиалогВыбораТипаГруза_ПорожнийКТК", "div");
+            AddElement("ДиалогВыбораТипаГруза_ПорожнийКТК", "ДиалогВыбораТипаГруза_КнопкаПорожнийКТК", "button", "{'class':'ДиалогВыбораТипаГруза_Ячейка'}", "Порожний контейнер");
+            AddElement("ДиалогВыбора", "ДиалогВыбораТипаГруза_ГенГруз", "div");
+            AddElement("ДиалогВыбораТипаГруза_ГенГруз", "ДиалогВыбораТипаГруза_КнопкаГенГруз", "button", "{'class':'ДиалогВыбораТипаГруза_Ячейка'}", "Генеральный груз");
+            ShowModalDialog();
+        }
 
-
+*/
     </script>
 
 </body>
